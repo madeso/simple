@@ -1,124 +1,110 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+#include "engine/angle.h"
+
+#include <cmath>
+
+namespace
+{
+    constexpr float pi = M_PI;
+
+    float rad2deg(float rad)
+    {
+        return (float)(180 / pi) * rad;
+    }
+
+    float deg2rad(float deg)
+    {
+        return (float)pi / 180 * deg;
+    }
+}
 
 namespace SimpleEngine
 {
-    public struct angle
+    angle angle::Zero()
     {
-        private float rad;
-        private angle(float r)
-        {
-            this.rad = r;
-        }
+        return angle::FromRadians(0);
+    }
 
-        public float inRadians
-        {
-            get
-            {
-                return rad;
-            }
-        }
+    float angle::inRadians() const
+    {
+        return rad;
+    }
 
-        private static float rad2deg(float rad)
-		{
-			return (float) (180/Math.PI) * rad;
-		}
-        private static float deg2rad(float deg)
-		{
-            return (float) Math.PI / 180 * deg;
-		}
+    float angle::inDegrees() const
+    {
+        return rad2deg(rad);
+    }
 
-        public float inDegrees
-        {
-            get
-            {
-                return rad2deg(rad);
-            }
-        }
+    angle angle::FromRadians(float r)
+    {
+        return angle{r};
+    }
 
-        public static angle FromRadians(float r)
-        {
-            return new angle(r);
-        }
-        public static angle FromDegrees(float deg)
-        {
-            return new angle(deg2rad(deg));
-        }
-        public static angle operator +(angle l, angle r)
-        {
-            return angle.FromRadians(l.inRadians + r.inRadians);
-        }
+    angle angle::FromDegrees(float deg)
+    {
+        return angle{deg2rad(deg)};
+    }
 
-        public static angle Zero
-        {
-            get
-            {
-                return angle.FromRadians(0);
-            }
-        }
-        public static angle FromPercentOf360(float percent)
-        {
-            return angle.FromRadians( (float)( percent * Math.PI * 2));
-        }
+    angle angle::FromPercentOf360(float percent)
+    {
+        return angle::FromRadians((float)(percent * pi * 2));
+    }
 
-        public static angle operator -(angle l, angle r)
-        {
-            return angle.FromRadians(l.inRadians - r.inRadians);
-        }
-        public static angle operator *(angle l, float r)
-        {
-            return angle.FromRadians(l.inRadians * r);
-        }
-        public static angle operator -(angle me)
-        {
-            return me.Negative;
-        }
+    angle angle::operator-() const
+    {
+        return Negative();
+    }
 
-        public angle Negative
-        {
-            get
-            {
-                return new angle(-rad);
-            }
-        }
+    angle angle::Negative() const
+    {
+        return angle{-rad};
+    }
 
-        public float Sin
-        {
-            get
-            {
-                return (float)Math.Sin(inRadians);
-            }
-        }
-        public float Cos
-        {
-            get
-            {
-                return (float) Math.Cos(inRadians);
-            }
-        }
-        public float Tan
-        {
-            get
-            {
-                return (float)Math.Tan(inRadians);
-            }
-        }
+    float angle::Sin() const
+    {
+        return (float)std::sin(inRadians());
+    }
 
-        public static angle Asin(float v)
-        {
-            return angle.FromRadians( (float) Math.Asin(v) );
-        }
+    float angle::Cos() const
+    {
+        return (float)std::cos(inRadians());
+    }
 
-        public static angle Acos(float v)
-        {
-            return angle.FromRadians((float)Math.Acos(v));
-        }
+    float angle::Tan()
+    {
+        return (float)std::tan(inRadians());
+    }
 
-        public static angle Atan(float v)
-        {
-            return angle.FromRadians((float)Math.Atan(v));
-        }
+    angle angle::Asin(float v)
+    {
+        return angle::FromRadians((float)std::asin(v));
+    }
+
+    angle angle::Acos(float v)
+    {
+        return angle::FromRadians((float)std::acos(v));
+    }
+
+    angle angle::Atan(float v)
+    {
+        return angle::FromRadians((float)std::atan(v));
+    }
+
+    angle::angle(float r) : rad(r)
+    {
+    }
+
+    angle operator+(angle l, angle r)
+    {
+        return angle::FromRadians(l.inRadians() + r.inRadians());
+    }
+
+    angle operator-(angle l, angle r)
+    {
+        return angle::FromRadians(l.inRadians() - r.inRadians());
+    }
+
+    angle operator*(angle l, float r)
+    {
+        return angle::FromRadians(l.inRadians() * r);
     }
 }
