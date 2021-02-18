@@ -1,5 +1,6 @@
 set(src
     engine/angle.cc engine/angle.h
+    engine/main.cc engine/main.h
 )
 
 add_library(engine STATIC ${src})
