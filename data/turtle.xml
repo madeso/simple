@@ -1,0 +1,54 @@
+<actor>
+  <mesh file="C:\Users\Gustav\dev\media\finished\3d\psionic3d\toonturtle\turtle1.ms3d">
+    <animation>
+      <name>Walk</name>
+      <start>1</start>
+      <end>11</end>
+    </animation>
+    <animation>
+      <name>Swim</name>
+      <start>12</start>
+      <end>25</end>
+    </animation>
+    <animation>
+      <name>Jump</name>
+      <start>26</start>
+      <end>40</end>
+    </animation>
+    <animation>
+      <name>Bite attack</name>
+      <start>41</start>
+      <end>50</end>
+    </animation>
+    <animation>
+      <name>Die onto back</name>
+      <start>51</start>
+      <end>64</end>
+    </animation>
+    <animation>
+      <name>Go into Shell</name>
+      <start>66</start>
+      <end>77</end>
+    </animation>
+    <animation>
+      <name>360 spin</name>
+      <start>79</start>
+      <end>87</end>
+    </animation>
+    <animation>
+      <name>Backflip</name>
+      <start>89</start>
+      <end>100</end>
+    </animation>
+    <animation>
+      <name>Idle 1</name>
+      <start>101</start>
+      <end>120</end>
+    </animation>
+    <animation>
+      <name>idle 2</name>
+      <start>121</start>
+      <end>150</end>
+    </animation>
+  </mesh>
+</actor>

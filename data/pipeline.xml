@@ -1,0 +1,30 @@
+<pipeline target="view">
+  <targets>
+    <form id="view"/>
+    <buffer id="depth" width="512" height="512"/>
+    <buffer id="depth_lo" width="512" height="512"/>
+    <buffer id="debpth_blur_h" width="256" height="256"/>
+    <buffer id="depthblur" width="512" height="512"/>
+  </targets>
+  <providers>
+    <world id="worldRenderer" shader="depth.xml" target="depth"/>
+    <fullscreen id="renderlow" shader="" target="depth_lo">
+      <bindbuffer id="binder" buffer="depth" location="0"/>
+    </fullscreen>
+    
+    <fullscreen id="blurh" shader="fse_blurs.xml" target="debpth_blur_h">
+      <setu2 id="set_direction" shader="fse_blurs.xml" uniform="direction" x="1" y="0"/>
+      <bindbuffer id="binder" buffer="depth_lo" location="0"/>
+    </fullscreen>
+    
+    <fullscreen id="blurv" shader="fse_blurs.xml" target="depthblur">
+      <setu2 id="set_direction" shader="fse_blurs.xml" uniform="direction" x="0" y="1"/>
+      <bindbuffer id="binder" buffer="debpth_blur_h" location="0"/>
+    </fullscreen>
+    
+    <fullscreen id="ssao" shader="fse_ssao.xml" target="view">
+      <bindbuffer id="depth" buffer="depth" location="0"/>
+      <bindbuffer id="deapthblurred" buffer="depthblur" location="1"/>
+    </fullscreen>
+  </providers>
+</pipeline>

@@ -1,0 +1,20 @@
+<shader>
+  <vertex>
+    <![CDATA[
+    varying float Distance;
+    void main()
+    {
+      gl_Position = ftransform();
+      gl_FrontColor = vec4(gl_Normal.xyz, 1);
+    }
+    ]]>
+  </vertex>
+  <fragment>
+    <![CDATA[
+    void main()
+    {
+      gl_FragColor = vec4(normalize(gl_Color.xyz), 1);
+    }
+    ]]>
+  </fragment>
+</shader>

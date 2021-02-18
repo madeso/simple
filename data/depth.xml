@@ -1,0 +1,22 @@
+<shader>
+  <bind/>
+  <vertex>
+    <![CDATA[
+    varying float Distance;
+    void main()
+    {
+      gl_Position = gl_Position = ftransform();
+      Distance = gl_Position.z / 20;
+    }
+    ]]>
+  </vertex>
+  <fragment>
+    <![CDATA[
+    varying float Distance;
+    void main()
+    {
+      gl_FragColor = vec4(Distance,Distance,Distance,1.0);
+    }
+    ]]>
+  </fragment>
+</shader>

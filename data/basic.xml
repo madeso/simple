@@ -1,0 +1,8 @@
+<pipeline target="view">
+  <targets>
+    <form id="view"/>
+  </targets>
+  <providers>
+    <world id="worldRenderer" shader="" target="view"/>
+  </providers>
+</pipeline>
