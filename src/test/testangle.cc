@@ -1,33 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using SimpleEngine;
-using NUnit.Framework.SyntaxHelpers;
+﻿#include "catch.hpp"
+#include "engine/angle.h"
 
-namespace SimpleUnit
+using namespace SimpleEngine;
+
+constexpr float fe = 0.0000001f;
+
+TEST_CASE("TestSinCos")
 {
-    [TestFixture]
-    public class TestAngle
-    {
-        private const float fe = 0.0000001f;
-        [Test]
-        public void TestSinCos()
-        {
-            Assert.That(angle.FromDegrees(90).Sin, Is.EqualTo(1).Within(fe));
-            Assert.That(angle.FromDegrees(90).Cos, Is.EqualTo(0).Within(fe));
-            Assert.That(angle.FromDegrees(0).Sin, Is.EqualTo(0).Within(fe));
-            Assert.That(angle.FromDegrees(0).Cos, Is.EqualTo(1).Within(fe));
-        }
+    CHECK(angle::FromDegrees(90).Sin() == Approx(1));
+    CHECK(angle::FromDegrees(90).Cos() == Approx(0).margin(fe));
+    CHECK(angle::FromDegrees(0).Sin() == Approx(0));
+    CHECK(angle::FromDegrees(0).Cos() == Approx(1));
+}
 
-        [Test]
-        public void TestA()
-        {
-            Assert.That(angle.Asin(1).inDegrees, Is.EqualTo(90).Within(fe));
-            Assert.That(angle.Acos(0).inDegrees, Is.EqualTo(90).Within(fe));
-            Assert.That(angle.Asin(0).inDegrees, Is.EqualTo(0).Within(fe));
-            Assert.That(angle.Acos(1).inDegrees, Is.EqualTo(0).Within(fe));
-        }
-    }
+TEST_CASE("TestA")
+{
+    CHECK(angle::Asin(1).inDegrees() == Approx(90));
+    CHECK(angle::Acos(0).inDegrees() == Approx(90));
+    CHECK(angle::Asin(0).inDegrees() == Approx(0));
+    CHECK(angle::Acos(1).inDegrees() == Approx(0));
 }

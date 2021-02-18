@@ -14,7 +14,7 @@ target_include_directories(engine
 source_group("" FILES ${src})
 
 set(src_test
-    # test/test.cc
+    test/testangle.cc
     ../external/catch/main.cc
 )
 add_executable(test ${src_test})
