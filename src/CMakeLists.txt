@@ -27,6 +27,9 @@ set(src
     engine/renderlist.cc engine/renderlist.h
 
     engine/compiledmesh.cc engine/compiledmesh.h
+    engine/window.cc engine/window.h
+    engine/arcball.cc engine/arcball.h
+    engine/rotation.cc engine/rotation.h
 
     engine/main.cc engine/main.h
 )

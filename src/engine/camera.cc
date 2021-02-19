@@ -29,7 +29,7 @@ namespace SimpleEngine
 
         void rotate(quat q)
         {
-            rotation = quat::Combine()(rotation, q);
+            rotation = quat::Combine(rotation, q);
         }
 
         vec3 location = vec3::Zero();

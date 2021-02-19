@@ -1,38 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/arcball.h"
+
+#include <cmath>
+
+#include "engine/axisangle.h"
+#include "engine/quat.h"
 
 namespace SimpleEngine
 {
-    struct ArcBall
+    ArcBall::ArcBall(const vec2& c, float r)
+        : center(c)
+        , radius(r)
     {
-        ArcBall(vec2 center, float radius)
-        {
-            this.radius = radius;
-            this.center = center;
-        }
+    }
 
-        vec3 transform(vec2 v)
-        {
-            float x = (v.x - center.x) / radius;
-            float y = (v.y - center.y) / radius;
-            float rsq = x * x + y * y;
-            float z = (rsq < 1) ? (float)(Math.Sqrt(1 - rsq)) : 0;
-            return vec3(x, y, z).Normalized;
-        }
+    vec3 ArcBall::transform(const vec2& v) const
+    {
+        float x = (v.x - center.x) / radius;
+        float y = (v.y - center.y) / radius;
+        float rsq = x * x + y * y;
+        float z = (rsq < 1) ? (float)(std::sqrt(1 - rsq)) : 0.0f;
+        return vec3(x, y, z).Normalized();
+    }
 
-        quat rotation(vec2 from, vec2 to)
-        {
-            vec3 f = transform(from);
-            vec3 t = transform(to);
-            vec3 axis = vec3.cross(f, t).Normalized;
-            angle angle = vec3.AngleBetween(f, t);
-            return quat(AxisAngle.RightHandAround(axis, angle));
-        }
-
-        vec2 center;
-
-        float radius;
+    quat ArcBall::rotation(const vec2& from, const vec2& to) const
+    {
+        vec3 f = transform(from);
+        vec3 t = transform(to);
+        vec3 axis = vec3::cross(f, t).Normalized();
+        angle angle = vec3::AngleBetween(f, t);
+        return quat(AxisAngle::RightHandAround(axis, angle));
     }
 }
