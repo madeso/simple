@@ -12,7 +12,9 @@ set(src
     engine/meshdef.cc engine/meshdef.h
     engine/pushedmatrix.cc engine/pushedmatrix.h
     engine/cpp.cc engine/cpp.h
-    engine/filesystem.cc
+    engine/filesystem.cc engine/filesystem.h
+    engine/media.cc engine/media.h
+    engine/medialoader.cc engine/medialoader.h
 
     engine/main.cc engine/main.h
 )
