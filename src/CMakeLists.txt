@@ -31,6 +31,8 @@ set(src
     engine/arcball.cc engine/arcball.h
     engine/rotation.cc engine/rotation.h
 
+    engine/actor.cc engine/actor.h
+
     engine/main.cc engine/main.h
 )
 

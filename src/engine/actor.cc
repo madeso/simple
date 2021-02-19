@@ -1,51 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/actor.h"
 
 namespace SimpleEngine
 {
-    struct Actor
+    std::shared_ptr<MeshDef> mesh;
+    std::map<std::string, std::shared_ptr<Animation>> animations;
+
+    Actor::Actor(std::shared_ptr<MeshDef> m)
+        : mesh(m)
     {
-        MeshDef mesh;
-        std::map<std::string, Animation> animations = std::map<std::string, Animation>();
+    }
 
-        Actor(MeshDef mesh)
-        {
-            this.mesh = mesh;
-        }
+    std::shared_ptr<Animation> Actor::GetAnimation(const std::string& name)
+    {
+        return animations[name];
+    }
 
-        Animation this [std::string name] {
-            get
-            {
-                return animations[name];
-            }
-        }
-
-        Actor
-        add(std::string name, Animation an)
-        {
-            animations.Add(name, an);
-            return this;
-        }
-
-        MeshDef Mesh
-        {
-            get
-            {
-                return mesh;
-            }
-        }
-
-        IEnumerable<KeyValuePair<std::string, Animation>> Animations
-        {
-            get
-            {
-                for (KeyValuePair<std::string, Animation> kvp : animations)
-                {
-                    yield return kvp;
-                }
-            }
-        }
+    Actor& Actor::add(const std::string& name, std::shared_ptr<Animation> an)
+    {
+        animations.emplace(name, an);
+        return *this;
     }
 }
