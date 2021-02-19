@@ -26,6 +26,8 @@ set(src
     engine/renderable.cc engine/renderable.h
     engine/renderlist.cc engine/renderlist.h
 
+    engine/compiledmesh.cc
+
     engine/main.cc engine/main.h
 )
 

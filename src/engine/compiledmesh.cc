@@ -4,6 +4,7 @@
 #include "engine/meshdef.h"
 #include "engine/meshpart.h"
 #include "engine/poseable.h"
+#include "engine/renderlist.h"
 
 namespace SimpleEngine
 {
@@ -24,7 +25,7 @@ namespace SimpleEngine
                 {
                     try
                     {
-                        parts.emplace_back(new MeshPart(ml, m, def, this));
+                        parts.emplace_back(std::make_shared<MeshPart>(ml, *m, def, this));
                     }
                     catch (const std::runtime_error& e)
                     {
@@ -56,5 +57,5 @@ namespace SimpleEngine
         {
             return pose;
         }
-    }
+    };
 }

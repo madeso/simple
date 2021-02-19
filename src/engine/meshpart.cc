@@ -14,7 +14,7 @@ namespace SimpleEngine
 {
     struct Poseable;
 
-    MeshPart::MeshPart(MediaLoader* ml, const MaterialDef& m, MeshDef* def, std::shared_ptr<Poseable> p)
+    MeshPart::MeshPart(MediaLoader* ml, const MaterialDef& m, MeshDef* def, Poseable* p)
         : poseable(p)
     {
         mat = std::make_shared<Material>(m.diffuse, ml->fetch<Texture>(m.texture));

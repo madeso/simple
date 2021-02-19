@@ -19,10 +19,10 @@ namespace SimpleEngine
     {
         std::vector<std::vector<Vertex>> faces;
         std::shared_ptr<Material> mat;
-        std::shared_ptr<Poseable> poseable;
+        Poseable* poseable;
         int id = -1;
 
-        MeshPart(MediaLoader* ml, const MaterialDef& m, MeshDef* def, std::shared_ptr<Poseable> p);
+        MeshPart(MediaLoader* ml, const MaterialDef& m, MeshDef* def, Poseable* p);
 
         int Id();
 
