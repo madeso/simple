@@ -22,7 +22,7 @@ set(src
     engine/poseable.cc engine/poseable.h
     engine/animation.cc engine/animation.h
 
-    engine/meshpart.cc
+    engine/meshpart.cc engine/meshpart.h
 
     engine/main.cc engine/main.h
 )
