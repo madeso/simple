@@ -1,154 +1,130 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using Tao.OpenGl;
-using SimpleEngine;
-using System.IO;
+﻿#include <memory>
+#include <string>
+
+#include "engine/animation.h"
+#include "engine/compiledmesh.h"
+#include "engine/filesystem.h"
+#include "engine/medialoader.h"
+#include "engine/meshdef.h"
+#include "engine/opengl.h"
+#include "engine/renderlist.h"
+#include "engine/rotation.h"
+#include "engine/window.h"
+#include "fmt/core.h"
+
+using namespace SimpleEngine;
 
 namespace ModelView
 {
-    struct Main : Form
+    struct Main : public Window
     {
+        std::string current_filename;
+        std::string model_information;
+
+        std::shared_ptr<MeshDef> def;
+        std::shared_ptr<CompiledMesh> mesh;
+        std::shared_ptr<Animation> anim;
+        std::shared_ptr<Rotation> rotation = std::make_shared<EasyRotation>();
+
+        vec2 oldmouse = vec2::Zero();
+        bool down = false;
+        int zoommem = 0;
+        const int kWheelStep = 120;
+        float distance = 15;
+
+        float animation_position = 0;
+        bool playing_animation = false;
+
         Main()
         {
-            InitializeComponent();
-            dView.paint = dView_Paint;
-
-            dView.MouseWheel += MouseEventHandler(dView_MouseWheel);
-            dView.dgl.MouseMove += MouseEventHandler(dView_MouseMove);
-            dView.dgl.MouseDown += MouseEventHandler(dView_MouseDown);
-            dView.dgl.MouseUp += MouseEventHandler(dView_MouseUp);
         }
 
-        void Main_FormClosed(object sender, FormClosedEventArgs e)
+        void selectMesh(const std::string& fileName)
         {
-            dView.Kill();
-        }
+            std::string basefile = Path.GetDirectoryName(dImportDialog.FileName);
+            std::string filename = Path.GetFileName(dImportDialog.FileName);
 
-        void selectMesh()
-        {
-            if (dImportDialog.ShowDialog() == DialogResult.OK)
+            std::shared_ptr<FileSystem> fs = std::make_shared<FileSystem>();
+            fs->addRoot(basefile);
+
+            std::string extent = Path.GetExtension(filename);
+            if (extent == ".act")
             {
-                std::string basefile = Path.GetDirectoryName(dImportDialog.FileName);
-                std::string filename = Path.GetFileName(dImportDialog.FileName);
-                FileSystem fs = FileSystem();
-                fs.addRoot(basefile);
+                anim = nullptr;
 
-                dAnimations.DropDownItems.Clear();
+                Actor act = ActorFile.Load(fs, filename);
+                def = act.Mesh;
+                mesh = nullptr;
 
-                ToolStripButton btn = ToolStripButton("Add animations");
-                btn.Click += EventHandler(btn_Click);
-                dAnimations.DropDownItems.Add(btn);
-
-                std::string extent = Path.GetExtension(filename);
-                if (extent == ".act")
+                for (auto& an : act.Animations)
                 {
-                    anim = nullptr;
-
-                    Actor act = ActorFile.Load(fs, filename);
-                    def = act.Mesh;
-                    mesh = nullptr;
-
-                    for (KeyValuePair<std::string, Animation> an : act.Animations)
-                    {
-                        addAnimation(an.Key, an.Value);
-                    }
+                    addAnimation(an.Key, an.Value);
                 }
-                else
-                {
-                    def = MeshFile.Load(fs, filename);
-                    anim = nullptr;
-                }
-
-                newMesh(fs);
-                updatePose();
-
-                dModelActions.Text = filename;
-
-                dMeshInfo.Text = fmt::format("{0} points, {1} texcoords {2} tris, {3}/{4} bones", def.points.Count, def.uvs.Count, def.TriCount, def.bones.Count, std::vector<MeshDef.Bone>(def.RootBones).Count);
-
-                forceRedraw();
             }
-        }
+            else
+            {
+                def = MeshFile.Load(fs, filename);
+                anim = nullptr;
+            }
 
-        void newMesh(FileSystem fs)
-        {
-            MediaLoader ml = MediaLoader(fs);
-            def.compile(ml);
-            mesh = def.Compiled;
+            newMesh(fs);
+            updatePose();
+
+            current_filename = filename;
+            model_information = fmt::format("{0} points, {1} texcoords {2} tris, {3}/{4} bones", def.points.Count, def.uvs.Count, def.TriCount, def.bones.Count, std::vector<MeshDef.Bone>(def.RootBones).Count);
+
             forceRedraw();
         }
 
-        void btn_Click(object sender, EventArgs e)
+        void newMesh(std::shared_ptr<FileSystem> fs)
         {
-            selectAnimation();
+            auto ml = MediaLoader(fs);
+            def->compile(ml);
+            mesh = def->Compiled();
+            forceRedraw();
         }
 
-        MeshDef def = nullptr;
-        CompiledMesh mesh = nullptr;
-        Animation anim = nullptr;
-        Rotation rotation = EasyRotation();
-
-        void dView_Paint()
+        void Paint()
         {
             vec3 c = vec3::In() * distance;
             glTranslatef(c.x, c.y, c.z);
-            rotation.rotateGl();
+            rotation->rotateGl();
 
-            RenderList list = RenderList();
+            RenderList list;
 
             RenderableGrid grid = RenderableGrid();
-            grid.sendToRenderer(list);
+            grid.sendToRenderer(&list);
 
             if (mesh != nullptr)
             {
-                mesh.sendToRenderer(list, vec3::Zero(), quat::Identity());
+                mesh->sendToRenderer(&list, vec3::Zero(), quat::Identity());
             }
             list.render();
         }
 
-        void dView_MouseMove(object sender, MouseEventArgs e)
+        void MouseMove(float mx, float my)
         {
             if (down)
             {
-                vec2 current = vec2(e.X, e.Y);
-                rotation.sendMouse(current, oldmouse);
+                vec2 current = vec2(mx, my);
+                rotation->sendMouse(current, oldmouse);
                 oldmouse = current;
             }
             forceRedraw();
         }
 
-        void dView_MouseUp(object sender, MouseEventArgs e)
+        void OnLMB(float mx, float my, bool state)
         {
-            if (e.Button == MouseButtons.Left)
+            if (state && !down)
             {
-                down = false;
+                oldmouse = vec2(mx, my);
             }
+            down = state;
         }
 
-        vec2 oldmouse = vec2.Zero;
-        bool down = false;
-
-        void dView_MouseDown(object sender, MouseEventArgs e)
+        void OnMouseWheel(int delta)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                oldmouse = vec2(e.X, e.Y);
-                down = true;
-            }
-        }
-
-        int zoommem = 0;
-        const int kWheelStep = 120;
-        float distance = 15;
-        void dView_MouseWheel(object sender, MouseEventArgs e)
-        {
-            zoommem += e.Delta;
+            zoommem += delta;
             int zoommove = 0;
 
             while (zoommem >= kWheelStep)
@@ -173,36 +149,28 @@ namespace ModelView
 
         void forceRedraw()
         {
-            dView.Draw();
         }
 
-        void normalToolStripMenuItem_Click(object sender, EventArgs e)
+        void SetBasicCamera()
         {
-            arcBallToolStripMenuItem.Checked = false;
-            normalToolStripMenuItem.Checked = true;
-            rotation = BasicQuatRot();
+            rotation = std::make_shared<BasicQuatRot>();
         }
 
-        void arcBallToolStripMenuItem_Click(object sender, EventArgs e)
+        void SetArcballCamera()
         {
-            arcBallToolStripMenuItem.Checked = true;
-            normalToolStripMenuItem.Checked = false;
-            rotation = ArcBallRotation(this);
+            rotation = std::make_shared<ArcBallRotation>(this);
         }
 
-        void selectAnimation()
+        void selectAnimation(const std::string& fileName)
         {
-            if (dSelectAnimation.ShowDialog() == DialogResult.OK)
-            {
-                std::string basefile = Path.GetDirectoryName(dSelectAnimation.FileName);
-                std::string filename = Path.GetFileName(dSelectAnimation.FileName);
-                FileSystem fs = FileSystem();
-                fs.addRoot(basefile);
-                addAnimation(Path.GetFileNameWithoutExtension(filename), AnimationFile.Load(fs, filename));
-            }
+            std::string basefile = Path.GetDirectoryName(dSelectAnimation.FileName);
+            std::string filename = Path.GetFileName(dSelectAnimation.FileName);
+            FileSystem fs = FileSystem();
+            fs.addRoot(basefile);
+            addAnimation(Path.GetFileNameWithoutExtension(filename), AnimationFile.Load(fs, filename));
         }
 
-        void addAnimation(std::string name, Animation anim)
+        void addAnimation(const std::string& name, std::shared_ptr<Animation> anim)
         {
             ToolStripButton selectanim = ToolStripButton(name);
             selectanim.Tag = anim;
@@ -211,22 +179,38 @@ namespace ModelView
             setAnimation(anim, name);
         }
 
-        void setAnimation(Animation anim, std::string name)
+        std::string animation_information;
+
+        void setAnimation(std::shared_ptr<Animation> anim, const std::string& name)
         {
-            this.anim = anim;
+            this->anim = anim;
             dAnimation.Value = 0;
             dAnimations.Text = name;
 
-            dAnimInfo.Text = fmt::format("{0} bones, {1}s long", anim.bones.Count, anim.Length);
+            animation_information = fmt::format("{0} bones, {1}s long", anim->bones.size(), anim->Length());
 
             updatePose();
         }
 
-        void selectAnimationClicked(object sender, EventArgs e)
+        float SafeAnimationPosition()
         {
-            ToolStripButton b = (ToolStripButton)sender;
-            Animation an = (Animation)b.Tag;
-            setAnimation(an, b.Text);
+            if (animation_position < 0.0f)
+            {
+                return 0.0f;
+            }
+
+            if (anim == nullptr)
+            {
+                return;
+            }
+
+            const auto l = anim->Length();
+            if (animation_position > l)
+            {
+                return l;
+            }
+            else
+                return animation_position;
         }
 
         void updatePose()
@@ -237,53 +221,10 @@ namespace ModelView
                 return;
             if (mesh == nullptr)
                 return;
-            float val = dAnimation.Value / (float)dAnimation.Maximum;
-            Pose pose = anim.getPose(anim.Length * val);
-            mesh.setPose(CompiledPose.Compile(pose, def));
+            float val = SafeAnimationPosition();
+            auto pose = anim->getPose(val);
+            mesh->setPose(CompiledPose::Compile(pose, def));
             forceRedraw();
-        }
-
-        void dAnimation_ValueChanged(object sender, EventArgs e)
-        {
-            updatePose();
-        }
-
-        void importToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            selectMesh();
-        }
-
-        void exportToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-        }
-
-        void dPlayPause_ButtonClick(object sender, EventArgs e)
-        {
-            if (dAnimTimer.Enabled)
-                dAnimTimer.Stop();
-            else
-                dAnimTimer.Start();
-        }
-
-        void playPauseToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (dAnimTimer.Enabled)
-                dAnimTimer.Stop();
-        }
-
-        void endToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            dAnimation.Value = dAnimation.Maximum;
-        }
-
-        void beginToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            dAnimation.Value = 0;
-        }
-
-        void dModelActions_ButtonClick(object sender, EventArgs e)
-        {
-            selectMesh();
         }
 
         void selectMaterialToolStripMenuItem_Click(object sender, EventArgs e)
@@ -298,31 +239,7 @@ namespace ModelView
             }
         }
 
-        float AnimationPositionPercent
-        {
-            get
-            {
-                return dAnimation.Value / (float)dAnimation.Maximum;
-            }
-            set
-            {
-                dAnimation.Value = (int)(dAnimation.Maximum * value);
-            }
-        }
-
-        float AnimationPositionSec
-        {
-            get
-            {
-                return anim.Length * AnimationPositionPercent;
-            }
-            set
-            {
-                AnimationPositionPercent = value / anim.Length;
-            }
-        }
-
-        void dAnimTimer_Tick(object sender, EventArgs e)
+        void step(float dt)
         {
             if (anim == nullptr)
                 return;
@@ -331,10 +248,18 @@ namespace ModelView
             if (mesh == nullptr)
                 return;
 
-            float change = dAnimTimer.Interval / 100.0f;
-            float nv = AnimationPositionSec + change;
-            while (nv > anim.Length) nv -= anim.Length;
-            AnimationPositionSec = nv;
+            if (playing_animation == false)
+            {
+                return;
+            }
+
+            animation_position += dt;
+
+            while (animation_position > anim->Length())
+            {
+                animation_position -= anim->Length();
+            }
+            updatePose();
             forceRedraw();
         }
     }
