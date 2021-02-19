@@ -31,6 +31,7 @@ namespace SimpleEngine
         float operator()(int row, int column) const;
         float& operator()(int row, int column);
 
+        mat44();
         mat44(FA d);
 
         static mat44 FromColumnMajor(FA data);

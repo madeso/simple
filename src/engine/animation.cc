@@ -1,24 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include <stdexcept>
+#include <vector>
+
+#include "engine/axisangle.h"
+#include "engine/mat44.h"
+#include "engine/math1.h"
+#include "engine/matrixhelper.h"
+#include "engine/meshdef.h"
+#include "engine/quat.h"
+#include "engine/vec3.h"
+#include "fmt/core.h"
 
 namespace SimpleEngine
 {
     struct Timed
     {
-        Timed(float time)
-        {
-            this.time = time;
-        }
         float time;
 
-        static int Get<T>(std::vector<T> da, float current)
-            where T : Timed
+        Timed(float t)
+            : time(t)
         {
-            for (int i = 1; i < da.Count; ++i)
+        }
+
+        template <typename T>
+        static int Get(const std::vector<T>& da, float current)
+        {
+            for (int i = 1; i < da.size(); ++i)
             {
-                if (math1.IsWithin(da[i - 1].time, current, da[i].time))
+                if (math1::IsWithin(da[i - 1].time, current, da[i].time))
                 {
                     return i;
                 }
@@ -27,103 +35,101 @@ namespace SimpleEngine
             //throw std::runtime_error("data contatiner invalid for animating");
             return -1;
         }
-    }
+    };
 
     struct FramePosition : Timed
     {
-        FramePosition(float time, vec3 location)
-            : base(time)
+        FramePosition(float time, const vec3& l)
+            : Timed(time)
+            , location(l)
         {
-            this.location = location;
         }
         vec3 location;
 
-        static vec3 Interpolate(FramePosition from, float current, FramePosition to)
+        static vec3 Interpolate(const FramePosition& from, float current, const FramePosition& to)
         {
-            float scale = math1.To01(from.time, current, to.time);
-            if (math1.IsWithin(0, scale, 1) == false)
+            float scale = math1::To01(from.time, current, to.time);
+            if (math1::IsWithin(0, scale, 1) == false)
                 throw std::runtime_error("invalid scale");
-            return vec3.Interpolate(from.location, scale, to.location);
+            return vec3::Interpolate(from.location, scale, to.location);
         }
 
-        override std::string ToString()
+        std::string ToString() const
         {
-            return std::string.Format("{0} {1}", time, location);
+            return fmt::format("{0} {1}", time, location.ToString());
         }
-    }
+    };
 
-    struct FrameRotation : Timed
+    struct FrameRotation : public Timed
     {
-        FrameRotation(float time, quat rotation)
-            : base(time)
+        FrameRotation(float time, const quat& r)
+            : Timed(time)
+            , rotation(r)
         {
-            this.rotation = rotation;
         }
+
         quat rotation;
 
         static quat Interpolate(FrameRotation from, float current, FrameRotation to)
         {
-            float scale = math1.To01(from.time, current, to.time);
-            if (math1.IsWithin(0, scale, 1) == false)
+            float scale = math1::To01(from.time, current, to.time);
+            if (math1::IsWithin(0, scale, 1) == false)
                 throw std::runtime_error("invalid scale");
-            return quat::SlerpShortway()(from.rotation, scale, to.rotation);
+            return quat::SlerpShortway(from.rotation, scale, to.rotation);
         }
 
-        override std::string ToString()
+        std::string ToString() const
         {
-            return std::string.Format("{0} {1}", time, rotation.AxisAngle);
+            return fmt::format("{0} {1}", time, rotation.AxisAngle().ToString());
         }
-    }
+    };
 
     struct PoseForBone
     {
         vec3 location;
         quat rotation;
 
-        override std::string ToString()
+        std::string ToString() const
         {
-            return std::string.Format("{0} : {1}", location, rotation.AxisAngle);
+            return fmt::format("{0} : {1}", location.ToString(), rotation.AxisAngle().ToString());
         }
-    }
+    };
 
     struct AnimationForBone
     {
-        std::vector<FramePosition> fp = std::vector<FramePosition>();
-        std::vector<FrameRotation> fr = std::vector<FrameRotation>();
+        std::vector<FramePosition> fp;
+        std::vector<FrameRotation> fr;
 
-        override std::string ToString()
+        std::string ToString() const
         {
-            return std::string.Format("<{0} {1}>", fp.Count, fr.Count);
+            return fmt::format("<{0} {1}>", fp.size(), fr.size());
         }
 
-        float Length
+        float Length() const
         {
-            get
-            {
-                // get the time of the last frame
-                return fp[fp.Count - 1].time;
-            }
+            // get the time of the last frame
+            return fp[fp.size() - 1].time;
         }
 
-        void addPositon(float time, vec3 vec3)
+        void addPositon(float time, const vec3& vec3)
         {
             addPositon(FramePosition(time, vec3));
         }
-        void addPositon(FramePosition fp)
+        void addPositon(const FramePosition& ff)
         {
-            this.fp.Add(fp);
+            fp.emplace_back(ff);
         }
 
-        void addRotation(float time, quat rotation)
+        void addRotation(float time, const quat& rotation)
         {
             addRotation(FrameRotation(time, rotation));
         }
-        void addRotation(FrameRotation fr)
+        void addRotation(const FrameRotation& ff)
         {
-            this.fr.Add(fr);
+            fr.emplace_back(ff);
         }
 
-        PoseForBone getBonePose(float time)
+        PoseForBone getBonePose(float time) const
         {
             PoseForBone p = PoseForBone();
             p.location = Interpolate(time, fp);
@@ -131,72 +137,72 @@ namespace SimpleEngine
             return p;
         }
 
-        static quat Interpolate(float time, std::vector<FrameRotation> fr)
+        static quat Interpolate(float time, const std::vector<FrameRotation>& fr)
         {
-            int fri = Timed.Get<FrameRotation>(fr, time);
+            int fri = Timed::Get<FrameRotation>(fr, time);
             if (fri == -1)
                 return quat::Identity();
-            quat r = FrameRotation.Interpolate(fr[fri - 1], time, fr[fri]);
+            quat r = FrameRotation::Interpolate(fr[fri - 1], time, fr[fri]);
             return r;
         }
 
-        static vec3 Interpolate(float time, std::vector<FramePosition> fp)
+        static vec3 Interpolate(float time, const std::vector<FramePosition>& fp)
         {
-            int fpi = Timed.Get<FramePosition>(fp, time);
+            int fpi = Timed::Get<FramePosition>(fp, time);
             if (fpi == -1)
                 return vec3::Zero();
-            vec3 res = FramePosition.Interpolate(fp[fpi - 1], time, fp[fpi]);
+            vec3 res = FramePosition::Interpolate(fp[fpi - 1], time, fp[fpi]);
             return res;
         }
 
         AnimationForBone sub(int start, int end)
         {
-            AnimationForBone ab = AnimationForBone();
+            AnimationForBone ab;
             float length = end - start;
             bool first = true;
             float last = 0;
 
-            for (FramePosition fp : this.fp)
+            for (auto& fp : this->fp)
             {
-                if (math1.IsBetween(start, fp.time, end))
+                if (math1::IsBetween(start, fp.time, end))
                 {
                     float mark = fp.time - start;
-                    if (first && math1.IsZero(mark) == false)
+                    if (first && math1::IsZero(mark) == false)
                     {
-                        ab.addPositon(0, Interpolate(start, this.fp));
+                        ab.addPositon(0, Interpolate(start, this->fp));
                     }
-                    mark = math1.ZeroOrValue(mark);
+                    mark = math1::ZeroOrValue(mark);
                     first = false;
                     ab.addPositon(mark, fp.location);
                     last = mark;
                 }
             }
-            if (math1.isSame(length, last) == false)
+            if (math1::isSame(length, last) == false)
             {
-                ab.addPositon(length, Interpolate(end, this.fp));
+                ab.addPositon(length, Interpolate(end, this->fp));
             }
 
             first = true;
             last = 0;
 
-            for (FrameRotation fr : this.fr)
+            for (auto& fr : this->fr)
             {
-                if (math1.IsBetween(start, fr.time, end))
+                if (math1::IsBetween(start, fr.time, end))
                 {
                     float mark = fr.time - start;
-                    if (first && math1.IsZero(mark) == false)
+                    if (first && math1::IsZero(mark) == false)
                     {
-                        ab.addRotation(0, Interpolate(start, this.fr));
+                        ab.addRotation(0, Interpolate(start, this->fr));
                     }
-                    mark = math1.ZeroOrValue(mark);
+                    mark = math1::ZeroOrValue(mark);
                     first = false;
                     ab.addRotation(mark, fr.rotation);
                     last = mark;
                 }
             }
-            if (math1.isSame(length, last) == false)
+            if (math1::isSame(length, last) == false)
             {
-                ab.addRotation(length, Interpolate(end, this.fr));
+                ab.addRotation(length, Interpolate(end, this->fr));
             }
 
             /*if (ab.fp.Count == 1)
@@ -210,131 +216,133 @@ namespace SimpleEngine
                 ab.addRotation(end, afb.fr[0].rotation);
             }*/
 
-            if (ab.fp.Count < 2 || ab.fr.Count < 2)
+            if (ab.fp.size() < 2 || ab.fr.size() < 2)
+            {
                 throw std::runtime_error("Data error, need atleast 2 keyframes per animation");
+            }
             return ab;
         }
 
         void scale(float scale)
         {
             std::vector<FramePosition> nf = std::vector<FramePosition>();
-            for (FramePosition f : fp)
+            for (auto& f : fp)
             {
-                nf.Add(FramePosition(f.time, f.location * scale));
+                nf.emplace_back(FramePosition(f.time, f.location * scale));
             }
             fp = nf;
         }
-    }
+    };
+
+    struct Pose
+    {
+        Pose(const std::vector<PoseForBone>& pose)
+            : bones(pose)
+        {
+        }
+
+        std::vector<PoseForBone> bones;
+    };
 
     struct CompiledPose
     {
         std::vector<mat44> transforms;
 
-        CompiledPose(std::vector<mat44> transforms)
+        CompiledPose(const std::vector<mat44>& ts)
+            : transforms(ts)
         {
-            this.transforms = transforms;
         }
 
-        static CompiledPose Compile(Pose pose, MeshDef def)
+        static CompiledPose Compile(const Pose& pose, const MeshDef& def)
         {
-            if (pose.bones.Count != def.bones.Count)
-                throw std::runtime_error("Invalid animation/mesh, bone count differs");
-            std::vector<mat44> result = std::vector<mat44>(pose.bones.Count);
-            for (int i = 0; i < pose.bones.Count; ++i) result.Add(mat44.Identity);
-            for (MeshDef.Bone root : def.RootBones)
+            if (pose.bones.size() != def.bones.size())
             {
-                updateMatrix(ref result, root, pose, def.bones);
+                throw std::runtime_error("Invalid animation/mesh, bone count differs");
+            }
+
+            auto result = std::vector<mat44>(pose.bones.size());
+            for (int i = 0; i < pose.bones.size(); ++i) result.emplace_back(mat44::Identity());
+            for (auto& root : def.RootBones())
+            {
+                updateMatrix(&result, root, pose, def.bones);
             }
             return CompiledPose(result);
         }
 
-        static void updateMatrix(ref std::vector<mat44> result, MeshDef.Bone bone, Pose pose, std::vector<MeshDef.Bone> list)
+        static void updateMatrix(std::vector<mat44>* result, std::shared_ptr<Bone> bone, const Pose& pose, const std::vector<std::shared_ptr<Bone>>& list)
         {
-            mat44 parent;
-            if (bone.parentBone == nullptr)
-                parent = mat44.Identity;
-            else
-                parent = result[bone.parent];
-            vec3 loc = pose.bones[bone.index].location;
-            quat rot = pose.bones[bone.index].rotation;
-            // bone.pos Rotate(-bone.rot).
-            result[bone.index] = MatrixHelper(parent).Rotate(bone.rot).Translate(bone.pos).Translate(loc).Rotate(-rot).mat44;
-            for (MeshDef.Bone b : bone.childs)
+            mat44 parent =
+                bone->parentBone == nullptr ? mat44::Identity() : (*result)[bone->parent];
+            vec3 loc = pose.bones[bone->index].location;
+            quat rot = pose.bones[bone->index].rotation;
+            // bone->pos Rotate(-bone->rot).
+            (*result)[bone->index] = MatrixHelper(parent).Rotate(bone->rot).Translate(bone->pos).Translate(loc).Rotate(-rot).mat44();
+            for (auto& b : bone->childs)
             {
-                updateMatrix(ref result, b, pose, list);
+                updateMatrix(result, b, pose, list);
             }
         }
-    }
-
-    struct Pose
-    {
-        Pose(IEnumerable<PoseForBone> pose)
-        {
-            bones = std::vector<PoseForBone>(pose);
-        }
-        std::vector<PoseForBone> bones;
-    }
+    };
 
     struct AnimationInformation
     {
-        AnimationInformation(int start, int end, std::string name)
+        AnimationInformation(int s, int e, const std::string& n)
+            : start(s)
+            , end(e)
+            , name(n)
         {
-            this.start = start;
-            this.end = end;
-            this.name = name;
         }
         int start;
         int end;
         std::string name;
-    }
+    };
 
     struct Animation
     {
-        Animation(IEnumerable<AnimationForBone> bones)
+        std::vector<AnimationForBone> bones;
+        float Length;
+
+        Animation(const std::vector<AnimationForBone>& b)
+            : bones(b)
+            , Length(0.0f)
         {
-            this.bones = std::vector<AnimationForBone>(bones);
-            float l = 0;
-            for (AnimationForBone ab : this.bones)
+            for (auto& ab : bones)
             {
-                l = math1.Max(l, ab.Length);
+                Length = math1::Max(Length, ab.Length());
             }
-            Length = l;
         }
 
-        Pose getPose(float time)
+        Pose getPose(float time) const
         {
-            std::vector<PoseForBone> bd = std::vector<PoseForBone>();
-            for (AnimationForBone ab : bones)
+            std::vector<PoseForBone> bd;
+            for (const auto& ab : bones)
             {
-                bd.Add(ab.getBonePose(time));
+                bd.emplace_back(ab.getBonePose(time));
             }
             return Pose(bd);
         }
 
-        std::vector<AnimationForBone> bones;
-        float Length;
-
-        Animation subanim(int start, int end)
+        Animation subanim(int start, int end) const
         {
-            std::vector<AnimationForBone> bd = std::vector<AnimationForBone>();
+            std::vector<AnimationForBone> bd;
             for (AnimationForBone ab : bones)
             {
-                bd.Add(ab.sub(start, end));
+                bd.emplace_back(ab.sub(start, end));
             }
             return Animation(bd);
         }
 
-        Animation subanim(AnimationInformation info)
+        Animation subanim(const AnimationInformation& info)
         {
             return subanim(info.start, info.end);
         }
 
         void scale(float scale)
         {
-            for (AnimationForBone afb : bones)
+            for (auto& afb : bones)
             {
                 afb.scale(scale);
             }
         }
-    }
+    };
 }

@@ -122,7 +122,7 @@ namespace SimpleEngine
         return *this;
     }
 
-    std::vector<std::shared_ptr<Bone>> MeshDef::RootBones()
+    std::vector<std::shared_ptr<Bone>> MeshDef::RootBones() const
     {
         std::vector<std::shared_ptr<Bone>> r;
 

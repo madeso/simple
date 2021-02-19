@@ -109,7 +109,7 @@ namespace SimpleEngine
 
         MeshDef& mapBones();
 
-        std::vector<std::shared_ptr<Bone>> RootBones();
+        std::vector<std::shared_ptr<Bone>> RootBones() const;
 
         std::vector<Tri> TrianglesFor(const MaterialDef& material) const;
 

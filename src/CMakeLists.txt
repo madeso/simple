@@ -20,6 +20,7 @@ set(src
     engine/material.cc engine/material.h
 
     engine/poseable.cc engine/poseable.h
+    engine/animation.cc
 
     engine/main.cc engine/main.h
 )

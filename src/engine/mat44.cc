@@ -47,6 +47,10 @@ namespace SimpleEngine
         return dataColumnMajor[row + column * kSize];
     }
 
+    mat44::mat44()
+    {
+    }
+
     mat44::mat44(mat44::FA d)
         : dataColumnMajor(d)
     {
