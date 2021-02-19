@@ -19,6 +19,8 @@ set(src
     engine/texture.cc engine/texture.h
     engine/material.cc engine/material.h
 
+    engine/poseable.cc engine/poseable.h
+
     engine/main.cc engine/main.h
 )
 

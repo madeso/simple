@@ -8,12 +8,6 @@ namespace SimpleEngine
     struct CompiledPose;
     struct MediaLoader;
 
-    struct Poseable
-    {
-        virtual ~Poseable() = default;
-        virtual std::shared_ptr<CompiledPose> CurrentPose() = 0;
-    };
-
     struct CompiledMesh : public Poseable
     {
         std::vector<std::shared_ptr<MeshPart>> parts;
