@@ -1,86 +1,63 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
-using Tao.OpenGl;
-using System.Drawing.Imaging;
+﻿#include "engine/texture.h"
+
+#include "engine/filesystem.h"
+#include "engine/opengl.h"
+#include "stb_image.h"
 
 namespace SimpleEngine
 {
-    struct Image : IDisposable
+    unsigned int Image::Id()
     {
-        int text = 0;
+        return text;
+    }
 
-        int Id
+    Image::Image(bool alpha, int width, int height, unsigned char* bitmapData, bool mipmap, int format)
+    {
+        glGenTextures(1, &text);
+        bind();
+        int internalformat = alpha ? GL_RGBA8 : GL_RGB8;
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mipmap ? GL_LINEAR_MIPMAP_NEAREST : GL_LINEAR);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, GL_UNSIGNED_BYTE, bitmapData);
+        if (mipmap)
         {
-            get
-            {
-                return text;
-            }
-        }
-
-        Image(bool alpha, int width, int height, IntPtr bitmapData, bool mipmap, int format)
-        {
-            /*
-            Gl.glGenTextures(1, out text);
-            bind();
-            int internalformat = alpha ? Gl.GL_RGBA8 : Gl.GL_RGB8;
-
-            Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR);
-            Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, mipmap? Gl.GL_LINEAR_MIPMAP_NEAREST : Gl.GL_LINEAR);
-
-            Gl.glTexImage2D(Gl.GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, Gl.GL_UNSIGNED_BYTE, bitmapData);
-            if (mipmap)
-            {
-                Gl.glGenerateMipmapEXT(Gl.GL_TEXTURE_2D);
-            }*/
-        }
-
-        void bind()
-        {
-            bind(0);
-        }
-        void bind(int location)
-        {
-            //Gl.glActiveTexture(Gl.GL_TEXTURE0 + location);
-            //Gl.glBindTexture(Gl.GL_TEXTURE_2D, text);
-        }
-
-        void Dispose()
-        {
-            //Gl.glDeleteTextures(1, ref text);
+            glGenerateMipmap(GL_TEXTURE_2D);
         }
     }
 
-    struct Texture : Media
+    void Image::bind(int location)
     {
-        Image img;
+        glActiveTexture(GL_TEXTURE0 + location);
+        glBindTexture(GL_TEXTURE_2D, text);
+    }
 
-        override void load(MediaLoader ml, FileSystem fs, std::string path)
-        {
-            Bitmap b = Bitmap(fs.open(path));
-            b.RotateFlip(RotateFlipType.RotateNoneFlipY);
-            Rectangle rectangle = Rectangle(0, 0, b.Width, b.Height);
-            BitmapData bitmapData = b.LockBits(rectangle, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
-            img = Image(false, b.Width, b.Height, bitmapData.Scan0, false, Gl.GL_BGR_EXT);
-            b.UnlockBits(bitmapData);
-        }
+    Image::~Image()
+    {
+        glDeleteTextures(1, &text);
+    }
 
-        void bind()
-        {
-            img.bind();
-        }
+    void Texture::load(MediaLoader* ml, FileSystem* fs, const std::string& path)
+    {
+        const auto filename = fs->open(path);
 
-        void bind(int location)
-        {
-            img.bind(location);
-        }
+        int w = 0;
+        int h = 0;
+        int comp = 0;
+        unsigned char* image = stbi_load(filename.c_str(), &w, &h, &comp, 3);
 
-        override void unload()
+        if (image != nullptr)
         {
-            img.Dispose();
-            img = nullptr;
+            const bool alpha = comp == 4;
+            const int format = alpha ? GL_RGBA : GL_RGB;
+            img = std::make_shared<Image>(alpha, w, h, image, false, format);
+            stbi_image_free(image);
         }
+    }
+
+    void Texture::bind(int location)
+    {
+        img->bind(location);
     }
 }

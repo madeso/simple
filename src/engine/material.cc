@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Tao.OpenGl;
+﻿#include "engine/material.h"
+
+#include "engine/opengl.h"
 
 namespace SimpleEngine
 {
-    struct Material
+    Material::Material()
+        : color(vec3(1, 1, 1))
     {
-        Material(vec3 color, Texture tex)
-        {
-            this.color = color;
-            this.tex = Handle<Texture>(tex);
-        }
+    }
 
-        void apply()
-        {
-            Gl.glColor3f(color.x, color.y, color.z);
-            tex.Ref.bind();
-        }
+    Material::Material(const vec3& c, std::shared_ptr<Texture> t)
+        : color(c)
+        , tex(t)
+    {
+    }
 
-        vec3 color = vec3(1, 1, 1);
-        Handle<Texture> tex;
+    void Material::apply()
+    {
+        glColor3f(color.x, color.y, color.z);
+        tex->bind();
     }
 }

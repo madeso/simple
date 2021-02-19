@@ -16,6 +16,9 @@ set(src
     engine/media.cc engine/media.h
     engine/medialoader.cc engine/medialoader.h
 
+    engine/texture.cc engine/texture.h
+    engine/material.cc engine/material.h
+
     engine/main.cc engine/main.h
 )
 
@@ -23,7 +26,7 @@ find_package(Filesystem REQUIRED)
 
 add_library(engine STATIC ${src})
 target_link_libraries(engine
-    PUBLIC sdl2 opengl imgui fmt::fmt stb glm
+    PUBLIC sdl2 opengl imgui fmt::fmt stb glm glad
     PRIVATE project_options project_warnings std::filesystem
 )
 target_include_directories(engine
