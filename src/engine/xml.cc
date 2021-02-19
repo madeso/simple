@@ -184,7 +184,7 @@ namespace SimpleEngine
             {
                 doc.Load(path);
             }
-            override std::string ToString()
+            std::string ToString() const
             {
                 return path;
             }
@@ -201,7 +201,7 @@ namespace SimpleEngine
                 doc.LoadXml(source);
             }
 
-            override std::string ToString()
+            std::string ToString() const
             {
                 return Strings.FirstChars(source, 10);
             }

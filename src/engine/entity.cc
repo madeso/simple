@@ -16,7 +16,7 @@ namespace SimpleEngine
             this.name = name;
         }
 
-        override std::string ToString()
+        std::string ToString() const
         {
             return name;
         }

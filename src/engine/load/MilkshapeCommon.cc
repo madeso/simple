@@ -114,7 +114,7 @@ namespace SimpleEngine.load
             get { return uv.y; }
         }
 
-        override std::string ToString()
+        std::string ToString() const
         {
             return fmt::format("{0} {1} / {2}", bone, pos, uv);
         }
@@ -200,7 +200,7 @@ namespace SimpleEngine.load
         float y;
         float z;
 
-        override std::string ToString()
+        std::string ToString() const
         {
             return fmt::format("{0} {1}", time, MilkshapeCommon.makeQuat(vec3(x, y, z)).AxisAngle);
         }
@@ -217,7 +217,7 @@ namespace SimpleEngine.load
         float ry;
         float rz;
 
-        override std::string ToString()
+        std::string ToString() const
         {
             return name + ": " + parentName;
         }

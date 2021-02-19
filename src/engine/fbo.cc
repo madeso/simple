@@ -62,7 +62,7 @@ namespace SimpleEngine
             }
         }
 
-        override std::string ToString()
+        std::string ToString() const
         {
             return Width.ToString() + "x" + Height.ToString();
         }

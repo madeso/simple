@@ -35,7 +35,7 @@ namespace SimpleEngine.fse
             }
         }
 
-        override std::string ToString()
+        std::string ToString() const
         {
             return Id;
         }

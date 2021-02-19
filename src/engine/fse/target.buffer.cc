@@ -17,7 +17,7 @@ namespace SimpleEngine.fse.Targets
             }
         }
 
-        override std::string ToString()
+        std::string ToString() const
         {
             return base.ToString() + " targeting a buffer (" + width.ToString() + "x" + height.ToString() + ") named " + Name;
         }

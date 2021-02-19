@@ -55,7 +55,7 @@ namespace SimpleEngine
             mstrings.Clear();
         }
 
-        override std::string ToString()
+        std::string ToString() const
         {
             if (mstrings.Count == 0)
                 return mEmpty;

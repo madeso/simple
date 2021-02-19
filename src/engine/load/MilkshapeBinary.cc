@@ -300,7 +300,7 @@ namespace SimpleEngine.load
             char boneID;
             byte refCount;
 
-            override std::string ToString()
+            std::string ToString() const
             {
                 return fmt::format("{0} ({1} {2} {3})", (int)boneID, vertex[0], vertex[1], vertex[2]);
             }

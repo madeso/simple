@@ -13,7 +13,7 @@ namespace SimpleEngine.fse.Commands
         int location;
         std::string name;
 
-        override std::string ToString()
+        std::string ToString() const
         {
             return base.ToString() + " binds buffer " + name + " to " + location.ToString();
         }

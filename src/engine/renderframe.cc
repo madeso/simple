@@ -258,7 +258,7 @@ namespace SimpleEngine
                 this.down = down;
             }
 
-            override std::string ToString()
+            std::string ToString() const
             {
                 return fmt::format("{0} -> {1}", button, down);
             }

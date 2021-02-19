@@ -15,7 +15,7 @@ namespace SimpleEngine.load.studio3ds
         int id;
         byte[] bytes;
 
-        override std::string ToString()
+        std::string ToString() const
         {
             return fmt::format("{0} {1} byte(s)", ChunkId.ToString(id), bytes.Length);
         }

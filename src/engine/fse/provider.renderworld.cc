@@ -17,7 +17,7 @@ namespace SimpleEngine.fse.Providers
             shadername = Xml.GetAttributeString(e, "shader");
         }
 
-        override std::string ToString()
+        std::string ToString() const
         {
             return base.ToString() + " renders world with " + CSharp.Nullstring(shadername, "no shader") + ((shader != nullptr) ? "(loaded)" : "");
         }

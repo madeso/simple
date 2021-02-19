@@ -16,7 +16,7 @@ namespace SimpleEngine.load.studio3ds
                 this.c = c;
             }
 
-            override std::string ToString()
+            std::string ToString() const
             {
                 return fmt::format("{0}, {1}, {2}", a, b, c);
             }

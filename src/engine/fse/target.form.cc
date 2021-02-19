@@ -16,7 +16,7 @@ namespace SimpleEngine.fse.Targets
             this.height = height;
         }
 
-        override std::string ToString()
+        std::string ToString() const
         {
             return base.ToString() + " targeting a form";
         }

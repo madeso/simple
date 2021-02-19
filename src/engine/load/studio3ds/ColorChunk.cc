@@ -28,7 +28,7 @@ namespace SimpleEngine.load.studio3ds
             }
         }
 
-        override std::string ToString()
+        std::string ToString() const
         {
             return fmt::format("{0} {1} {2}", red, green, blue);
         }

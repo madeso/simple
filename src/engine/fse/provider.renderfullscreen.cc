@@ -11,7 +11,7 @@ namespace SimpleEngine.fse.Providers
         Shader sh;
         std::string shadername;
 
-        override std::string ToString()
+        std::string ToString() const
         {
             return base.ToString() + " renders fullscreen with " + CSharp.Nullstring(shadername, "no shader") + ((sh != nullptr) ? "loaded" : "");
         }

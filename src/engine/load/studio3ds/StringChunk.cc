@@ -14,7 +14,7 @@ namespace SimpleEngine.load.studio3ds
             Value = b.ReadString();
         }
 
-        override std::string ToString()
+        std::string ToString() const
         {
             return Value;
         }
