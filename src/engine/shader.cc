@@ -18,7 +18,7 @@ namespace SimpleEngine
 
             if (false == CompileStatus)
             {
-                throw Exception("Shader " + name + " failed to compile: " + getInfoLog());
+                throw std::runtime_error("Shader " + name + " failed to compile: " + getInfoLog());
             }
         }
 
@@ -66,7 +66,7 @@ namespace SimpleEngine
         {
             var = Gl.glGetUniformLocation(s.Program, ref name);
             if (var == -1)
-                throw Exception(name + " is not a recognized uniform");
+                throw std::runtime_error(name + " is not a recognized uniform");
         }
 
         void bindUniform(int location)
@@ -117,7 +117,7 @@ namespace SimpleEngine
         Shader(FileSystem sys, std::string path)
         {
             if (false == IsShadersSupported)
-                throw Exception("shaders not supported on your card, sorry");
+                throw std::runtime_error("shaders not supported on your card, sorry");
 
             XmlElement shader = Xml.Open(Xml.FromStream(sys.open(path)), "shader");
             LoadFrom(path, shader);
@@ -126,7 +126,7 @@ namespace SimpleEngine
         Shader(std::string path, XmlElement shader)
         {
             if (false == IsShadersSupported)
-                throw Exception("shaders not supported on your card, sorry");
+                throw std::runtime_error("shaders not supported on your card, sorry");
             LoadFrom(path, shader);
         }
 
@@ -146,7 +146,7 @@ namespace SimpleEngine
 
             if (false == LinkStatus)
             {
-                throw Exception("Link error for " + path + ": " + getInfoLog());
+                throw std::runtime_error("Link error for " + path + ": " + getInfoLog());
             }
 
             for (XmlElement b : Xml.Elements(shader["bind"]))

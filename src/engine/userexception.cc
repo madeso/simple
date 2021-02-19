@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SimpleEngine
 {
-    struct UserException : Exception
+    struct UserException : std::runtime_error
     {
         UserException(std::string message)
             : base(message)

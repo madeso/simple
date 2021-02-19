@@ -31,7 +31,7 @@ namespace SimpleEngine.fse
                 if (std::string.IsNullOrEmpty(id))
                     id = value;
                 else
-                    throw Exception("Unable to change id from " + id + " to " + value);
+                    throw std::runtime_error("Unable to change id from " + id + " to " + value);
             }
         }
 
@@ -76,7 +76,7 @@ namespace SimpleEngine.fse
                 }
                 else
                 {
-                    throw Exception("failed to set " + value.ToString() + " as a provider for " + this.ToString());
+                    throw std::runtime_error("failed to set " + value.ToString() + " as a provider for " + this.ToString());
                 }
             }
         }

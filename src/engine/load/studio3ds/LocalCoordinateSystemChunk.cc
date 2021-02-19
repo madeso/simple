@@ -11,7 +11,7 @@ namespace SimpleEngine.load.studio3ds
         LocalCoordinateSystemChunk(BinaryChunk c)
         {
             if (c.id != ChunkId.LOCAL_COORDINATES_SYSTEM)
-                throw Exception("not a coordsys");
+                throw std::runtime_error("not a coordsys");
 
             Binary b = c.Binary;
             float[, ] lmat = float[4, 4];

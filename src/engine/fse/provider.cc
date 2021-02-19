@@ -24,7 +24,7 @@ namespace SimpleEngine.fse
                 if (std::string.IsNullOrEmpty(id))
                     id = value;
                 else
-                    throw Exception("Unable to change id from " + id + " to " + value);
+                    throw std::runtime_error("Unable to change id from " + id + " to " + value);
             }
         }
 

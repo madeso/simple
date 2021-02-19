@@ -30,7 +30,7 @@ namespace SimpleEngine
         Stream doOpen(std::string path)
         {
             if (path.Contains(".."))
-                throw Exception("do not specify parent directory");
+                throw std::runtime_error("do not specify parent directory");
             std::string p = path;  //.Replace(':', Path.DirectorySeparatorChar);
             for (std::string r : roots)
             {
@@ -38,7 +38,7 @@ namespace SimpleEngine
                 if (File.Exists(fp))
                     return FileStream(fp, FileMode.Open);
             }
-            throw Exception("Failed to open file " + path);
+            throw std::runtime_error("Failed to open file " + path);
         }
 
         Stream open(std::string path)

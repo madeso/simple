@@ -32,7 +32,7 @@ namespace SimpleEngine.fse
         {
             if (references.Contains(br))
             {
-                throw Exception(br.Name + " already addd to " + this.ToString());
+                throw std::runtime_error(br.Name + " already addd to " + this.ToString());
             }
             references.Add(br);
         }
@@ -95,7 +95,7 @@ namespace SimpleEngine.fse
         {
             if (false == associations.ContainsKey(name))
             {
-                throw Exception(name + " is missing a defined size");
+                throw std::runtime_error(name + " is missing a defined size");
             }
             else
                 return associations[name];

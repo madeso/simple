@@ -12,7 +12,7 @@ namespace SimpleEngine.load.studio3ds
         FaceMaterialChunk(BinaryChunk c)
         {
             if (c.id != ChunkId.FACES_MATERIAL)
-                throw Exception("not a face material chunk");
+                throw std::runtime_error("not a face material chunk");
             Binary b = c.Binary;
             name = b.ReadString();
             int count = b.int2();

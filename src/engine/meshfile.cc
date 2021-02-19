@@ -210,7 +210,7 @@ namespace SimpleEngine
                                     vd.Add(v);
                                 }
                                 if (vd.Count < 3)
-                                    throw Exception("Face data incomplete");
+                                    throw std::runtime_error("Face data incomplete");
                                 for (int i = 2; i < vd.Count; ++i)
                                 {
                                     std::vector<MeshDef.VertexData> arr = std::vector<MeshDef.VertexData>();

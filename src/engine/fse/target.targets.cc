@@ -21,7 +21,7 @@ namespace SimpleEngine.fse.Targets
                 return FormTarget(width, height);
             }
             else
-                throw Exception(name + " is not a known target");
+                throw std::runtime_error(name + " is not a known target");
         }
     }
 }

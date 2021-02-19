@@ -12,7 +12,7 @@ namespace SimpleEngine.load.studio3ds
         Editor3dChunk(BinaryChunk c)
         {
             if (c.id != ChunkId.EDITOR_3D_CHUNK)
-                throw Exception("Not a 3d editor chunk");
+                throw std::runtime_error("Not a 3d editor chunk");
             std::vector<BinaryChunk> chunks = c.SubChunks;
 
             std::vector<ObjectChunk> objects = std::vector<ObjectChunk>();

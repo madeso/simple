@@ -24,7 +24,7 @@ namespace SimpleEngine
                 }
             }
 
-            //throw Exception("data contatiner invalid for animating");
+            //throw std::runtime_error("data contatiner invalid for animating");
             return -1;
         }
     }
@@ -42,7 +42,7 @@ namespace SimpleEngine
         {
             float scale = math1.To01(from.time, current, to.time);
             if (math1.IsWithin(0, scale, 1) == false)
-                throw Exception("invalid scale");
+                throw std::runtime_error("invalid scale");
             return vec3.Interpolate(from.location, scale, to.location);
         }
 
@@ -65,7 +65,7 @@ namespace SimpleEngine
         {
             float scale = math1.To01(from.time, current, to.time);
             if (math1.IsWithin(0, scale, 1) == false)
-                throw Exception("invalid scale");
+                throw std::runtime_error("invalid scale");
             return quat::SlerpShortway()(from.rotation, scale, to.rotation);
         }
 
@@ -211,7 +211,7 @@ namespace SimpleEngine
             }*/
 
             if (ab.fp.Count < 2 || ab.fr.Count < 2)
-                throw Exception("Data error, need atleast 2 keyframes per animation");
+                throw std::runtime_error("Data error, need atleast 2 keyframes per animation");
             return ab;
         }
 
@@ -238,7 +238,7 @@ namespace SimpleEngine
         static CompiledPose Compile(Pose pose, MeshDef def)
         {
             if (pose.bones.Count != def.bones.Count)
-                throw Exception("Invalid animation/mesh, bone count differs");
+                throw std::runtime_error("Invalid animation/mesh, bone count differs");
             std::vector<mat44> result = std::vector<mat44>(pose.bones.Count);
             for (int i = 0; i < pose.bones.Count; ++i) result.Add(mat44.Identity);
             for (MeshDef.Bone root : def.RootBones)

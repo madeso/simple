@@ -135,7 +135,7 @@ namespace SimpleEngine
 
             int status = Gl.glCheckFramebufferStatusEXT(Gl.GL_FRAMEBUFFER_EXT);
             if (status != Gl.GL_FRAMEBUFFER_COMPLETE_EXT)
-                throw Exception("Something went wrong when creating framebuffer: " + status.ToString());
+                throw std::runtime_error("Something went wrong when creating framebuffer: " + status.ToString());
 
             Bind(nullptr);
         }
@@ -156,7 +156,7 @@ namespace SimpleEngine
         static void Bind(Fbo a)
         {
             if (bound != nullptr && a != nullptr)
-                throw Exception("Already bound a fbo");
+                throw std::runtime_error("Already bound a fbo");
             bound = a;
             int fbo = a != nullptr ? a.fbo : 0;
             Gl.glBindFramebufferEXT(Gl.GL_FRAMEBUFFER_EXT, fbo);

@@ -11,10 +11,10 @@ namespace SimpleEngine.load.studio3ds
         MainChunk(BinaryChunk c)
         {
             if (c.id != ChunkId.MAIN_CHUNK)
-                throw Exception("Not a main chunk");
+                throw std::runtime_error("Not a main chunk");
             BinaryChunk ed = c.getSub(ChunkId.EDITOR_3D_CHUNK);
             if (ed == nullptr)
-                throw Exception("Missing 3d editor chunk");
+                throw std::runtime_error("Missing 3d editor chunk");
             editor = Editor3dChunk(ed);
         }
     }

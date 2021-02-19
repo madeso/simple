@@ -18,7 +18,7 @@ namespace SimpleEngine.load
                 BinaryChunk.ReadFromBinary(chunks, b);
             }
             if (chunks.Count != 1)
-                throw Exception("Unknown or damaged 3ds file");
+                throw std::runtime_error("Unknown or damaged 3ds file");
 
             MainChunk main = MainChunk(chunks[0]);
             return ParaseChunk(main);

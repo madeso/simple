@@ -28,7 +28,7 @@ namespace SimpleEngine.fse
             if (buffer == nullptr)
                 buffer = fbo;
             else
-                throw Exception("Error, buffer already initialized!");
+                throw std::runtime_error("Error, buffer already initialized!");
         }
 
         void bindTexture(int location)

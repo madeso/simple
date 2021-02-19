@@ -20,7 +20,7 @@ namespace SimpleEngine.fse.Providers
                 return RenderWorldProvider(x);
             }
             else
-                throw Exception(name + " is not a known provider");
+                throw std::runtime_error(name + " is not a known provider");
         }
     }
 }

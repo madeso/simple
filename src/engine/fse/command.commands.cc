@@ -16,7 +16,7 @@ namespace SimpleEngine.fse.Commands
             else if (name == "setu2")
                 return SetVec2Uniform(el, pro);
             else
-                throw Exception(name + " is not a valid command");
+                throw std::runtime_error(name + " is not a valid command");
         }
     }
 }

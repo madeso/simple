@@ -54,7 +54,7 @@ namespace SimpleEngine.load.studio3ds
         {
             BinaryChunk c = SelectChunkOrNull(id, s);
             if (c == nullptr)
-                throw Exception("Missing required chunk");
+                throw std::runtime_error("Missing required chunk");
             else
                 return c;
         }

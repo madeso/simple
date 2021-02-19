@@ -36,7 +36,7 @@ namespace SimpleEngine.load.studio3ds
         TriMeshChunk(BinaryChunk c)
         {
             if (c.id != ChunkId.TRIANGULAR_MESH)
-                throw Exception("Not a trimesh");
+                throw std::runtime_error("Not a trimesh");
             std::vector<BinaryChunk> chunks = c.SubChunks;
             points = ParsePoints(BinaryChunk.SelectChunk(ChunkId.VERTICES_LIST, chunks));
             mapping = ParseMapping(BinaryChunk.SelectChunk(ChunkId.MAPPING_COORDINATES_LIST, chunks));

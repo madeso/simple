@@ -45,7 +45,7 @@ namespace SimpleEngine.load
                 if (bones[i].name == bone)
                     return i;
             }
-            throw Exception("Failed to find a match for " + bone);
+            throw std::runtime_error("Failed to find a match for " + bone);
         }
 
         void mapBonesToId()

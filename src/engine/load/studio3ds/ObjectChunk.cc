@@ -13,7 +13,7 @@ namespace SimpleEngine.load.studio3ds
         ObjectChunk(BinaryChunk c)
         {
             if (c.id != ChunkId.OBJECT_BLOCK)
-                throw Exception("Not a object block");
+                throw std::runtime_error("Not a object block");
 
             std::vector<BinaryChunk> chunks = std::vector<BinaryChunk>();
             Binary b = Binary(c.bytes);
@@ -21,7 +21,7 @@ namespace SimpleEngine.load.studio3ds
             BinaryChunk.ReadFromBinary(chunks, b);
             BinaryChunk tm = BinaryChunk.SelectChunk(ChunkId.TRIANGULAR_MESH, chunks);
             if (tm == nullptr)
-                throw Exception("Missing a trimesh chunk");
+                throw std::runtime_error("Missing a trimesh chunk");
             trimesh = TriMeshChunk(tm);
         }
     }

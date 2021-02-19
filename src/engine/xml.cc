@@ -17,7 +17,7 @@ namespace SimpleEngine
         {
             XmlAttribute attribute = element.Attributes[name];
             if (attribute == nullptr)
-                throw Exception(element.Name + " is missing text attribute \"" + name + "\"");
+                throw std::runtime_error(element.Name + " is missing text attribute \"" + name + "\"");
             else
                 return attribute.Value;
         }
@@ -130,13 +130,13 @@ namespace SimpleEngine
                 XmlDocument doc = Open(path);
                 XmlElement el = FirstOrNull(doc, p);
                 if (el == nullptr)
-                    throw Exception(p + " not found: " + path);
+                    throw std::runtime_error(p + " not found: " + path);
                 else
                     return el;
             }
-            catch (Exception e)
+            catch (std::runtime_error e)
             {
-                throw Exception("while reading " + path + " for node: " + p, e);
+                throw std::runtime_error("while reading " + path + " for node: " + p, e);
             }
         }
 
@@ -216,9 +216,9 @@ namespace SimpleEngine
                 loader.load(doc);
                 return doc;
             }
-            catch (Exception e)
+            catch (std::runtime_error e)
             {
-                throw Exception("while opening xml: " + loader, e);
+                throw std::runtime_error("while opening xml: " + loader, e);
             }
         }
 
@@ -228,7 +228,7 @@ namespace SimpleEngine
             {
                 return el;
             }
-            throw Exception(e.Name + " does not have any elements");
+            throw std::runtime_error(e.Name + " does not have any elements");
         }
 
         static IEnumerable<KeyValuePair<std::string, std::string>> Attributes(XmlElement el)
@@ -299,7 +299,7 @@ namespace SimpleEngine
         {
             std::string res = GetTextOfSubElementOrNull(node, p);
             if (res == nullptr)
-                throw Exception("node is missing " + p + ", a requested sub node");
+                throw std::runtime_error("node is missing " + p + ", a requested sub node");
             else
                 return res;
         }
@@ -317,7 +317,7 @@ namespace SimpleEngine
                 return text.Value;
             }
             else
-                throw Exception("Failed to get smart text of node");
+                throw std::runtime_error("Failed to get smart text of node");
         }
 
         static std::string GetTextOfSubElementOrNull(XmlNode node, std::string p)

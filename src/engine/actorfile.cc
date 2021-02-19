@@ -43,7 +43,7 @@ namespace SimpleEngine
                 def = MeshFile.Load(fs, meshpath);
             }
             else
-                throw Exception("Unhandled format " + ext + " for " + meshpath);
+                throw std::runtime_error("Unhandled format " + ext + " for " + meshpath);
 
             for (std::string ignoreThisBone : bonesToIgnore)
             {
@@ -68,7 +68,7 @@ namespace SimpleEngine
             }
 
             if (texmap.Count != 0)
-                throw Exception("Some materials was not mapped");
+                throw std::runtime_error("Some materials was not mapped");
 
             def.scale(scale);
             if (animation != nullptr)

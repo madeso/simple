@@ -8,8 +8,8 @@ namespace SimpleEngine.fse
 {
     struct Linker
     {
-        Map<Provider> providers = Map<Provider>(delegate(std::string name) { throw Exception(name + " is not a defined provider"); });
-        Map<Target> targets = Map<Target>(delegate(std::string name) { throw Exception(name + " is not a defined target"); });
+        Map<Provider> providers = Map<Provider>(delegate(std::string name) { throw std::runtime_error(name + " is not a defined provider"); });
+        Map<Target> targets = Map<Target>(delegate(std::string name) { throw std::runtime_error(name + " is not a defined target"); });
 
         Provider getProvider(std::string name)
         {
@@ -49,7 +49,7 @@ namespace SimpleEngine.fse
             {
                 t.link(this);
                 if (t.Provider == nullptr)
-                    throw Exception(t.ToString() + " is missing a provider");
+                    throw std::runtime_error(t.ToString() + " is missing a provider");
             }
 
             for (Provider p : providers.Data)

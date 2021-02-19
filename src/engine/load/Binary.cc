@@ -46,7 +46,7 @@ namespace SimpleEngine.load
             byte[] b = byte[size];
             int read = fs.Read(b, 0, b.Length);
             if (size != read)
-                throw Exception("Not enough bytes read");
+                throw std::runtime_error("Not enough bytes read");
             return b;
         }
 

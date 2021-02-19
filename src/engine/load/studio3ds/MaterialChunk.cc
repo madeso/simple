@@ -16,7 +16,7 @@ namespace SimpleEngine.load.studio3ds
         MaterialChunk(BinaryChunk c)
         {
             if (c.id != ChunkId.MATERIAL_BLOCK)
-                throw Exception("Not a material chunk");
+                throw std::runtime_error("Not a material chunk");
             std::vector<BinaryChunk> chunks = c.SubChunks;
 
             name = StringChunk(BinaryChunk.SelectChunk(ChunkId.MATERIAL_NAME, chunks));

@@ -39,7 +39,7 @@ namespace SimpleEngine
                 }
             }
 
-            throw Exception("Not enough or too many values");
+            throw std::runtime_error("Not enough or too many values");
         }
     }
 }
