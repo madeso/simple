@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Tao.OpenGl;
+﻿#include "engine/pushedmatrix.h"
+
+#include "engine/opengl.h"
 
 namespace SimpleEngine
 {
-    struct PushedMatrix : IDisposable
+    PushedMatrix::PushedMatrix()
     {
-        PushedMatrix()
-        {
-            Gl.glPushMatrix();
-        }
+        glPushMatrix();
+    }
 
-        void Dispose()
-        {
-            Gl.glPopMatrix();
-        }
+    PushedMatrix::~PushedMatrix()
+    {
+        glPopMatrix();
     }
 }

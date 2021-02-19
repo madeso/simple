@@ -10,6 +10,7 @@ set(src
     engine/quat.cc engine/quat.h
 
     engine/meshdef.cc engine/meshdef.h
+    engine/pushedmatrix.cc engine/pushedmatrix.h
 
     engine/main.cc engine/main.h
 )
