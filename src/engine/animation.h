@@ -1,4 +1,6 @@
-﻿#include <memory>
+﻿#pragma once
+
+#include <memory>
 #include <vector>
 
 #include "engine/mat44.h"
