@@ -5,22 +5,24 @@ using System.Text;
 
 namespace SimpleEngine
 {
-    class Pool<T>
+    struct Pool<T>
     {
         Func<T> creator;
-        Stack<T> pool = new Stack<T>();
-        public Pool(Func<T> creator)
+        Stack<T> pool = Stack<T>();
+        Pool(Func<T> creator)
         {
             this.creator = creator;
         }
 
-        public T get()
+        T get()
         {
-            if (pool.Count == 0) return creator();
-            else return pool.Pop();
+            if (pool.Count == 0)
+                return creator();
+            else
+                return pool.Pop();
         }
 
-        internal void release(T t)
+        void release(T t)
         {
             pool.Push(t);
         }

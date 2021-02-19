@@ -8,40 +8,40 @@ using System.Xml;
 
 namespace Convert
 {
-    class Convert
+    struct Convert
     {
-        static void Main(string[] args)
+        static void Main(std::string[] args)
         {
-            string filepath = args[0];
-            string dir = Path.GetDirectoryName(filepath);
-            string filename = Path.GetFileName(filepath);
-            FileSystem fs = new FileSystem();
+            std::string filepath = args[0];
+            std::string dir = Path.GetDirectoryName(filepath);
+            std::string filename = Path.GetFileName(filepath);
+            FileSystem fs = FileSystem();
             fs.addRoot(dir);
             fs.addRoot(Environment.CurrentDirectory);
 
             Actor actor = ActorFile.Load(fs, filename);
 
-            string meshtarget = Path.Combine( dir, Path.ChangeExtension(filename,"mdf") );
+            std::string meshtarget = Path.Combine(dir, Path.ChangeExtension(filename, "mdf"));
             WriteMesh(actor.Mesh, meshtarget);
 
-            foreach (KeyValuePair<string, Animation> animation in actor.Animations)
+            for (KeyValuePair<std::string, Animation> animation : actor.Animations)
             {
-                string filetarget = Path.ChangeExtension(Path.Combine(dir, animation.Key), "anm");
+                std::string filetarget = Path.ChangeExtension(Path.Combine(dir, animation.Key), "anm");
                 WriteAnimation(filetarget, animation.Value);
             }
         }
 
-        private static void WriteAnimation(string path, Animation an)
+        static void WriteAnimation(std::string path, Animation an)
         {
-            using (Stream s = File.OpenWrite(path))
+            using(Stream s = File.OpenWrite(path))
             {
                 AnimationFile.Write(an, s);
             }
         }
 
-        private static void WriteMesh(MeshDef def, string path)
+        static void WriteMesh(MeshDef def, std::string path)
         {
-            using (Stream s = File.OpenWrite(path))
+            using(Stream s = File.OpenWrite(path))
             {
                 MeshFile.Save(s, def);
             }

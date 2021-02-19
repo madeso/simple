@@ -1,46 +1,45 @@
 ﻿namespace ModelView
 {
-    partial class GlDraw
+    struct GlDraw
     {
-        /// <summary> 
+        /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        System.ComponentModel.IContainer components = nullptr;
 
-        /// <summary> 
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+    protected
+        override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing && (components != nullptr))
             {
                 components.Dispose();
             }
             base.Dispose(disposing);
         }
 
-        #region Component Designer generated code
+#region Component Designer generated code
 
-        /// <summary> 
-        /// Required method for Designer support - do not modify 
+        /// <summary>
+        /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
+        void InitializeComponent()
         {
             this.SuspendLayout();
-            // 
+            //
             // GlDraw
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            //
+            this.AutoScaleDimensions = System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Name = "GlDraw";
-            this.Size = new System.Drawing.Size(300, 271);
+            this.Size = System.Drawing.Size(300, 271);
             this.ResumeLayout(false);
-
         }
 
-        #endregion
-
+#endregion
     }
 }

@@ -4,37 +4,39 @@ using System.Text;
 
 namespace SimpleEngine
 {
-	public static class CSharp
-	{
-		public static void Swap<T>(ref T a, ref T b)
-		{
-			T temp = a;
-			a = b;
-			b = temp;
-		}
+    namespace CSharp
+    {
+        static void Swap<T>(ref T a, ref T b)
+        {
+            T temp = a;
+            a = b;
+            b = temp;
+        }
 
-		public static IEnumerable<T> Enumerate<T>(params T[] args)
-		{
+        static IEnumerable<T> Enumerate<T>(params T[] args)
+        {
             return args;
-			/*foreach (T a in args)
+            /*for (T a: args)
 			{
 				yield return a;
 			}*/
-		}
+        }
 
-		public static bool IsEmpty<T>(IEnumerable<T> e)
-		{
-			foreach (T a in e)
-			{
-				return false;
-			}
-			return true;
-		}
-
-        public static string Nullstring(string nullorvalue, string valid)
+        static bool IsEmpty<T>(IEnumerable<T> e)
         {
-            if (string.IsNullOrEmpty(nullorvalue)) return valid;
-            else return nullorvalue;
+            for (T a : e)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        static std::string Nullstring(std::string nullorvalue, std::string valid)
+        {
+            if (std::string.IsNullOrEmpty(nullorvalue))
+                return valid;
+            else
+                return nullorvalue;
         }
     }
 }

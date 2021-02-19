@@ -6,20 +6,21 @@ using System.Xml;
 
 namespace SimpleEngine.fse.Providers
 {
-    public static class Providers
+    namespace Providers
     {
-        public static Provider Create(XmlElement x)
+        static Provider Create(XmlElement x)
         {
-            string name = x.Name;
+            std::string name = x.Name;
             if (name == "fullscreen")
             {
-                return new RenderFullscreenProvider(x);
+                return RenderFullscreenProvider(x);
             }
             else if (name == "world")
             {
-                return new RenderWorldProvider(x);
+                return RenderWorldProvider(x);
             }
-            else throw new Exception(name + " is not a known provider");
+            else
+                throw Exception(name + " is not a known provider");
         }
     }
 }

@@ -6,51 +6,51 @@ using System.IO;
 
 namespace SimpleEngine
 {
-    public static class AnimationFile
+    namespace AnimationFile
     {
-        public static Animation Load(FileSystem fs, string path)
+        static Animation Load(FileSystem fs, std::string path)
         {
             return Binary.Load(fs, path);
         }
-        public static void Write(Animation an, Stream s)
+        static void Write(Animation an, Stream s)
         {
             Binary.Write(an, s);
         }
 
-        private class Binary
+        struct Binary
         {
-            public static void Write(Animation an, Stream s)
+            static void Write(Animation an, Stream s)
             {
-                BinaryWriter bw = new BinaryWriter(s);
+                BinaryWriter bw = BinaryWriter(s);
                 bw.Write((int)0);
                 bw.Write(an.bones.Count);
-                foreach (AnimationForBone ab in an.bones)
+                for (AnimationForBone ab : an.bones)
                 {
                     bw.Write(ab.fp.Count);
-                    foreach (FramePosition p in ab.fp)
+                    for (FramePosition p : ab.fp)
                     {
                         bw.Write(p.time);
                         vec3.Write(p.location, bw);
                     }
                     bw.Write(ab.fr.Count);
-                    foreach (FrameRotation r in ab.fr)
+                    for (FrameRotation r : ab.fr)
                     {
                         bw.Write(r.time);
                         quat.Write(r.rotation, bw);
                     }
                 }
             }
-            internal static Animation Load(FileSystem fs, string path)
+            static Animation Load(FileSystem fs, std::string path)
             {
-                List<AnimationForBone> afb = new List<AnimationForBone>();
-                using (Stream s = fs.open(path))
+                std::vector<AnimationForBone> afb = std::vector<AnimationForBone>();
+                using(Stream s = fs.open(path))
                 {
-                    BinaryReader br = new BinaryReader(s);
+                    BinaryReader br = BinaryReader(s);
                     int version = br.ReadInt32();
                     int bonecount = br.ReadInt32();
                     for (int boneid = 0; boneid < bonecount; ++boneid)
                     {
-                        AnimationForBone ab = new AnimationForBone();
+                        AnimationForBone ab = AnimationForBone();
                         afb.Add(ab);
                         int poscount = br.ReadInt32();
                         for (int posid = 0; posid < poscount; ++posid)
@@ -68,7 +68,7 @@ namespace SimpleEngine
                         }
                     }
                 }
-                return new Animation(afb);
+                return Animation(afb);
             }
         }
     }

@@ -7,13 +7,13 @@ using System.IO;
 
 namespace SimpleEngine.load
 {
-    public static class MilkshapeBinary
+    namespace MilkshapeBinary
     {
-        private static object RawDeserializeEx(byte[] rawdatas, Type anytype)
+        static object RawDeserializeEx(byte[] rawdatas, Type anytype)
         {
             int rawsize = Marshal.SizeOf(anytype);
             if (rawsize > rawdatas.Length)
-                return null;
+                return nullptr;
             GCHandle handle = GCHandle.Alloc(rawdatas, GCHandleType.Pinned);
             IntPtr buffer = handle.AddrOfPinnedObject();
             object retobj = Marshal.PtrToStructure(buffer, anytype);
@@ -21,11 +21,10 @@ namespace SimpleEngine.load
             return retobj;
         }
 
-        private static string CropNull(string input)
+        static std::string CropNull(std::string input)
         {
             input = input.Trim();
-            if (input.EndsWith(((char)13).ToString())
-                && input.IndexOf('\0') == -1)
+            if (input.EndsWith(((char)13).ToString()) && input.IndexOf('\0') == -1)
             {
                 return input.Substring(0, input.Length - 1);
             }
@@ -33,40 +32,41 @@ namespace SimpleEngine.load
                 return input;
             return input.Substring(0, input.IndexOf('\0'));
         }
-        private static string AsString(char[] c)
+
+        static std::string AsString(char[] c)
         {
-            return CropNull(new string(c));
+            return CropNull(std::string(c));
         }
 
-        private class Runner
+        struct Runner
         {
             Stream fs;
 
-            private T Read<T>()
+            T Read<T>()
             {
-                byte[] b = new byte[Marshal.SizeOf(typeof(T))];
+                byte[] b = byte[Marshal.SizeOf(typeof(T))];
                 fs.Read(b, 0, b.Length);
                 return (T)RawDeserializeEx(b, typeof(T));
             }
 
-            private int ReadCount()
+            int ReadCount()
             {
                 return Read<short>();
             }
 
-            private string ReadString(int count)
+            std::string ReadString(int count)
             {
-                byte[] b = new byte[count];
+                byte[] b = byte[count];
                 fs.Read(b, 0, b.Length);
                 return System.Text.Encoding.UTF8.GetString(b);
             }
 
-            public Runner(Stream s)
+            Runner(Stream s)
             {
                 this.fs = s;
             }
 
-            public void run()
+            void run()
             {
                 MS3DHeader header = Read<MS3DHeader>();
                 readVertices();
@@ -79,13 +79,13 @@ namespace SimpleEngine.load
                 readJoints();
             }
 
-            private void readJoints()
+            void readJoints()
             {
                 int jointcount = ReadCount();
 
                 for (int ji = 0; ji < jointcount; ++ji)
                 {
-                    Joint joint = new Joint();
+                    Joint joint = Joint();
                     joint.joint = Read<MS3DJoint>();
                     for (int ki = 0; ki < joint.joint.numRotationKeyframes; ++ki)
                     {
@@ -102,7 +102,7 @@ namespace SimpleEngine.load
                 }
             }
 
-            private void readMaterials()
+            void readMaterials()
             {
                 int matcount = ReadCount();
                 for (int m = 0; m < matcount; ++m)
@@ -112,12 +112,12 @@ namespace SimpleEngine.load
                 }
             }
 
-            private void readMeshGroups()
+            void readMeshGroups()
             {
                 int meshgroups = ReadCount();
                 for (int m = 0; m < meshgroups; ++m)
                 {
-                    MeshGroup group = new MeshGroup();
+                    MeshGroup group = MeshGroup();
                     byte flags = Read<byte>();
                     group.name = CropNull(ReadString(32));
                     int mtricount = ReadCount();
@@ -131,7 +131,7 @@ namespace SimpleEngine.load
                 }
             }
 
-            private void readTriangles()
+            void readTriangles()
             {
                 int tricount = ReadCount();
                 for (int t = 0; t < tricount; ++t)
@@ -141,7 +141,7 @@ namespace SimpleEngine.load
                 }
             }
 
-            private void readVertices()
+            void readVertices()
             {
                 int vertcount = ReadCount();
                 for (int v = 0; v < vertcount; ++v)
@@ -152,22 +152,23 @@ namespace SimpleEngine.load
             }
 
             // result
-            public int framecount;
-            public float current;
-            public float animfps;
-            public List<MS3DVertex> vertices = new List<MS3DVertex>();
-            public List<MS3DTriangle> triangles = new List<MS3DTriangle>();
-            public List<MS3DMaterial> materials = new List<MS3DMaterial>();
-            public List<MeshGroup> groups = new List<MeshGroup>();
-            public List<Joint> joints = new List<Joint>();
+            int framecount;
+            float current;
+            float animfps;
+            std::vector<MS3DVertex> vertices = std::vector<MS3DVertex>();
+            std::vector<MS3DTriangle> triangles = std::vector<MS3DTriangle>();
+            std::vector<MS3DMaterial> materials = std::vector<MS3DMaterial>();
+            std::vector<MeshGroup> groups = std::vector<MeshGroup>();
+            std::vector<Joint> joints = std::vector<Joint>();
         }
 
-        public static void Load(FileSystem fs,string meshpath,out MeshDef def,out Animation animation)
+        static void
+        Load(FileSystem fs, std::string meshpath, out MeshDef def, out Animation animation)
         {
             Model model;
-            using(Stream s = fs.open(meshpath) )
+            using(Stream s = fs.open(meshpath))
             {
-                Runner run = new Runner(s);
+                Runner run = Runner(s);
                 run.run();
                 model = ExtractModel(run);
             }
@@ -176,13 +177,13 @@ namespace SimpleEngine.load
             animation = MilkshapeCommon.ExtractAnimation(model);
         }
 
-        private static Model ExtractModel(Runner run)
+        static Model ExtractModel(Runner run)
         {
-            Model model = new Model();
+            Model model = Model();
             model.framecount = run.framecount;
             model.currentFrame = run.current;
 
-            foreach (MS3DMaterial s in run.materials)
+            for (MS3DMaterial s : run.materials)
             {
                 Material mat = model.newMaterial();
                 mat.name = AsString(s.name);
@@ -196,15 +197,15 @@ namespace SimpleEngine.load
                 mat.alphatexture = AsString(s.alphamap);
             }
 
-            foreach (MeshGroup g in run.groups)
+            for (MeshGroup g : run.groups)
             {
                 Mesh m = model.newMesh();
                 m.materialId = g.material;
-                foreach (int tr in g.tri)
+                for (int tr : g.tri)
                 {
                     MS3DTriangle tri = run.triangles[tr];
-                    int[] vid = new int[3];
-                    int[] nid = new int[3];
+                    int[] vid = int[3];
+                    int[] nid = int[3];
 
                     for (int i = 0; i < 3; ++i)
                     {
@@ -216,7 +217,7 @@ namespace SimpleEngine.load
                         norm.y = tri.vertexNormals[i + 1];
                         norm.z = tri.vertexNormals[i + 2];
 
-                        MS3DVertex v = run.vertices[ tri.vertexIndices[i] ];
+                        MS3DVertex v = run.vertices[tri.vertexIndices[i]];
                         Vertex ver = m.newVertex();
                         ver.u = tri.s[i];
                         ver.v = tri.t[i];
@@ -236,7 +237,7 @@ namespace SimpleEngine.load
                 }
             }
 
-            foreach (Joint j in run.joints)
+            for (Joint j : run.joints)
             {
                 Bone b = model.newBone();
                 b.parentName = AsString(j.joint.parentName);
@@ -248,7 +249,7 @@ namespace SimpleEngine.load
                 b.y = j.joint.translation[1];
                 b.z = j.joint.translation[2];
 
-                foreach (MS3DKeyframe r in j.rotations)
+                for (MS3DKeyframe r : j.rotations)
                 {
                     RotatonKey k = b.newRotationKey();
                     k.time = r.time * run.animfps;
@@ -257,7 +258,7 @@ namespace SimpleEngine.load
                     k.z = r.parameter[2];
                 }
 
-                foreach (MS3DKeyframe t in j.translations)
+                for (MS3DKeyframe t : j.translations)
                 {
                     PositionKey k = b.newPositionKey();
                     k.time = t.time * run.animfps;
@@ -271,7 +272,7 @@ namespace SimpleEngine.load
             return model;
         }
 
-        private static void copyToColor(Color color,float[] p)
+        static void copyToColor(Color color, float[] p)
         {
             color.r = p[0];
             color.g = p[1];
@@ -279,106 +280,79 @@ namespace SimpleEngine.load
             color.a = p[3];
         }
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        private struct MS3DHeader
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)] struct MS3DHeader
         {
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)]
-            public char[] ID;
-            public int version;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)] char[] ID;
+            int version;
         }
 
-        class MeshGroup
+        struct MeshGroup
         {
-            public string name;
-            public int material;
-            public List<int> tri = new List<int>();
+            std::string name;
+            int material;
+            std::vector<int> tri = std::vector<int>();
         }
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        private struct MS3DVertex
+            [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)] struct MS3DVertex
         {
-            public byte flags;
-            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 3)]
-            public float[] vertex;
-            public char boneID;
-            public byte refCount;
+            byte flags;
+            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 3)] float[] vertex;
+            char boneID;
+            byte refCount;
 
-            public override string ToString()
+            override std::string ToString()
             {
-                return string.Format("{0} ({1} {2} {3})", (int)boneID, vertex[0], vertex[1], vertex[2]);
+                return std::string.Format("{0} ({1} {2} {3})", (int)boneID, vertex[0], vertex[1], vertex[2]);
             }
         }
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        private struct MS3DTriangle
+            [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)] struct MS3DTriangle
         {
-            public short flags;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-            public short[] vertexIndices;
-            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 9)]
-            public float[] vertexNormals; //[3],[3] 
-            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 3)]
-            public float[] s;
-            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 3)]
-            public float[] t;
-            public byte smoothingGroup;
-            public byte groupIndex;
+            short flags;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)] short[] vertexIndices;
+            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 9)] float[] vertexNormals;  //[3],[3]
+            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 3)] float[] s;
+            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 3)] float[] t;
+            byte smoothingGroup;
+            byte groupIndex;
         }
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        private struct MS3DMaterial
+            [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)] struct MS3DMaterial
         {
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-            public char[] name;
-            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 4)]
-            public float[] ambient;
-            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 4)]
-            public float[] diffuse;
-            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 4)]
-            public float[] specular;
-            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 4)]
-            public float[] emissive;
-            [MarshalAs(UnmanagedType.R4)]
-            public float shininess; // 0.0f - 128.0f 
-            [MarshalAs(UnmanagedType.R4)]
-            public float transparency; // 0.0f - 1.0f 
-            public char mode; // 0, 1, 2 is unused now 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
-            public char[] texture;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
-            public char[] alphamap;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)] char[] name;
+            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 4)] float[] ambient;
+            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 4)] float[] diffuse;
+            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 4)] float[] specular;
+            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 4)] float[] emissive;
+            [MarshalAs(UnmanagedType.R4)] float shininess;     // 0.0f - 128.0f
+            [MarshalAs(UnmanagedType.R4)] float transparency;  // 0.0f - 1.0f
+            char mode;                                         // 0, 1, 2 is unused now
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)] char[] texture;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)] char[] alphamap;
         }
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        private struct MS3DJoint
+            [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)] struct MS3DJoint
         {
-            public byte flags;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-            public char[] name;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-            public char[] parentName;
-            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 3)]
-            public float[] rotation;
-            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 3)]
-            public float[] translation;
-            public short numRotationKeyframes;
-            public short numTranslationKeyframes;
+            byte flags;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)] char[] name;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)] char[] parentName;
+            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 3)] float[] rotation;
+            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 3)] float[] translation;
+            short numRotationKeyframes;
+            short numTranslationKeyframes;
         }
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        private struct MS3DKeyframe
+            [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)] struct MS3DKeyframe
         {
-            [MarshalAs(UnmanagedType.R4)]
-            public float time;
-            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 3)]
-            public float[] parameter;
+            [MarshalAs(UnmanagedType.R4)] float time;
+            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R4, SizeConst = 3)] float[] parameter;
         }
 
-        private class Joint
+        struct Joint
         {
-            public MS3DJoint joint;
-            public List<MS3DKeyframe> rotations = new List<MS3DKeyframe>();
-            public List<MS3DKeyframe> translations = new List<MS3DKeyframe>();
+            MS3DJoint joint;
+            std::vector<MS3DKeyframe> rotations = std::vector<MS3DKeyframe>();
+            std::vector<MS3DKeyframe> translations = std::vector<MS3DKeyframe>();
         }
     }
 }

@@ -6,22 +6,21 @@ using System.Runtime.InteropServices;
 
 namespace SimpleEngine
 {
-    public class Counter
+    struct Counter
     {
-        [DllImport("Kernel32.dll")]
-        private static extern bool QueryPerformanceCounter(
+        [DllImport("Kernel32.dll")] static extern bool QueryPerformanceCounter(
             out long lpPerformanceCount);
 
-        [DllImport("Kernel32.dll")]
-        private static extern bool QueryPerformanceFrequency(
+        [DllImport("Kernel32.dll")] static extern bool QueryPerformanceFrequency(
             out long lpFrequency);
 
-        private long startTime, stopTime;
-        private long freq;
+        long startTime, stopTime;
+
+        long freq;
 
         // Constructor
 
-        public Counter()
+        Counter()
         {
             startTime = 0;
             stopTime = 0;
@@ -29,22 +28,22 @@ namespace SimpleEngine
             if (QueryPerformanceFrequency(out freq) == false)
             {
                 // high-performance counter not supported
-                throw new UserException("Hi-performance counter not supported");
+                throw UserException("Hi-performance counter not supported");
             }
         }
 
-        public void Start()
+        void Start()
         {
             //Thread.Sleep(0);
             QueryPerformanceCounter(out startTime);
         }
 
-        public void Stop()
+        void Stop()
         {
             QueryPerformanceCounter(out stopTime);
         }
 
-        public double DurationD
+        double DurationD
         {
             get
             {
@@ -52,7 +51,7 @@ namespace SimpleEngine
             }
         }
 
-        public float Duration
+        float Duration
         {
             get
             {

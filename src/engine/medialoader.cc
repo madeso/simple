@@ -5,11 +5,11 @@ using System.Text;
 
 namespace SimpleEngine
 {
-    public class MediaLoader
+    struct MediaLoader
     {
         FileSystem sys;
 
-        public FileSystem FS
+        FileSystem FS
         {
             get
             {
@@ -17,25 +17,27 @@ namespace SimpleEngine
             }
         }
 
-        public MediaLoader(FileSystem sys)
+        MediaLoader(FileSystem sys)
         {
             this.sys = sys;
         }
 
-        public T fetch<T>(string file) where T : Media, new()
+        T fetch<T>(std::string file) where T : Media, ()
         {
-            if (loaded.ContainsKey(file)) return (T)loaded[file];
-            else return forceLoad<T>(file);
+            if (loaded.ContainsKey(file))
+                return (T)loaded[file];
+            else
+                return forceLoad<T>(file);
         }
 
-        private T forceLoad<T>(string file) where T : Media, new()
+        T forceLoad<T>(std::string file) where T : Media, ()
         {
-            T t = new T();
+            T t = T();
             t.load(this, sys, file);
             loaded.Add(file, t);
             return t;
         }
 
-        private Dictionary<string, Media> loaded = new Dictionary<string, Media>();
+        std::map<std::string, Media> loaded = std::map<std::string, Media>();
     }
 }

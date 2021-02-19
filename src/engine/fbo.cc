@@ -6,12 +6,11 @@ using Tao.OpenGl;
 
 namespace SimpleEngine
 {
-
-    internal class RenderBuffer
+    struct RenderBuffer
     {
-        readonly int buffer;
+        int buffer;
 
-        public int Buffer
+        int Buffer
         {
             get
             {
@@ -19,7 +18,7 @@ namespace SimpleEngine
             }
         }
 
-        public RenderBuffer(int internalFormat, int width, int height)
+        RenderBuffer(int internalFormat, int width, int height)
         {
             Gl.glGenRenderbuffersEXT(1, out buffer);
 
@@ -27,23 +26,31 @@ namespace SimpleEngine
             Gl.glRenderbufferStorageEXT(Gl.GL_RENDERBUFFER_EXT, internalFormat, width, height);
         }
 
-        private void bind()
+        void bind()
         {
             Gl.glBindRenderbufferEXT(Gl.GL_RENDERBUFFER_EXT, buffer);
         }
     }
 
-    public class Size : IComparable<Size>
+    struct Size : IComparable<Size>
     {
-        public Size()
+        Size()
         {
             Width = 512;
             Height = 512;
         }
-        public int Width { get; set; }
-        public int Height { get; set; }
+        int Width
+        {
+            get;
+            set;
+        }
+        int Height
+        {
+            get;
+            set;
+        }
 
-        public int CompareTo(Size other)
+        int CompareTo(Size other)
         {
             if (this.Width == other.Width)
             {
@@ -55,34 +62,36 @@ namespace SimpleEngine
             }
         }
 
-        public override string ToString()
+        override std::string ToString()
         {
             return Width.ToString() + "x" + Height.ToString();
         }
 
-        public class Comperator : IEqualityComparer<Size>
+        struct Comperator : IEqualityComparer<Size>
         {
-            public bool Equals(Size x, Size y)
+            bool Equals(Size x, Size y)
             {
                 return x.CompareTo(y) == 0;
             }
 
-            public int GetHashCode(Size s)
+            int GetHashCode(Size s)
             {
-                return s.Width*3 + s.Height;
+                return s.Width * 3 + s.Height;
             }
         }
     }
 
-    public class Fbo
+    struct Fbo
     {
-        private readonly int fbo;
-        
-        private readonly int width;
-        private readonly int height;
-        private readonly bool mipmap;
+        int fbo;
 
-        public int Width
+        int width;
+
+        int height;
+
+        bool mipmap;
+
+        int Width
         {
             get
             {
@@ -90,7 +99,7 @@ namespace SimpleEngine
             }
         }
 
-        public int Height
+        int Height
         {
             get
             {
@@ -98,18 +107,18 @@ namespace SimpleEngine
             }
         }
 
-        public Size Size
+        Size Size
         {
             get
             {
-                return new Size { Width= Width, Height= Height} ;
+                return Size{Width = Width, Height = Height};
             }
         }
 
         RenderBuffer depth;
         Image texture;
 
-        public Fbo(int width, int height, bool mipmap)
+        Fbo(int width, int height, bool mipmap)
         {
             this.width = width;
             this.height = height;
@@ -118,56 +127,59 @@ namespace SimpleEngine
             Gl.glGenFramebuffersEXT(1, out fbo);
             Bind(this);
 
-            depth = new RenderBuffer(Gl.GL_DEPTH_COMPONENT, width, height);
+            depth = RenderBuffer(Gl.GL_DEPTH_COMPONENT, width, height);
             attach(depth, Gl.GL_DEPTH_ATTACHMENT_EXT);
 
-            texture = new Image(true, width, height, IntPtr.Zero, mipmap, Gl.GL_RGBA);
+            texture = Image(true, width, height, IntPtr.Zero, mipmap, Gl.GL_RGBA);
             attach(texture, Gl.GL_COLOR_ATTACHMENT0_EXT);
 
             int status = Gl.glCheckFramebufferStatusEXT(Gl.GL_FRAMEBUFFER_EXT);
-            if (status != Gl.GL_FRAMEBUFFER_COMPLETE_EXT) throw new Exception("Something went wrong when creating framebuffer: " + status.ToString());
+            if (status != Gl.GL_FRAMEBUFFER_COMPLETE_EXT)
+                throw Exception("Something went wrong when creating framebuffer: " + status.ToString());
 
-            Bind(null);
+            Bind(nullptr);
         }
 
-        private void attach(RenderBuffer b, int attachmentPoint)
+        void attach(RenderBuffer b, int attachmentPoint)
         {
             Gl.glFramebufferRenderbufferEXT(Gl.GL_FRAMEBUFFER_EXT, attachmentPoint, Gl.GL_RENDERBUFFER_EXT, b.Buffer);
         }
 
-        private void attach(Image img, int attachmentPoint)
+        void attach(Image img, int attachmentPoint)
         {
             const int mipmaplevel = 0;
             Gl.glFramebufferTexture2DEXT(Gl.GL_FRAMEBUFFER_EXT, attachmentPoint, Gl.GL_TEXTURE_2D, img.Id, mipmaplevel);
         }
 
-        private static Fbo bound = null;
-        private static void Bind(Fbo a)
+        static Fbo bound = nullptr;
+
+        static void Bind(Fbo a)
         {
-            if (bound != null && a != null) throw new Exception("Already bound a fbo");
+            if (bound != nullptr && a != nullptr)
+                throw Exception("Already bound a fbo");
             bound = a;
-            int fbo = a != null ? a.fbo : 0;
+            int fbo = a != nullptr ? a.fbo : 0;
             Gl.glBindFramebufferEXT(Gl.GL_FRAMEBUFFER_EXT, fbo);
         }
 
-        public void updateTexture(Action renderer)
+        void updateTexture(Action renderer)
         {
             Bind(this);
             Gl.glPushAttrib(Gl.GL_VIEWPORT_BIT);
             Gl.glViewport(0, 0, width, height);
-            
+
             renderer();
 
             Gl.glPopAttrib();
-            Bind(null);
+            Bind(nullptr);
         }
 
-        internal void bindTexture()
+        void bindTexture()
         {
             texture.bind();
         }
 
-        internal void bindTexture(int location)
+        void bindTexture(int location)
         {
             texture.bind(location);
         }

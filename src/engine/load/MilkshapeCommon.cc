@@ -5,234 +5,227 @@ using System.Text;
 
 namespace SimpleEngine.load
 {
-    internal class Model
+    struct Model
     {
-        public int framecount = 0;
-        public float currentFrame = 0;
+        int framecount = 0;
+        float currentFrame = 0;
 
-        public List<Mesh> meshes = new List<Mesh>();
+        std::vector<Mesh> meshes = std::vector<Mesh>();
 
-        public Mesh newMesh()
+        Mesh newMesh()
         {
-            Mesh m = new Mesh();
+            Mesh m = Mesh();
             meshes.Add(m);
             return m;
         }
 
-        public List<Material> materials = new List<Material>();
-        public List<Bone> bones = new List<Bone>();
+        std::vector<Material> materials = std::vector<Material>();
+        std::vector<Bone> bones = std::vector<Bone>();
 
-        internal Material newMaterial()
+        Material newMaterial()
         {
-            Material mat = new Material();
+            Material mat = Material();
             materials.Add(mat);
             return mat;
         }
 
-        internal Bone newBone()
+        Bone newBone()
         {
-            Bone b = new Bone();
+            Bone b = Bone();
             bones.Add(b);
             return b;
         }
 
-        int boneId(string bone)
+        int boneId(std::string bone)
         {
-            if (bone == "") return -1;
+            if (bone == "")
+                return -1;
             for (int i = 0; i < bones.Count; ++i)
             {
-                if (bones[i].name == bone) return i;
+                if (bones[i].name == bone)
+                    return i;
             }
-            throw new Exception("Failed to find a match for " + bone);
+            throw Exception("Failed to find a match for " + bone);
         }
 
-        public void mapBonesToId()
+        void mapBonesToId()
         {
-            foreach (Bone b in bones)
+            for (Bone b : bones)
             {
                 b.parentId = boneId(b.parentName);
             }
         }
-    }
-    internal class Mesh
+    } struct Mesh
     {
-        public string name = "";
-        public int flags = 0;
-        public int materialId = 0;
+        std::string name = "";
+        int flags = 0;
+        int materialId = 0;
 
-        public List<Vertex> vertices = new List<Vertex>();
-        public List<Normal> normals = new List<Normal>();
-        public List<Tri> tris = new List<Tri>();
+        std::vector<Vertex> vertices = std::vector<Vertex>();
+        std::vector<Normal> normals = std::vector<Normal>();
+        std::vector<Tri> tris = std::vector<Tri>();
 
-        internal Vertex newVertex()
+        Vertex newVertex()
         {
-            Vertex v = new Vertex();
+            Vertex v = Vertex();
             vertices.Add(v);
             return v;
         }
 
-        internal Normal newNormal()
+        Normal newNormal()
         {
-            Normal n = new Normal();
+            Normal n = Normal();
             normals.Add(n);
             return n;
         }
 
-        internal Tri newTri()
+        Tri newTri()
         {
-            Tri t = new Tri();
+            Tri t = Tri();
             tris.Add(t);
             return t;
         }
-    }
-    internal class Vertex
+    } struct Vertex
     {
-        public int flags = 0;
-        public float x
+        int flags = 0;
+        float x
         {
             set { pos.x = value; }
             get { return pos.x; }
         }
-        public float y
+        float y
         {
             set { pos.y = value; }
             get { return pos.y; }
         }
-        public float z
+        float z
         {
             set { pos.z = value; }
             get { return pos.z; }
         }
-        public float u
+        float u
         {
             set { uv.x = value; }
             get { return uv.x; }
         }
-        public float v
+        float v
         {
             set { uv.y = value; }
             get { return uv.y; }
         }
 
-        public override string ToString()
+        override std::string ToString()
         {
-            return string.Format("{0} {1} / {2}",bone, pos, uv);
+            return std::string.Format("{0} {1} / {2}", bone, pos, uv);
         }
 
-        public vec2 uv = new vec2(0, 0);
-        public vec3 pos = new vec3(0, 0, 0);
-        public int bone = 0;
-    }
-    internal class Normal
+        vec2 uv = vec2(0, 0);
+        vec3 pos = vec3(0, 0, 0);
+        int bone = 0;
+    } struct Normal
     {
-        public float x
+        float x
         {
             get { return norm.x; }
             set { norm.x = value; }
         }
-        public float y
+        float y
         {
             get { return norm.y; }
             set { norm.y = value; }
         }
-        public float z
+        float z
         {
             get { return norm.z; }
             set { norm.z = value; }
         }
 
-        public vec3 norm = new vec3(0, 0, 0);
+        vec3 norm = vec3(0, 0, 0);
 
-        internal void normalize()
+        void normalize()
         {
             norm.normalize();
         }
-    }
-    internal class Tri
+    } struct Tri
     {
-        public int flags = 0;
-        public int v1 = 0;
-        public int v2 = 0;
-        public int v3 = 0;
-        public int n1 = 0;
-        public int n2 = 0;
-        public int n3 = 0;
-        public int smoothingGroup = 0;
+        int flags = 0;
+        int v1 = 0;
+        int v2 = 0;
+        int v3 = 0;
+        int n1 = 0;
+        int n2 = 0;
+        int n3 = 0;
+        int smoothingGroup = 0;
 
-        internal void buildNormal(Mesh mesh)
+        void buildNormal(Mesh mesh)
         {
             // not needed?
         }
-    }
-    internal class Color
+    } struct Color
     {
-        public float r = 1;
-        public float g = 1;
-        public float b = 1;
-        public float a = 1;
+        float r = 1;
+        float g = 1;
+        float b = 1;
+        float a = 1;
 
-        internal void parse(string p)
+        void parse(std::string p)
         {
-            string[] data = p.Split(" ".ToCharArray());
+            std::string[] data = p.Split(" ".ToCharArray());
             r = math1.ParseFloat(data[0]);
             g = math1.ParseFloat(data[1]);
             b = math1.ParseFloat(data[2]);
             a = math1.ParseFloat(data[3]);
         }
-    }
-    internal class Material
+    } struct Material
     {
-        public string name = "";
-        public Color ambient = new Color();
-        public Color diffuse = new Color();
-        public Color specular = new Color();
-        public Color emissive = new Color();
-        public float shininess = 0;
-        public float transperency = 1;
-        public string diffuseTexture = "";
-        public string alphatexture = "";
-    }
-    internal class PositionKey
+        std::string name = "";
+        Color ambient = Color();
+        Color diffuse = Color();
+        Color specular = Color();
+        Color emissive = Color();
+        float shininess = 0;
+        float transperency = 1;
+        std::string diffuseTexture = "";
+        std::string alphatexture = "";
+    } struct PositionKey
     {
-        public float time;
-        public float x;
-        public float y;
-        public float z;
-    }
-    internal class RotatonKey
+        float time;
+        float x;
+        float y;
+        float z;
+    } struct RotatonKey
     {
-        public float time;
-        public float x;
-        public float y;
-        public float z;
+        float time;
+        float x;
+        float y;
+        float z;
 
-        public override string ToString()
+        override std::string ToString()
         {
-            return string.Format("{0} {1}", time, MilkshapeCommon.makeQuat(new vec3(x, y, z)).AxisAngle);
+            return std::string.Format("{0} {1}", time, MilkshapeCommon.makeQuat(vec3(x, y, z)).AxisAngle);
         }
-    }
-    internal class Bone
+    } struct Bone
     {
-        public string name = "";
-        public string parentName = "";
-        public int parentId = -1;
-        public int flags;
-        public float x;
-        public float y;
-        public float z;
-        public float rx;
-        public float ry;
-        public float rz;
+        std::string name = "";
+        std::string parentName = "";
+        int parentId = -1;
+        int flags;
+        float x;
+        float y;
+        float z;
+        float rx;
+        float ry;
+        float rz;
 
-        public override string ToString()
+        override std::string ToString()
         {
             return name + ": " + parentName;
         }
 
-        List<PositionKey> positions = new List<PositionKey>();
-        List<RotatonKey> rotations = new List<RotatonKey>();
+        std::vector<PositionKey> positions = std::vector<PositionKey>();
+        std::vector<RotatonKey> rotations = std::vector<RotatonKey>();
 
-        public IEnumerable<PositionKey> PositionKeys
+        IEnumerable<PositionKey> PositionKeys
         {
             get
             {
@@ -240,7 +233,7 @@ namespace SimpleEngine.load
             }
         }
 
-        public IEnumerable<RotatonKey> RotationKeys
+        IEnumerable<RotatonKey> RotationKeys
         {
             get
             {
@@ -248,66 +241,68 @@ namespace SimpleEngine.load
             }
         }
 
-        internal RotatonKey newRotationKey()
+        RotatonKey newRotationKey()
         {
-            RotatonKey key = new RotatonKey();
+            RotatonKey key = RotatonKey();
             rotations.Add(key);
             return key;
         }
 
-        internal PositionKey newPositionKey()
+        PositionKey newPositionKey()
         {
-            PositionKey key = new PositionKey();
+            PositionKey key = PositionKey();
             positions.Add(key);
             return key;
         }
     }
 
-    internal static class MilkshapeCommon
+    namespace MilkshapeCommon
     {
-        internal static Animation ExtractAnimation(Model model)
+        static Animation ExtractAnimation(Model model)
         {
-            List<AnimationForBone> ani = new List<AnimationForBone>();
+            std::vector<AnimationForBone> ani = std::vector<AnimationForBone>();
 
             bool added = false;
 
-            foreach (Bone b in model.bones)
+            for (Bone b : model.bones)
             {
-                AnimationForBone a = new AnimationForBone();
+                AnimationForBone a = AnimationForBone();
 
-                foreach (PositionKey pk in b.PositionKeys)
+                for (PositionKey pk : b.PositionKeys)
                 {
-                    a.addPositon(pk.time, new vec3(pk.x, pk.y, pk.z));
+                    a.addPositon(pk.time, vec3(pk.x, pk.y, pk.z));
                     added = true;
                 }
-                foreach (RotatonKey rk in b.RotationKeys)
+                for (RotatonKey rk : b.RotationKeys)
                 {
-                    a.addRotation(rk.time, makeQuat(new vec3(rk.x, rk.y, rk.z)));
+                    a.addRotation(rk.time, makeQuat(vec3(rk.x, rk.y, rk.z)));
                     added = true;
                 }
 
                 ani.Add(a);
             }
 
-            if (added) return new Animation(ani);
-            else return null;
+            if (added)
+                return Animation(ani);
+            else
+                return nullptr;
         }
-        internal static MeshDef ExtractMeshDefinition(Model model)
+        static MeshDef ExtractMeshDefinition(Model model)
         {
-            MeshDef def = new MeshDef();
+            MeshDef def = MeshDef();
             int id = 0;
-            foreach (Material mat in model.materials)
+            for (Material mat : model.materials)
             {
                 MeshDef.MaterialDef smat = def.addMaterial("m" + id.ToString());
                 smat.texture = SmartTexture(mat.diffuseTexture);
                 ++id;
             }
 
-            foreach (Bone b in model.bones)
+            for (Bone b : model.bones)
             {
                 MeshDef.Bone bn = def.newBone();
-                bn.pos = new vec3(b.x, b.y, b.z);
-                bn.rot = makeQuat(new vec3(b.rx, b.ry, b.rz));
+                bn.pos = vec3(b.x, b.y, b.z);
+                bn.rot = makeQuat(vec3(b.rx, b.ry, b.rz));
                 bn.parent = b.parentId;
                 bn.name = b.name;
             }
@@ -316,7 +311,7 @@ namespace SimpleEngine.load
             int vbase = 0;
             int nadded = 0;
             int nbase = 0;
-            foreach (Mesh me in model.meshes)
+            for (Mesh me : model.meshes)
             {
                 vbase += vadded;
                 vadded = 0;
@@ -324,43 +319,43 @@ namespace SimpleEngine.load
                 nadded = 0;
 
                 def.selectMaterial("m" + me.materialId);
-                foreach (Vertex v in me.vertices)
+                for (Vertex v : me.vertices)
                 {
                     def.addPoint(v.pos, v.bone);
-                    def.AddUv(new vec2(v.u, 1 - v.v));
+                    def.AddUv(vec2(v.u, 1 - v.v));
                     ++vadded;
                 }
 
-                foreach (Normal n in me.normals)
+                for (Normal n : me.normals)
                 {
                     def.addNomal(n.norm);
                     ++nadded;
                 }
 
-                foreach (Tri tr in me.tris)
+                for (Tri tr : me.tris)
                 {
-                    MeshDef.VertexData[] data = new MeshDef.VertexData[3];
+                    MeshDef.VertexData[] data = MeshDef.VertexData[3];
                     data[0].uv = data[0].vertex = vbase + tr.v1;
                     data[1].uv = data[1].vertex = vbase + tr.v2;
                     data[2].uv = data[2].vertex = vbase + tr.v3;
                     data[0].normal = nbase + tr.n1;
                     data[1].normal = nbase + tr.n2;
                     data[2].normal = nbase + tr.n3;
-                    def.addTri(new MeshDef.Tri(data));
+                    def.addTri(MeshDef.Tri(data));
                 }
             }
 
             return def;
         }
-        internal static float sin(float s)
+        static float sin(float s)
         {
             return (float)Math.Sin(s);
         }
-        internal static float cos(float s)
+        static float cos(float s)
         {
             return (float)Math.Cos(s);
         }
-        internal static quat makeQuat(vec3 angles)
+        static quat makeQuat(vec3 angles)
         {
             float ang;
             float sr, sp, sy, cr, cp, cy;
@@ -377,14 +372,14 @@ namespace SimpleEngine.load
             sr = sin(ang);
             cr = cos(ang);
 
-            float x = sr * cp * cy - cr * sp * sy; // X
-            float y = cr * sp * cy + sr * cp * sy; // Y
-            float z = cr * cp * sy - sr * sp * cy; // Z
-            float w = cr * cp * cy + sr * sp * sy; // W
-            quat a = new quat(w, new vec3(x, y, z)).Normalized;
+            float x = sr * cp * cy - cr * sp * sy;  // X
+            float y = cr * sp * cy + sr * cp * sy;  // Y
+            float z = cr * cp * sy - sr * sp * cy;  // Z
+            float w = cr * cp * cy + sr * sp * sy;  // W
+            quat a = quat(w, vec3(x, y, z)).Normalized;
             return a;
         }
-        internal static string SmartTexture(string p)
+        static std::string SmartTexture(std::string p)
         {
             return System.IO.Path.GetFileName(p);
         }

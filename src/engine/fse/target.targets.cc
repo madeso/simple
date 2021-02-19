@@ -6,21 +6,22 @@ using System.Xml;
 
 namespace SimpleEngine.fse.Targets
 {
-    public static class Targets
+    namespace Targets
     {
-        public static Target Create(XmlElement x, int width, int height)
+        static Target Create(XmlElement x, int width, int height)
         {
-            string name = x.Name;
+            std::string name = x.Name;
 
             if (name == "buffer")
             {
-                return new BufferTarget(x);
+                return BufferTarget(x);
             }
             else if (name == "form")
             {
-                return new FormTarget(width, height);
+                return FormTarget(width, height);
             }
-            else throw new Exception(name + " is not a known target");
+            else
+                throw Exception(name + " is not a known target");
         }
     }
 }

@@ -5,23 +5,24 @@ using System.Text;
 
 namespace SimpleEngine
 {
-    public class Mesh : Media
+    struct Mesh : Media
     {
-        CompiledMesh mesh = null;
+        CompiledMesh mesh = nullptr;
 
-        public override void load(MediaLoader ml, FileSystem fs, string path)
+        override void load(MediaLoader ml, FileSystem fs, std::string path)
         {
             MeshDef mesh = MeshFile.Load(fs, path);
             mesh.compile(ml);
             this.mesh = mesh.Compiled;
         }
 
-        protected override void unload()
+    protected
+        override void unload()
         {
-            mesh = null;
+            mesh = nullptr;
         }
 
-        public CompiledMesh Compiled
+        CompiledMesh Compiled
         {
             get
             {

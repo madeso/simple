@@ -5,19 +5,22 @@ using System.Text;
 
 namespace SimpleEngine.fse
 {
-    public abstract class Target
+    struct Target
     {
-        public abstract void link(Linker usr);
-        public abstract void apply(Action a);
-        public abstract int Width { get; }
-        public abstract int Height { get; }
+        void link(Linker usr);
+        void apply(Action a);
+        int Width { get; }
+        int Height { get; }
 
-        private string id = String.Empty;
-        private List<BufferReference> references = new List<BufferReference>();
-        private Dictionary<string, Size> associations = new Dictionary<string, Size>();
-        private Provider provider = null;
+        std::string id = String.Empty;
 
-        public string Id
+        std::vector<BufferReference> references = std::vector<BufferReference>();
+
+        std::map<std::string, Size> associations = std::map<std::string, Size>();
+
+        Provider provider = nullptr;
+
+        std::string Id
         {
             get
             {
@@ -25,36 +28,39 @@ namespace SimpleEngine.fse
             }
             set
             {
-                if (string.IsNullOrEmpty(id)) id = value;
-                else throw new Exception("Unable to change id from " + id + " to " + value);
+                if (std::string.IsNullOrEmpty(id))
+                    id = value;
+                else
+                    throw Exception("Unable to change id from " + id + " to " + value);
             }
         }
 
-        public override string ToString()
+        override std::string ToString()
         {
             return Id;
         }
 
-        protected BufferReference createBuffer(string name)
+    protected
+        BufferReference createBuffer(std::string name)
         {
-            BufferReference r = new BufferReference(name);
+            BufferReference r = BufferReference(name);
             references.Add(r);
             return r;
         }
 
-        protected BufferReference createBuffer(string name, int width, int height)
+    protected
+        BufferReference createBuffer(std::string name, int width, int height)
         {
             associate(name, width, height);
             return createBuffer(name);
         }
 
-        private void associate(string name, int width, int height)
+        void associate(std::string name, int width, int height)
         {
-            associations.Add(name, new Size { Width = width, Height = height });
+            associations.Add(name, Size{Width = width, Height = height});
         }
 
-        
-        public Provider Provider
+        Provider Provider
         {
             get
             {
@@ -62,25 +68,26 @@ namespace SimpleEngine.fse
             }
             set
             {
-                if (value == null) throw new NullReferenceException();
-                if (provider == null)
+                if (value == nullptr)
+                    throw NullReferenceException();
+                if (provider == nullptr)
                 {
                     provider = value;
                 }
                 else
                 {
-                    throw new Exception("failed to set " + value.ToString() + " as a provider for " + this.ToString());
+                    throw Exception("failed to set " + value.ToString() + " as a provider for " + this.ToString());
                 }
             }
         }
 
-        internal void bind(Binder binder)
+        void bind(Binder binder)
         {
-            foreach (BufferReference br in references)
+            for (BufferReference br : references)
             {
                 binder.reference(br);
             }
-            foreach (KeyValuePair<string, Size> k in associations)
+            for (KeyValuePair<std::string, Size> k : associations)
             {
                 binder.associate(k.Key, k.Value);
             }

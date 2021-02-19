@@ -5,15 +5,15 @@ using System.Text;
 
 namespace SimpleEngine.load.studio3ds
 {
-    class ColorChunk
+    struct ColorChunk
     {
-        public readonly float red;
-        public readonly float green;
-        public readonly float blue;
+        float red;
+        float green;
+        float blue;
 
-        public ColorChunk(BinaryChunk c)
+        ColorChunk(BinaryChunk c)
         {
-            if (c != null)
+            if (c != nullptr)
             {
                 Binary b = c.Binary;
                 red = b.rfloat();
@@ -28,16 +28,16 @@ namespace SimpleEngine.load.studio3ds
             }
         }
 
-        public override string ToString()
+        override std::string ToString()
         {
-            return string.Format("{0} {1} {2}", red, green, blue);
+            return std::string.Format("{0} {1} {2}", red, green, blue);
         }
 
-        public vec3 Color
+        vec3 Color
         {
             get
             {
-                return new vec3(red, green, blue);
+                return vec3(red, green, blue);
             }
         }
     }

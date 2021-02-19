@@ -5,84 +5,89 @@ using System.Text;
 
 namespace SimpleEngine
 {
-    public class RenderList
+    struct RenderList
     {
-        abstract class RenderDta
+        struct RenderDta
         {
-            public abstract int Id
+            int Id
             {
                 get;
             }
 
-            public abstract void render();
+            void render();
         }
 
-        class RenderMeshPart : RenderDta
+        struct RenderMeshPart : RenderDta
         {
-            public MeshPart part;
-            public vec3 pos;
-            public quat rot;
+            MeshPart part;
+            vec3 pos;
+            quat rot;
 
-            public override int Id
+            override int Id
             {
                 get { return part.Id; }
             }
 
-            public override void render()
+            override void render()
             {
                 part.render(pos, rot);
             }
         }
 
-        class RenderRenderable : RenderDta
+        struct RenderRenderable : RenderDta
         {
-            public int id;
-            public Renderable r;
+            int id;
+            Renderable r;
 
-            public override int Id
+            override int Id
             {
                 get { return id; }
             }
 
-            public override void render()
+            override void render()
             {
                 r.render();
             }
         }
 
-        private List<RenderDta> datas = new List<RenderDta>();
+        std::vector<RenderDta>
+            datas = std::vector<RenderDta>();
 
-        class RenderDataComparer : Comparer<RenderDta>
+        struct RenderDataComparer : Comparer<RenderDta>
         {
-            public override int Compare(RenderDta x, RenderDta y)
+            override int Compare(RenderDta x, RenderDta y)
             {
-                if (x.Id == y.Id) return 0;
-                else if (x.Id < y.Id) return -1;
-                else return 1;
+                if (x.Id == y.Id)
+                    return 0;
+                else if (x.Id < y.Id)
+                    return -1;
+                else
+                    return 1;
             }
         }
 
-        public void add(MeshPart part, vec3 pos, quat rot)
+        void
+        add(MeshPart part, vec3 pos, quat rot)
         {
-            RenderMeshPart d = new RenderMeshPart();
+            RenderMeshPart d = RenderMeshPart();
             d.part = part;
             d.pos = pos;
             d.rot = rot;
             datas.Add(d);
         }
 
-        public void add(Renderable r, int id)
+        void add(Renderable r, int id)
         {
-            RenderRenderable rr = new RenderRenderable();
+            RenderRenderable rr = RenderRenderable();
             rr.id = id;
             rr.r = r;
             datas.Add(rr);
         }
 
-        public void render()
+        void render()
         {
-            datas.Sort(new RenderDataComparer());
-            foreach (RenderDta data in datas)
+            datas.Sort(RenderDataComparer());
+            for (RenderDta data : datas)
             {
                 data.render();
             }

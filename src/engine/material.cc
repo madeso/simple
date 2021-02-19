@@ -6,21 +6,21 @@ using Tao.OpenGl;
 
 namespace SimpleEngine
 {
-    public class Material
+    struct Material
     {
-        public Material(vec3 color, Texture tex)
+        Material(vec3 color, Texture tex)
         {
             this.color = color;
-            this.tex = new Handle<Texture>(tex);
+            this.tex = Handle<Texture>(tex);
         }
 
-        public void apply()
+        void apply()
         {
             Gl.glColor3f(color.x, color.y, color.z);
             tex.Ref.bind();
         }
 
-        vec3 color = new vec3(1,1,1);
+        vec3 color = vec3(1, 1, 1);
         Handle<Texture> tex;
     }
 }

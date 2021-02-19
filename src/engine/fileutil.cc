@@ -6,12 +6,12 @@ using System.IO;
 
 namespace SimpleEngine
 {
-    public static class FileUtil
+    namespace FileUtil
     {
-        public static IEnumerable<string> LinesIn(Stream s)
+        static IEnumerable<std::string> LinesIn(Stream s)
         {
-            StreamReader sr = new StreamReader(s);
-            while( false==sr.EndOfStream )
+            StreamReader sr = StreamReader(s);
+            while (false == sr.EndOfStream)
             {
                 yield return sr.ReadLine();
             }

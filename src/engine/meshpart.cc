@@ -6,40 +6,41 @@ using Tao.OpenGl;
 
 namespace SimpleEngine
 {
-    public class MeshPart
+    struct MeshPart
     {
-        public List<MeshDef.Vertex[]> faces = new List<MeshDef.Vertex[]>();
+        std::vector<MeshDef.Vertex[]> faces = std::vector<MeshDef.Vertex[]>();
         Material mat;
         Poseable poseable;
 
-        public MeshPart(MediaLoader ml, MeshDef.MaterialDef m, MeshDef def, Poseable poseable)
+        MeshPart(MediaLoader ml, MeshDef.MaterialDef m, MeshDef def, Poseable poseable)
         {
             this.poseable = poseable;
 
-            mat = new Material(m.diffuse, ml.fetch<Texture>(m.texture));
-            foreach (MeshDef.Tri tri in def.TrianglesFor(m))
+            mat = Material(m.diffuse, ml.fetch<Texture>(m.texture));
+            for (MeshDef.Tri tri : def.TrianglesFor(m))
             {
                 faces.Add(def.lookup(tri));
             }
         }
 
         int id = -1;
-        public int Id
+        int Id
         {
             get
             {
-                if (id == -1) id = calculateId();
+                if (id == -1)
+                    id = calculateId();
                 return id;
             }
         }
 
-        private int calculateId()
+        int calculateId()
         {
             return 0;
         }
-        internal void render(vec3 p, quat rot)
+        void render(vec3 p, quat rot)
         {
-            using(PushedMatrix dnum = new PushedMatrix() )
+            using(PushedMatrix dnum = PushedMatrix())
             {
                 mat.apply();
                 Gl.glTranslatef(p.x, p.y, p.z);
@@ -47,21 +48,20 @@ namespace SimpleEngine
                 // apply rotation
                 Gl.glRotatef(aa.angle.inDegrees, aa.axis.x, aa.axis.y, aa.axis.z);
                 Gl.glBegin(Gl.GL_TRIANGLES);
-                foreach (MeshDef.Vertex[] face in faces)
+                for (MeshDef.Vertex[] face : faces)
                 {
                     for (int i = 0; i < 3; ++i)
                     {
                         MeshDef.Vertex v = face[i];
-                        vec3 vert = (poseable.CurrentPose != null)
-                            ? poseable.CurrentPose.transforms[v.bone] * v.vertex
-                            : v.vertex;
+                        vec3 vert = (poseable.CurrentPose != nullptr)
+                                        ? poseable.CurrentPose.transforms[v.bone] * v.vertex
+                                        : v.vertex;
                         Gl.glNormal3f(v.normal.x, v.normal.y, v.normal.z);
                         Gl.glTexCoord2f(v.uv.x, v.uv.y);
                         Gl.glVertex3f(vert.x, vert.y, vert.z);
                     }
                 }
                 Gl.glEnd();
-
             }
         }
     }

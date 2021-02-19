@@ -5,20 +5,20 @@ using System.Text;
 
 namespace SimpleEngine
 {
-    public struct Rect
+    struct Rect
     {
-        public static Rect FromLTWH(int l, int t, int w, int h)
+        static Rect FromLTWH(int l, int t, int w, int h)
         {
-            Rect r = new Rect();
+            Rect r = Rect();
             r.Left = l;
             r.Top = t;
             r.Width = w;
             r.Height = h;
             return r;
         }
-        public int Left;
-        public int Top;
-        public int Width;
-        public int Height;
+        int Left;
+        int Top;
+        int Width;
+        int Height;
     }
 }

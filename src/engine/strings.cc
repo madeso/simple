@@ -4,49 +4,51 @@ using System.Text;
 
 namespace SimpleEngine
 {
-	public static class Strings
-	{
-		public static string Stringify(IEnumerable<string> strings)
-		{
-			return new StringSeperator(", ", " and ").Append(strings).ToString();
-		}
+    namespace Strings
+    {
+        static std::string Stringify(IEnumerable<std::string> strings)
+        {
+            return StringSeperator(", ", " and ").Append(strings).ToString();
+        }
 
-		public static IEnumerable<string> sort(IEnumerable<string> strings)
-		{
-			List<string> str = new List<string>();
-			str.AddRange(strings);
-			str.Sort();
-			return str;
-		}
-		public static IEnumerable<string> unique(IEnumerable<string> strings)
-		{
-			SortedList<string, string> list = new SortedList<string, string>();
-			foreach(string s in strings)
-			{
-				if (list.ContainsKey(s) == false)
-				{
-					list.Add(s, s);
-				}
-			}
-			foreach (KeyValuePair<string, string> s in list)
-			{
-				yield return s.Key;
-			}
-		}
-		public static string FirstChars(string s, int count, string extra)
-		{
-			int l = s.Length;
-			if (s.Length + extra.Length > count) return s.Substring(0, count - extra.Length) + extra;
-			else return s;
-		}
-		public static string FirstChars(string s, int count)
-		{
-			return FirstChars(s, count, "...");
-		}
+        static IEnumerable<std::string> sort(IEnumerable<std::string> strings)
+        {
+            std::vector<std::string> str = std::vector<std::string>();
+            str.AddRange(strings);
+            str.Sort();
+            return str;
+        }
+        static IEnumerable<std::string> unique(IEnumerable<std::string> strings)
+        {
+            Sortedstd::vector<std::string, std::string> list = Sortedstd::vector<std::string, std::string>();
+            for (std::string s : strings)
+            {
+                if (list.ContainsKey(s) == false)
+                {
+                    list.Add(s, s);
+                }
+            }
+            for (KeyValuePair<std::string, std::string> s : list)
+            {
+                yield return s.Key;
+            }
+        }
+        static std::string FirstChars(std::string s, int count, std::string extra)
+        {
+            int l = s.Length;
+            if (s.Length + extra.Length > count)
+                return s.Substring(0, count - extra.Length) + extra;
+            else
+                return s;
+        }
+        static std::string FirstChars(std::string s, int count)
+        {
+            return FirstChars(s, count, "...");
+        }
 
-		public static IEnumerable<string> Enumerate(params string[] args)
-		{
-			return CSharp.Enumerate<string>(args);
-		}
-	}
+        static IEnumerable<std::string> Enumerate(params std::string[] args)
+        {
+            return CSharp.Enumerate<std::string>(args);
+        }
+    }
 }

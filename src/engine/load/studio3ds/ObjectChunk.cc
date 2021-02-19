@@ -5,22 +5,24 @@ using System.Text;
 
 namespace SimpleEngine.load.studio3ds
 {
-    class ObjectChunk
+    struct ObjectChunk
     {
-        public readonly TriMeshChunk trimesh;
-        public readonly string name;
+        TriMeshChunk trimesh;
+        std::string name;
 
-        public ObjectChunk(BinaryChunk c)
+        ObjectChunk(BinaryChunk c)
         {
-            if (c.id != ChunkId.OBJECT_BLOCK) throw new Exception("Not a object block");
-            
-            List<BinaryChunk> chunks = new List<BinaryChunk>();
-            Binary b = new Binary(c.bytes);
+            if (c.id != ChunkId.OBJECT_BLOCK)
+                throw Exception("Not a object block");
+
+            std::vector<BinaryChunk> chunks = std::vector<BinaryChunk>();
+            Binary b = Binary(c.bytes);
             name = b.ReadString();
             BinaryChunk.ReadFromBinary(chunks, b);
             BinaryChunk tm = BinaryChunk.SelectChunk(ChunkId.TRIANGULAR_MESH, chunks);
-            if (tm == null) throw new Exception("Missing a trimesh chunk");
-            trimesh = new TriMeshChunk(tm);
+            if (tm == nullptr)
+                throw Exception("Missing a trimesh chunk");
+            trimesh = TriMeshChunk(tm);
         }
     }
 }

@@ -7,36 +7,36 @@ using System.Xml;
 
 namespace SimpleEngine
 {
-    internal class ShaderSource
+    struct ShaderSource
     {
-        public ShaderSource(string name, string source, int type)
+        ShaderSource(std::string name, std::string source, int type)
         {
             mShader = Gl.glCreateShader(type);
-            var src = new string[] { source };
-            Gl.glShaderSource(Shader, 1, ref src, new int[] { source.Length });
+            var src = std::string[]{source};
+            Gl.glShaderSource(Shader, 1, ref src, int[]{source.Length});
             Gl.glCompileShader(mShader);
 
             if (false == CompileStatus)
             {
-                throw new Exception( "Shader " +name+ " failed to compile: " + getInfoLog() );
+                throw Exception("Shader " + name + " failed to compile: " + getInfoLog());
             }
         }
 
-        private string getInfoLog()
+        std::string getInfoLog()
         {
             int size;
             Gl.glGetShaderiv(Shader, Gl.GL_INFO_LOG_LENGTH, out size);
 
-            string log;
+            std::string log;
             int length;
             Gl.glGetShaderInfoLog(Shader, size, out length, out log);
 
             return log;
         }
 
-        private int mShader;
+        int mShader;
 
-        private bool CompileStatus
+        bool CompileStatus
         {
             get
             {
@@ -46,7 +46,7 @@ namespace SimpleEngine
             }
         }
 
-        public int Shader
+        int Shader
         {
             get
             {
@@ -54,88 +54,91 @@ namespace SimpleEngine
             }
         }
 
-        public const int Vertex = Gl.GL_VERTEX_SHADER;
-        public const int Fragment = Gl.GL_FRAGMENT_SHADER;
+        const int Vertex = Gl.GL_VERTEX_SHADER;
+        const int Fragment = Gl.GL_FRAGMENT_SHADER;
     }
 
-    internal class Uniform
+    struct Uniform
     {
         int var;
 
-        internal Uniform(Shader s, string name)
+        Uniform(Shader s, std::string name)
         {
             var = Gl.glGetUniformLocation(s.Program, ref name);
-            if (var == -1) throw new Exception(name + " is not a recognized uniform");
+            if (var == -1)
+                throw Exception(name + " is not a recognized uniform");
         }
 
-        internal void bindUniform(int location)
+        void bindUniform(int location)
         {
             Gl.glUniform1i(var, location);
         }
-        internal void bindUniform(float value)
+        void bindUniform(float value)
         {
             Gl.glUniform1f(var, value);
         }
 
-        internal void bindUniform(vec2 v)
+        void bindUniform(vec2 v)
         {
             Gl.glUniform2f(var, v.x, v.y);
         }
     }
 
-    public class Shader
+    struct Shader
     {
         ShaderSource vertex;
         ShaderSource fragment;
 
-        List<ShaderBind> binds = new List<ShaderBind>();
+        std::vector<ShaderBind> binds = std::vector<ShaderBind>();
 
-        public abstract class ShaderBind
+        struct ShaderBind
         {
-            public abstract void bind();
+            void bind();
         }
 
-        private class StaticUniformSamplerBind : ShaderBind
+        struct StaticUniformSamplerBind : ShaderBind
         {
-            private readonly int location;
+            int location;
             Uniform var;
 
-            public StaticUniformSamplerBind(XmlElement root, Shader shader)
+            StaticUniformSamplerBind(XmlElement root, Shader shader)
             {
-                string varname = Xml.GetAttributeString(root, "id");
+                std::string varname = Xml.GetAttributeString(root, "id");
                 location = Xml.GetAttribute<int>(root, "location", int.Parse, -1);
                 var = shader.getUniform(varname);
             }
 
-            public override void bind()
+            override void bind()
             {
                 var.bindUniform(location);
             }
         }
 
-        public Shader(FileSystem sys, string path)
+        Shader(FileSystem sys, std::string path)
         {
-            if (false == IsShadersSupported) throw new Exception("shaders not supported on your card, sorry");
+            if (false == IsShadersSupported)
+                throw Exception("shaders not supported on your card, sorry");
 
             XmlElement shader = Xml.Open(Xml.FromStream(sys.open(path)), "shader");
             LoadFrom(path, shader);
         }
 
-        public Shader(string path, XmlElement shader)
+        Shader(std::string path, XmlElement shader)
         {
-            if (false == IsShadersSupported) throw new Exception("shaders not supported on your card, sorry");
+            if (false == IsShadersSupported)
+                throw Exception("shaders not supported on your card, sorry");
             LoadFrom(path, shader);
         }
 
-        private void LoadFrom(string path, XmlElement shader)
+        void LoadFrom(std::string path, XmlElement shader)
         {
-            string vertexsource = Xml.GetTextOfSubElement(shader, "vertex");
-            string fragmentsource = Xml.GetTextOfSubElement(shader, "fragment");
+            std::string vertexsource = Xml.GetTextOfSubElement(shader, "vertex");
+            std::string fragmentsource = Xml.GetTextOfSubElement(shader, "fragment");
 
             mProgram = Gl.glCreateProgram();
 
-            vertex = new ShaderSource(path + " (vert)", vertexsource, ShaderSource.Vertex);
-            fragment = new ShaderSource(path + " (frag)", fragmentsource, ShaderSource.Fragment);
+            vertex = ShaderSource(path + " (vert)", vertexsource, ShaderSource.Vertex);
+            fragment = ShaderSource(path + " (frag)", fragmentsource, ShaderSource.Fragment);
 
             attach(vertex);
             attach(fragment);
@@ -143,33 +146,33 @@ namespace SimpleEngine
 
             if (false == LinkStatus)
             {
-                throw new Exception("Link error for " + path + ": " + getInfoLog());
+                throw Exception("Link error for " + path + ": " + getInfoLog());
             }
 
-            foreach (XmlElement b in Xml.Elements(shader["bind"]))
+            for (XmlElement b : Xml.Elements(shader["bind"]))
             {
-                binds.Add(new StaticUniformSamplerBind(b, this));
+                binds.Add(StaticUniformSamplerBind(b, this));
             }
         }
 
-        private string getInfoLog()
+        std::string getInfoLog()
         {
             int size;
             Gl.glGetProgramiv(Program, Gl.GL_INFO_LOG_LENGTH, out size);
 
-            string log;
+            std::string log;
             int length;
             Gl.glGetProgramInfoLog(Program, size, out length, out log);
 
             return log;
         }
 
-        private void attach(ShaderSource src)
+        void attach(ShaderSource src)
         {
             Gl.glAttachShader(Program, src.Shader);
         }
 
-        private bool LinkStatus
+        bool LinkStatus
         {
             get
             {
@@ -179,7 +182,7 @@ namespace SimpleEngine
             }
         }
 
-        internal int Program
+        int Program
         {
             get
             {
@@ -187,35 +190,35 @@ namespace SimpleEngine
             }
         }
 
-        private static bool IsShadersSupported
+        static bool IsShadersSupported
         {
             get
             {
-                bool hasVertex = true;// Gl.IsExtensionSupported("GL_ARB_vertex_shader");
-                bool hasFragment = true; // Gl.IsExtensionSupported("GL_ARB_fragment_shader");
+                bool hasVertex = true;    // Gl.IsExtensionSupported("GL_ARB_vertex_shader");
+                bool hasFragment = true;  // Gl.IsExtensionSupported("GL_ARB_fragment_shader");
                 return hasVertex && hasFragment;
             }
         }
 
-        private int mProgram;
+        int mProgram;
 
-        public static void Bind(Shader shader)
+        static void Bind(Shader shader)
         {
             Gl.glUseProgram(shader.Program);
-            foreach (ShaderBind sb in shader.binds)
+            for (ShaderBind sb : shader.binds)
             {
                 sb.bind();
             }
         }
 
-        public static void Unbind()
+        static void Unbind()
         {
             Gl.glUseProgram(0);
         }
 
-        internal Uniform getUniform(string varname)
+        Uniform getUniform(std::string varname)
         {
-            return new Uniform(this, varname);
+            return Uniform(this, varname);
         }
     }
 }

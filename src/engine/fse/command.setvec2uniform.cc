@@ -6,17 +6,17 @@ using System.Xml;
 
 namespace SimpleEngine.fse.Commands
 {
-    class SetVec2Uniform : Command
+    struct SetVec2Uniform : Command
     {
-        readonly string shaderName;
+        std::string shaderName;
         Shader shader;
-        
-        readonly string uniformName;
+
+        std::string uniformName;
         Uniform uniform;
 
-        readonly vec2 vec;
+        vec2 vec;
 
-        public SetVec2Uniform(XmlElement el, Provider p)
+        SetVec2Uniform(XmlElement el, Provider p)
             : base(el, p)
         {
             shaderName = Xml.GetAttributeString(el, "shader");
@@ -24,25 +24,26 @@ namespace SimpleEngine.fse.Commands
             float x = Xml.GetAttribute<float>(el, "x", float.Parse, 0);
             float y = Xml.GetAttribute<float>(el, "y", float.Parse, 0);
 
-            vec = new vec2(x, y);
+            vec = vec2(x, y);
         }
 
-
-        public override void apply()
+        override void apply()
         {
             uniform.bindUniform(vec);
         }
 
-        public override IEnumerable<Provider> Dependencies
+        override IEnumerable<Provider> Dependencies
         {
             get { return CSharp.Enumerate<Provider>(); }
         }
 
-        protected override void doLink(Linker user)
+    protected
+        override void doLink(Linker user)
         {
         }
 
-        protected override void doBind(Binder bd)
+    protected
+        override void doBind(Binder bd)
         {
             shader = bd.getShader(shaderName);
             uniform = shader.getUniform(uniformName);

@@ -6,19 +6,22 @@ using System.IO;
 
 namespace SimpleEngine
 {
-    public abstract class Media
+    struct Media
     {
-        public abstract void load(MediaLoader ml, FileSystem fs, string path);
-        protected abstract void unload();
-        public void increaseUsage()
+        void load(MediaLoader ml, FileSystem fs, std::string path);
+    protected
+        void unload();
+        void increaseUsage()
         {
             ++usage;
         }
-        public void decreaseUsage()
+        void decreaseUsage()
         {
             --usage;
-            if (usage == 0) unload();
+            if (usage == 0)
+                unload();
         }
-        private int usage = 0;
+
+        int usage = 0;
     }
 }

@@ -6,33 +6,33 @@ using Tao.OpenGl;
 
 namespace SimpleEngine
 {
-    public abstract class World
+    struct World
     {
-        public abstract void add(Renderable r);
-        public abstract void addCamera(Renderable r);
-        public abstract void remove(Renderable r);
-        public abstract void worldSendTo(RenderList list);
-        public abstract void cameraSendTo(RenderList list);
-        public abstract void addEntity(Entity ent);
-        public static World Load(MediaLoader loader, string file)
+        void add(Renderable r);
+        void addCamera(Renderable r);
+        void remove(Renderable r);
+        void worldSendTo(RenderList list);
+        void cameraSendTo(RenderList list);
+        void addEntity(Entity ent);
+        static World Load(MediaLoader loader, std::string file)
         {
-            return new SimpleWorld(loader, file);
+            return SimpleWorld(loader, file);
         }
-        public void render(int width, int height, Camera c)
+        void render(int width, int height, Camera c)
         {
             Setup.view3d(width, height);
-            using (PushedMatrix fm = new PushedMatrix())
+            using(PushedMatrix fm = PushedMatrix())
             {
                 c.sendRotation();
-                RenderList list = new RenderList();
+                RenderList list = RenderList();
                 cameraSendTo(list);
                 list.render();
             }
             Gl.glClear(Gl.GL_DEPTH_BUFFER_BIT);
-            using (PushedMatrix fm = new PushedMatrix())
+            using(PushedMatrix fm = PushedMatrix())
             {
                 c.sendRotationAndPosition();
-                RenderList list = new RenderList();
+                RenderList list = RenderList();
                 worldSendTo(list);
                 list.render();
             }

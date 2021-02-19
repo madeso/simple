@@ -6,9 +6,9 @@ using Tao.OpenGl;
 
 namespace SimpleEngine
 {
-    public static class Setup
+    namespace Setup
     {
-        public static void basicOpenGL()
+        static void basicOpenGL()
         {
             Gl.glShadeModel(Gl.GL_SMOOTH);
             Gl.glEnable(Gl.GL_TEXTURE_2D);
@@ -18,10 +18,10 @@ namespace SimpleEngine
             Gl.glDepthFunc(Gl.GL_LEQUAL);
             Gl.glHint(Gl.GL_PERSPECTIVE_CORRECTION_HINT, Gl.GL_NICEST);
             Gl.glMatrixMode(Gl.GL_MODELVIEW);
-            Gl.glEnable(Gl.GL_CULL_FACE); // backface culling
+            Gl.glEnable(Gl.GL_CULL_FACE);  // backface culling
         }
 
-        public static void view3d(int Width, int Height)
+        static void view3d(int Width, int Height)
         {
             Gl.glMatrixMode(Gl.GL_PROJECTION);
             Gl.glLoadIdentity();
@@ -30,12 +30,12 @@ namespace SimpleEngine
             Gl.glLoadIdentity();
         }
 
-        public static void Viewport(Rect rect)
+        static void Viewport(Rect rect)
         {
             Gl.glViewport(rect.Left, rect.Top, rect.Width, rect.Height);
         }
 
-        internal static void view2d(int Width, int Height)
+        static void view2d(int Width, int Height)
         {
             Gl.glMatrixMode(Gl.GL_PROJECTION);
             Gl.glLoadIdentity();

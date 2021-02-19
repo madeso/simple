@@ -6,35 +6,41 @@ using System.Xml;
 
 namespace SimpleEngine.fse.Providers
 {
-    class RenderFullscreenProvider : Provider
+    struct RenderFullscreenProvider : Provider
     {
         Shader sh;
-        readonly string shadername;
+        std::string shadername;
 
-        public override string ToString()
+        override std::string ToString()
         {
-            return base.ToString() + " renders fullscreen with " + CSharp.Nullstring(shadername, "no shader") + ( (sh!=null)?"loaded":"" );
+            return base.ToString() + " renders fullscreen with " + CSharp.Nullstring(shadername, "no shader") + ((sh != nullptr) ? "loaded" : "");
         }
 
-        public RenderFullscreenProvider(XmlElement el) : base(el)
+        RenderFullscreenProvider(XmlElement el)
+            : base(el)
         {
             shadername = Xml.GetAttributeString(el, "shader");
         }
 
-        protected override void doProvide(RenderArgs ra)
+    protected
+        override void doProvide(RenderArgs ra)
         {
-            if( sh != null ) Shader.Bind(sh);
-            callCommands(); // lets call the commands
-            FullscreenQuad.render(null, Target.Width, Target.Height);
-            if (sh != null) Shader.Unbind();
+            if (sh != nullptr)
+                Shader.Bind(sh);
+            callCommands();  // lets call the commands
+            FullscreenQuad.render(nullptr, Target.Width, Target.Height);
+            if (sh != nullptr)
+                Shader.Unbind();
         }
 
-        protected override void doLink(Linker user)
+    protected
+        override void doLink(Linker user)
         {
-            denyAutocallOfCommands(); // call the commands outself
+            denyAutocallOfCommands();  // call the commands outself
         }
 
-        protected override void doBind(Binder bd)
+    protected
+        override void doBind(Binder bd)
         {
             sh = bd.getShaderOrNull(shadername);
         }

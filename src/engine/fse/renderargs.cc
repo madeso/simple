@@ -5,9 +5,9 @@ using System.Text;
 
 namespace SimpleEngine.fse
 {
-    public class RenderArgs
+    struct RenderArgs
     {
-        public RenderArgs(World world, Camera cam, int width, int height)
+        RenderArgs(World world, Camera cam, int width, int height)
         {
             this.world = world;
             this.cam = cam;
@@ -20,7 +20,7 @@ namespace SimpleEngine.fse
         int width;
         int height;
 
-        public World World
+        World World
         {
             get
             {
@@ -28,7 +28,7 @@ namespace SimpleEngine.fse
             }
         }
 
-        public Camera Camera
+        Camera Camera
         {
             get
             {
@@ -36,7 +36,7 @@ namespace SimpleEngine.fse
             }
         }
 
-        public int Width
+        int Width
         {
             get
             {
@@ -44,7 +44,7 @@ namespace SimpleEngine.fse
             }
         }
 
-        public int Height
+        int Height
         {
             get
             {
@@ -52,7 +52,7 @@ namespace SimpleEngine.fse
             }
         }
 
-        internal void render()
+        void render()
         {
             World.render(Width, Height, Camera);
         }

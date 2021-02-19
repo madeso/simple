@@ -8,11 +8,11 @@ using System.Drawing.Imaging;
 
 namespace SimpleEngine
 {
-    internal class Image : IDisposable
+    struct Image : IDisposable
     {
         int text = 0;
 
-        internal int Id
+        int Id
         {
             get
             {
@@ -20,7 +20,7 @@ namespace SimpleEngine
             }
         }
 
-        public Image(bool alpha, int width, int height, IntPtr bitmapData, bool mipmap, int format)
+        Image(bool alpha, int width, int height, IntPtr bitmapData, bool mipmap, int format)
         {
             /*
             Gl.glGenTextures(1, out text);
@@ -37,50 +37,51 @@ namespace SimpleEngine
             }*/
         }
 
-        public void bind()
+        void bind()
         {
             bind(0);
         }
-        public void bind(int location)
+        void bind(int location)
         {
             //Gl.glActiveTexture(Gl.GL_TEXTURE0 + location);
             //Gl.glBindTexture(Gl.GL_TEXTURE_2D, text);
         }
 
-        public void Dispose()
+        void Dispose()
         {
             //Gl.glDeleteTextures(1, ref text);
         }
     }
 
-    public class Texture : Media
+    struct Texture : Media
     {
         Image img;
 
-        public override void load(MediaLoader ml, FileSystem fs, string path)
+        override void load(MediaLoader ml, FileSystem fs, std::string path)
         {
-            Bitmap b = new Bitmap( fs.open(path) );
+            Bitmap b = Bitmap(fs.open(path));
             b.RotateFlip(RotateFlipType.RotateNoneFlipY);
-            Rectangle rectangle = new Rectangle(0, 0, b.Width, b.Height);
+            Rectangle rectangle = Rectangle(0, 0, b.Width, b.Height);
             BitmapData bitmapData = b.LockBits(rectangle, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
-            img = new Image(false, b.Width, b.Height, bitmapData.Scan0, false, Gl.GL_BGR_EXT);
+            img = Image(false, b.Width, b.Height, bitmapData.Scan0, false, Gl.GL_BGR_EXT);
             b.UnlockBits(bitmapData);
         }
 
-        public void bind()
+        void bind()
         {
             img.bind();
         }
 
-        public void bind(int location)
+        void bind(int location)
         {
             img.bind(location);
         }
 
-        protected override void unload()
+    protected
+        override void unload()
         {
             img.Dispose();
-            img = null;
+            img = nullptr;
         }
     }
 }

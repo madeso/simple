@@ -6,14 +6,17 @@ using System.Xml;
 
 namespace SimpleEngine.fse.Commands
 {
-    public static class Commands
+    namespace Commands
     {
-        public static Command Create(XmlElement el, Provider pro)
+        static Command Create(XmlElement el, Provider pro)
         {
-            string name = el.Name;
-            if (name == "bindbuffer") return new BindBufferCommand(el, pro);
-            else if (name == "setu2") return new SetVec2Uniform(el, pro);
-            else throw new Exception(name + " is not a valid command");
+            std::string name = el.Name;
+            if (name == "bindbuffer")
+                return BindBufferCommand(el, pro);
+            else if (name == "setu2")
+                return SetVec2Uniform(el, pro);
+            else
+                throw Exception(name + " is not a valid command");
         }
     }
 }

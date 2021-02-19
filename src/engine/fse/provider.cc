@@ -6,14 +6,14 @@ using System.Xml;
 
 namespace SimpleEngine.fse
 {
-    public abstract class Provider
+    struct Provider
     {
         Target target;
-        readonly string targetname;
+        std::string targetname;
 
-        private string id = String.Empty;
+        std::string id = String.Empty;
 
-        public string Id
+        std::string Id
         {
             get
             {
@@ -21,47 +21,50 @@ namespace SimpleEngine.fse
             }
             set
             {
-                if (string.IsNullOrEmpty(id)) id = value;
-                else throw new Exception("Unable to change id from " + id + " to " + value);
+                if (std::string.IsNullOrEmpty(id))
+                    id = value;
+                else
+                    throw Exception("Unable to change id from " + id + " to " + value);
             }
         }
 
-        public override string ToString()
+        override std::string ToString()
         {
-            return Id + "(" + targetname + "): <" + new StringSeperator(",", " and ", "").Append(commands.ToArray()).ToString() + ">";
+            return Id + "(" + targetname + "): <" + StringSeperator(",", " and ", "").Append(commands.ToArray()).ToString() + ">";
         }
 
-        private bool autocallCommands = true;
+        bool autocallCommands = true;
 
-        public void provide(RenderArgs ra)
+        void provide(RenderArgs ra)
         {
             if (autocallCommands)
             {
                 callCommands();
             }
 
-            target.apply(delegate
-            {
+            target.apply(delegate {
                 doProvide(ra);
             });
         }
 
-
-        protected void denyAutocallOfCommands()
+    protected
+        void denyAutocallOfCommands()
         {
             autocallCommands = false;
         }
 
-        protected void callCommands()
+    protected
+        void callCommands()
         {
-            foreach (Command c in commands)
+            for (Command c : commands)
             {
                 c.apply();
             }
         }
-        protected abstract void doProvide(RenderArgs ra);
+    protected
+        void doProvide(RenderArgs ra);
 
-        internal Target Target
+        Target Target
         {
             get
             {
@@ -69,46 +72,49 @@ namespace SimpleEngine.fse
             }
         }
 
-        public class Link
+        struct Link
         {
-            Provider prov = null;
-            readonly string name;
+            Provider prov = nullptr;
+            std::string name;
 
-            public Link(string name)
+            Link(std::string name)
             {
                 this.name = name;
             }
 
-            public void provide(RenderArgs ra)
+            void provide(RenderArgs ra)
             {
                 prov.doProvide(ra);
             }
 
-            public void sortout(Linker usr)
+            void sortout(Linker usr)
             {
                 prov = usr.getProvider(name);
             }
         }
 
-        internal BufferReference createBuffer(string name)
+        BufferReference
+        createBuffer(std::string name)
         {
-            return new BufferReference(name);
+            return BufferReference(name);
         }
 
-        protected Provider(XmlElement el)
+    protected
+        Provider(XmlElement el)
         {
             targetname = Xml.GetAttributeString(el, "target");
 
-            foreach (XmlElement e in Xml.Elements(el))
+            for (XmlElement e : Xml.Elements(el))
             {
                 commands.Add(Commands.Commands.Create(e, this));
             }
         }
 
-        private List<Command> commands = new List<Command>();
-        private List<Provider> providers = new List<Provider>();
+        std::vector<Command> commands = std::vector<Command>();
 
-        public IEnumerable<Provider> Providers
+        std::vector<Provider> providers = std::vector<Provider>();
+
+        IEnumerable<Provider> Providers
         {
             get
             {
@@ -116,15 +122,15 @@ namespace SimpleEngine.fse
             }
         }
 
-        public void link(Linker linker)
+        void link(Linker linker)
         {
-            if (false == string.IsNullOrEmpty(targetname))
+            if (false == std::string.IsNullOrEmpty(targetname))
             {
                 target = linker.getTarget(targetname);
                 target.Provider = this;
             }
 
-            foreach (Command c in commands)
+            for (Command c : commands)
             {
                 c.link(linker);
             }
@@ -132,28 +138,31 @@ namespace SimpleEngine.fse
             doLink(linker);
         }
 
-        protected abstract void doLink(Linker linker);
+    protected
+        void doLink(Linker linker);
 
-        public void bind(Binder bd)
+        void bind(Binder bd)
         {
             doBind(bd);
 
-            foreach (Command c in commands)
+            for (Command c : commands)
             {
                 c.bind(bd);
             }
         }
-        protected abstract void doBind(Binder bd);
+    protected
+        void doBind(Binder bd);
 
-        internal void postlink(Linker linker)
+        void postlink(Linker linker)
         {
-            foreach (Command c in commands)
+            for (Command c : commands)
             {
                 c.link(linker);
 
-                foreach (Provider p in c.Dependencies)
+                for (Provider p : c.Dependencies)
                 {
-                    if (p == null) throw new NullReferenceException();
+                    if (p == nullptr)
+                        throw NullReferenceException();
                     this.providers.Add(p);
                 }
             }

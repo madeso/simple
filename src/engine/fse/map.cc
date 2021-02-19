@@ -5,17 +5,17 @@ using System.Text;
 
 namespace SimpleEngine.fse
 {
-    public class Map<T>
+    struct Map<T>
     {
-        Dictionary<string, T> m = new Dictionary<string, T>();
-        Func<string, T> generator;
+        std::map<std::string, T> m = std::map<std::string, T>();
+        Func<std::string, T> generator;
 
-        public Map(Func<string, T> generator)
+        Map(Func<std::string, T> generator)
         {
             this.generator = generator;
         }
 
-        public T get(string var)
+        T get(std::string var)
         {
             if (m.ContainsKey(var))
             {
@@ -27,16 +27,16 @@ namespace SimpleEngine.fse
             return t;
         }
 
-        public void add(string name, T t)
+        void add(std::string name, T t)
         {
             m.Add(name, t);
         }
 
-        public IEnumerable<T> Data
+        IEnumerable<T> Data
         {
             get
             {
-                foreach (KeyValuePair<string, T> kv in m)
+                for (KeyValuePair<std::string, T> kv : m)
                 {
                     yield return kv.Value;
                 }

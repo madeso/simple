@@ -5,16 +5,16 @@ using System.Text;
 
 namespace SimpleEngine.load.studio3ds
 {
-    class StringChunk
+    struct StringChunk
     {
-        public readonly string Value;
-        public StringChunk(BinaryChunk c)
+        std::string Value;
+        StringChunk(BinaryChunk c)
         {
             Binary b = c.Binary;
             Value = b.ReadString();
         }
 
-        public override string ToString()
+        override std::string ToString()
         {
             return Value;
         }

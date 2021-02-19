@@ -5,17 +5,17 @@ using System.Text;
 
 namespace SimpleEngine.fse
 {
-    public class BufferReference
+    struct BufferReference
     {
-        Fbo buffer = null;
-        readonly string name;
+        Fbo buffer = nullptr;
+        std::string name;
 
-        public BufferReference(string name)
+        BufferReference(std::string name)
         {
             this.name = name;
         }
 
-        public string Name
+        std::string Name
         {
             get
             {
@@ -23,23 +23,25 @@ namespace SimpleEngine.fse
             }
         }
 
-        internal void setBuffer(Fbo fbo)
+        void setBuffer(Fbo fbo)
         {
-            if (buffer == null) buffer = fbo;
-            else throw new Exception("Error, buffer already initialized!");
+            if (buffer == nullptr)
+                buffer = fbo;
+            else
+                throw Exception("Error, buffer already initialized!");
         }
 
-        internal void bindTexture(int location)
+        void bindTexture(int location)
         {
             buffer.bindTexture(location);
         }
 
-        internal void updateTexture(Action a)
+        void updateTexture(Action a)
         {
             buffer.updateTexture(a);
         }
 
-        internal int Width
+        int Width
         {
             get
             {
@@ -47,7 +49,7 @@ namespace SimpleEngine.fse
             }
         }
 
-        internal int Height
+        int Height
         {
             get
             {

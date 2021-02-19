@@ -5,17 +5,17 @@ using System.Text;
 
 namespace SimpleEngine
 {
-    public class Handle<T> : IDisposable where T : Media
+    struct Handle<T> : IDisposable where T : Media
     {
-        public Handle(T t)
+        Handle(T t)
         {
             this.t = t;
             t.increaseUsage();
         }
 
-        private T t;
+        T t;
 
-        public T Ref
+        T Ref
         {
             get
             {
@@ -23,7 +23,7 @@ namespace SimpleEngine
             }
         }
 
-        public void Dispose()
+        void Dispose()
         {
             t.decreaseUsage();
         }

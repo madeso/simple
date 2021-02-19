@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SimpleEngine
 {
-    public interface Renderable
+    interface Renderable
     {
         void sendToRenderer(RenderList r);
         void render();

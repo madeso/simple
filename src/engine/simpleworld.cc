@@ -6,17 +6,19 @@ using System.Xml;
 
 namespace SimpleEngine
 {
-    public class SimpleWorld : World
+    struct SimpleWorld : World
     {
-        private List<Renderable> worldRenderables = new List<Renderable>();
-        private List<Renderable> cameraRenderables = new List<Renderable>();
-        private List<Entity> entities = new List<Entity>();
+        std::vector<Renderable> worldRenderables = std::vector<Renderable>();
+
+        std::vector<Renderable> cameraRenderables = std::vector<Renderable>();
+
+        std::vector<Entity> entities = std::vector<Entity>();
 
         delegate void RenderableAddTarget(Renderable r);
 
-        public SimpleWorld(MediaLoader loader, string file)
+        SimpleWorld(MediaLoader loader, std::string file)
         {
-            using (var s = loader.FS.open(file))
+            using(var s = loader.FS.open(file))
             {
                 XmlElement level = Xml.Open(Xml.FromStream(s), "level");
                 addMeshes(loader, level["world"], add);
@@ -25,91 +27,92 @@ namespace SimpleEngine
             }
         }
 
-        private void addEntities(MediaLoader loader, XmlElement level)
+        void addEntities(MediaLoader loader, XmlElement level)
         {
-            foreach (XmlElement entity in Xml.ElementsNamed(level, "entity"))
+            for (XmlElement entity : Xml.ElementsNamed(level, "entity"))
             {
-                string t = Xml.GetAttributeString(entity, "type");
-                if (t[0] == '_') continue; // ignore for now
-                string name = Xml.GetAttributeString(entity, "name");
-                string meshpath = t + ".gob";
+                std::string t = Xml.GetAttributeString(entity, "type");
+                if (t[0] == '_')
+                    continue;  // ignore for now
+                std::string name = Xml.GetAttributeString(entity, "name");
+                std::string meshpath = t + ".gob";
                 vec3 pos = GetPosition(entity["position"]);
                 quat rot = GetRotation(entity["rotation"]);
 
-                using (var gobstream = loader.FS.open(meshpath))
+                using(var gobstream = loader.FS.open(meshpath))
                 {
                     addEntity(Entity.Create(loader, name, Xml.Open(Xml.FromStream(gobstream), "object"), pos, rot));
                 }
             }
         }
 
-        private void addMeshes(MediaLoader loader, XmlElement level, RenderableAddTarget target)
+        void addMeshes(MediaLoader loader, XmlElement level, RenderableAddTarget target)
         {
-            foreach (XmlElement entity in Xml.ElementsNamed(level, "entity"))
+            for (XmlElement entity : Xml.ElementsNamed(level, "entity"))
             {
-                string t = Xml.GetAttributeString(entity, "type");
-                string name = Xml.GetAttributeString(entity, "name");
-                string meshpath = t + ".mdf";
-                MeshInstance mesh = new MeshInstance(loader.fetch<Mesh>(meshpath));
+                std::string t = Xml.GetAttributeString(entity, "type");
+                std::string name = Xml.GetAttributeString(entity, "name");
+                std::string meshpath = t + ".mdf";
+                MeshInstance mesh = MeshInstance(loader.fetch<Mesh>(meshpath));
                 mesh.pos = GetPosition(entity["position"]);
                 mesh.rot = GetRotation(entity["rotation"]);
                 target(mesh);
             }
         }
 
-        private static vec3 GetPosition(XmlElement e)
+        static vec3 GetPosition(XmlElement e)
         {
-            return new vec3(dp(e, "x"), dp(e,"y"), dp(e, "z"));
+            return vec3(dp(e, "x"), dp(e, "y"), dp(e, "z"));
         }
 
-        private static float dp(XmlElement e, string p)
+        static float dp(XmlElement e, std::string p)
         {
-            string val = Xml.GetAttributeString(e, p);
+            std::string val = Xml.GetAttributeString(e, p);
             return float.Parse(val.Replace('.', ','));
         }
 
-        private static quat GetRotation(XmlElement e)
+        static quat GetRotation(XmlElement e)
         {
-            return new quat(dp(e, "w"), new vec3(dp(e, "x"), dp(e, "y"), dp(e, "z")));
+            return quat(dp(e, "w"), vec3(dp(e, "x"), dp(e, "y"), dp(e, "z")));
         }
 
-        public override void add(Renderable r)
+        override void add(Renderable r)
         {
             worldRenderables.Add(r);
         }
 
-        public override void remove(Renderable r)
+        override void remove(Renderable r)
         {
             worldRenderables.Remove(r);
         }
 
-        public override void worldSendTo(RenderList list)
+        override void worldSendTo(RenderList list)
         {
             sendToList(list, worldRenderables);
         }
 
-        private static void sendToList(RenderList target, List<Renderable> container)
+        static void sendToList(RenderList target, std::vector<Renderable> container)
         {
-            foreach (Renderable r in container)
+            for (Renderable r : container)
             {
                 r.sendToRenderer(target);
             }
         }
 
-        public override void addCamera(Renderable r)
+        override void addCamera(Renderable r)
         {
             cameraRenderables.Add(r);
         }
 
-        public override void cameraSendTo(RenderList list)
+        override void cameraSendTo(RenderList list)
         {
             sendToList(list, cameraRenderables);
         }
 
-        public override void addEntity(Entity ent)
+        override void addEntity(Entity ent)
         {
             entities.Add(ent);
-            foreach (Renderable r in ent.visual)
+            for (Renderable r : ent.visual)
             {
                 add(r);
             }

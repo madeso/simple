@@ -5,27 +5,26 @@ using System.Text;
 
 namespace SimpleEngine
 {
-    public abstract class Poseable
+    struct Poseable
     {
-        public abstract CompiledPose CurrentPose
+        CompiledPose CurrentPose
         {
             get;
         }
-    }
-    public class CompiledMesh : Poseable
+    } struct CompiledMesh : Poseable
     {
-        List<MeshPart> parts = new List<MeshPart>();
+        std::vector<MeshPart> parts = std::vector<MeshPart>();
 
-        public CompiledMesh(MediaLoader ml, MeshDef def)
+        CompiledMesh(MediaLoader ml, MeshDef def)
         {
-            List<Exception> errors = new List<Exception>();
-            foreach (MeshDef.MaterialDef m in def.Materials)
+            std::vector<Exception> errors = std::vector<Exception>();
+            for (MeshDef.MaterialDef m : def.Materials)
             {
                 if (def.hasTrianglesFor(m))
                 {
                     try
                     {
-                        parts.Add(new MeshPart(ml, m, def, this));
+                        parts.Add(MeshPart(ml, m, def, this));
                     }
                     catch (Exception e)
                     {
@@ -36,26 +35,26 @@ namespace SimpleEngine
 
             if (errors.Count != 0)
             {
-                throw new Exception("Several errors occured");
+                throw Exception("Several errors occured");
             }
         }
 
-        public void sendToRenderer(RenderList r, vec3 pos, quat rot)
+        void sendToRenderer(RenderList r, vec3 pos, quat rot)
         {
-            foreach (MeshPart part in parts)
+            for (MeshPart part : parts)
             {
                 r.add(part, pos, rot);
             }
         }
 
-        CompiledPose pose = null;
+        CompiledPose pose = nullptr;
 
-        public void setPose(CompiledPose pose)
+        void setPose(CompiledPose pose)
         {
             this.pose = pose;
         }
 
-        public override CompiledPose CurrentPose
+        override CompiledPose CurrentPose
         {
             get { return pose; }
         }

@@ -6,14 +6,14 @@ using Tao.OpenGl;
 
 namespace SimpleEngine
 {
-    class PushedMatrix :  IDisposable
+    struct PushedMatrix : IDisposable
     {
-        public PushedMatrix()
+        PushedMatrix()
         {
             Gl.glPushMatrix();
         }
 
-        public void Dispose()
+        void Dispose()
         {
             Gl.glPopMatrix();
         }

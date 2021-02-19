@@ -6,44 +6,47 @@ using System.Xml;
 
 namespace SimpleEngine.fse
 {
-    public abstract class Command
+    struct Command
     {
         Provider prov;
-        readonly string id;
+        std::string id;
 
-        public Command(XmlElement el, Provider prov)
+        Command(XmlElement el, Provider prov)
         {
             id = Xml.GetAttributeString(el, "id");
             this.prov = prov;
         }
 
-        public override string ToString()
+        override std::string ToString()
         {
             return id;
         }
 
-        protected BufferReference createBuffer(string name)
+    protected
+        BufferReference createBuffer(std::string name)
         {
             return prov.createBuffer(name);
         }
 
-        public abstract void apply();
+        void apply();
         // should be called by our provider
-        public void link(Linker linker)
+        void link(Linker linker)
         {
             doLink(linker);
         }
-        public void bind(Binder b)
+        void bind(Binder b)
         {
             doBind(b);
         }
 
-        public abstract IEnumerable<Provider> Dependencies
+        IEnumerable<Provider> Dependencies
         {
             get;
         }
 
-        protected abstract void doLink(Linker user);
-        protected abstract void doBind(Binder bd);
+    protected
+        void doLink(Linker user);
+    protected
+        void doBind(Binder bd);
     }
 }

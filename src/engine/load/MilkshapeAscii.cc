@@ -5,38 +5,41 @@ using System.Text;
 
 namespace SimpleEngine.load
 {
-    public static class MilkshapeAscii
+    namespace MilkshapeAscii
     {
-        public static void Load(FileSystem fs, string path, out MeshDef def, out Animation animation, float scale)
+        static void Load(FileSystem fs, std::string path, out MeshDef def, out Animation animation, float scale)
         {
-            Runner runner = new Runner();
+            Runner runner = Runner();
             runner.run(fs.readLines(path), scale);
             def = MilkshapeCommon.ExtractMeshDefinition(runner.model);
             animation = MilkshapeCommon.ExtractAnimation(runner.model);
         }
-        
+
         // removes " at start and end
-        private static string Cleanup(string p)
+
+        static std::string Cleanup(std::string p)
         {
-            return p.Substring(1, p.Length-2);
+            return p.Substring(1, p.Length - 2);
         }
-        private class Runner
+
+        struct Runner
         {
-            internal Model model = new Model();
-            List<string> lines;
+            Model model = Model();
+            std::vector<std::string> lines;
             float scale = 1.0f;
 
-            public void run(IEnumerable<string> alines, float scale)
+            void run(IEnumerable<std::string> alines, float scale)
             {
                 this.scale = scale;
-                lines = new List<string>(alines);
+                lines = std::vector<std::string>(alines);
 
                 while (lines.Count != 0)
                 {
-                    string l = readLine();
+                    std::string l = readLine();
 
-                    if (l.StartsWith("//")) continue;
-                    string[] cmd = l.Split(":".ToCharArray());
+                    if (l.StartsWith("//"))
+                        continue;
+                    std::string[] cmd = l.Split(":".ToCharArray());
                     if (cmd[0] == "Frames")
                     {
                         readFrameCount(cmd);
@@ -61,7 +64,7 @@ namespace SimpleEngine.load
                 model.mapBonesToId();
             }
 
-            private void readBones(string[] cmd)
+            void readBones(std::string[] cmd)
             {
                 int bonecount = int.Parse(cmd[1]);
                 for (int boneId = 0; boneId < bonecount; ++boneId)
@@ -70,7 +73,7 @@ namespace SimpleEngine.load
                     bone.name = Cleanup(readLine());
                     bone.parentName = Cleanup(readLine());
 
-                    string[] data = readLine().Split(" ".ToCharArray());
+                    std::string[] data = readLine().Split(" ".ToCharArray());
                     bone.flags = int.Parse(data[0]);
                     bone.x = math1.ParseFloat(data[1]) * scale;
                     bone.y = math1.ParseFloat(data[2]) * scale;
@@ -84,13 +87,13 @@ namespace SimpleEngine.load
                 }
             }
 
-            private void readRotationFrame(Bone bone)
+            void readRotationFrame(Bone bone)
             {
-                string textcount = readLine();
+                std::string textcount = readLine();
                 int count = int.Parse(textcount);
                 for (int frameId = 0; frameId < count; ++frameId)
                 {
-                    string[] data = readLine().Split(" ".ToCharArray());
+                    std::string[] data = readLine().Split(" ".ToCharArray());
                     RotatonKey key = bone.newRotationKey();
                     key.time = math1.ParseFloat(data[0]);
                     key.x = math1.ParseFloat(data[1]);
@@ -99,13 +102,13 @@ namespace SimpleEngine.load
                 }
             }
 
-            private void readPositionFrames(Bone bone)
+            void readPositionFrames(Bone bone)
             {
-                string textcount = readLine();
+                std::string textcount = readLine();
                 int count = int.Parse(textcount);
                 for (int frameId = 0; frameId < count; ++frameId)
                 {
-                    string[] data = readLine().Split(" ".ToCharArray());
+                    std::string[] data = readLine().Split(" ".ToCharArray());
                     PositionKey key = bone.newPositionKey();
                     key.time = math1.ParseFloat(data[0]);
                     key.x = math1.ParseFloat(data[1]) * scale;
@@ -114,16 +117,16 @@ namespace SimpleEngine.load
                 }
             }
 
-            private void readMaterials(string[] cmd)
+            void readMaterials(std::string[] cmd)
             {
                 int materialcount = int.Parse(cmd[1]);
-                for(int matId = 0; matId < materialcount; ++matId)
+                for (int matId = 0; matId < materialcount; ++matId)
                 {
                     readSingleMaterial();
                 }
             }
 
-            private void readSingleMaterial()
+            void readSingleMaterial()
             {
                 Material mat = model.newMaterial();
                 mat.name = Cleanup(readLine());
@@ -137,7 +140,7 @@ namespace SimpleEngine.load
                 mat.alphatexture = Cleanup(readLine());
             }
 
-            private void readMeshes(string[] cmd)
+            void readMeshes(std::string[] cmd)
             {
                 // number of meshes
                 int meshcount = int.Parse(cmd[1]);
@@ -147,30 +150,30 @@ namespace SimpleEngine.load
                 }
             }
 
-            private void readSingleMesh()
+            void readSingleMesh()
             {
-                string meshline = readLine();
-                string[] meshdata = meshline.Split(" ".ToCharArray());
+                std::string meshline = readLine();
+                std::string[] meshdata = meshline.Split(" ".ToCharArray());
                 Mesh mesh = model.newMesh();
                 mesh.name = Cleanup(meshdata[0]);
                 mesh.flags = int.Parse(meshdata[1]);
                 mesh.materialId = int.Parse(meshdata[2]);
-                
-                string vertexline = readLine();
+
+                std::string vertexline = readLine();
                 int vertexcount = int.Parse(vertexline);
                 for (int vertex = 0; vertex < vertexcount; ++vertex)
                 {
                     readSingleVertex(mesh);
                 }
 
-                string normalline = readLine();
+                std::string normalline = readLine();
                 int normalcount = int.Parse(vertexline);
                 for (int normal = 0; normal < normalcount; ++normal)
                 {
                     readSingleNormal(mesh);
                 }
 
-                string triline = readLine();
+                std::string triline = readLine();
                 int tricount = int.Parse(triline);
                 for (int tri = 0; tri < tricount; ++tri)
                 {
@@ -178,10 +181,10 @@ namespace SimpleEngine.load
                 }
             }
 
-            private void readSingleTriangle(Mesh mesh)
+            void readSingleTriangle(Mesh mesh)
             {
-                string triline = readLine();
-                string[] tricmd = triline.Split(" ".ToCharArray());
+                std::string triline = readLine();
+                std::string[] tricmd = triline.Split(" ".ToCharArray());
                 Tri tri = mesh.newTri();
                 tri.flags = int.Parse(tricmd[0]);
                 tri.v1 = int.Parse(tricmd[1]);
@@ -194,10 +197,10 @@ namespace SimpleEngine.load
                 tri.buildNormal(mesh);
             }
 
-            private void readSingleNormal(Mesh mesh)
+            void readSingleNormal(Mesh mesh)
             {
-                string normalline = readLine();
-                string[] normalcmd = normalline.Split(" ".ToCharArray());
+                std::string normalline = readLine();
+                std::string[] normalcmd = normalline.Split(" ".ToCharArray());
                 Normal n = mesh.newNormal();
                 n.x = math1.ParseFloat(normalcmd[0]);
                 n.y = math1.ParseFloat(normalcmd[1]);
@@ -205,10 +208,10 @@ namespace SimpleEngine.load
                 n.normalize();
             }
 
-            private void readSingleVertex(Mesh mesh)
+            void readSingleVertex(Mesh mesh)
             {
-                string vertexline = readLine();
-                string[] vertexcmd = vertexline.Split(" ".ToCharArray());
+                std::string vertexline = readLine();
+                std::string[] vertexcmd = vertexline.Split(" ".ToCharArray());
                 Vertex v = mesh.newVertex();
                 v.flags = int.Parse(vertexcmd[0]);
                 v.x = math1.ParseFloat(vertexcmd[1]) * scale;
@@ -219,19 +222,19 @@ namespace SimpleEngine.load
                 v.bone = int.Parse(vertexcmd[6]);
             }
 
-            private string readLine()
+            std::string readLine()
             {
-                string line = lines[0];
+                std::string line = lines[0];
                 lines.RemoveAt(0);
                 return line;
             }
 
-            private void readCurrentFrame(string[] cmd)
+            void readCurrentFrame(std::string[] cmd)
             {
                 model.currentFrame = int.Parse(cmd[1]);
             }
 
-            private void readFrameCount(string[] cmd)
+            void readFrameCount(std::string[] cmd)
             {
                 model.framecount = int.Parse(cmd[1]);
             }

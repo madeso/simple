@@ -6,31 +6,31 @@ using System.Xml;
 
 namespace SimpleEngine
 {
-    public class Entity
+    struct Entity
     {
-        public List<Renderable> visual = new List<Renderable>();
-        public readonly string name;
+        std::vector<Renderable> visual = std::vector<Renderable>();
+        std::string name;
 
-        private Entity(string name)
+        Entity(std::string name)
         {
             this.name = name;
         }
 
-        public override string ToString()
+        override std::string ToString()
         {
             return name;
         }
 
-        internal static Entity Create(MediaLoader loader, string name, System.Xml.XmlElement root, vec3 pos, quat rot)
+        static Entity Create(MediaLoader loader, std::string name, System.Xml.XmlElement root, vec3 pos, quat rot)
         {
-            Entity ent = new Entity(name);
+            Entity ent = Entity(name);
 
             XmlElement visual = root["visual"];
 
-            foreach(XmlElement meshel in Xml.ElementsNamed(visual, "mesh"))
+            for (XmlElement meshel : Xml.ElementsNamed(visual, "mesh"))
             {
-                string meshpath = Xml.GetAttributeString(meshel, "file");
-                MeshInstance mesh = new MeshInstance(loader.fetch<Mesh>(meshpath));
+                std::string meshpath = Xml.GetAttributeString(meshel, "file");
+                MeshInstance mesh = MeshInstance(loader.fetch<Mesh>(meshpath));
                 mesh.pos = pos;
                 mesh.rot = rot;
                 ent.add(mesh);
@@ -39,7 +39,7 @@ namespace SimpleEngine
             return ent;
         }
 
-        private void add(Renderable r)
+        void add(Renderable r)
         {
             visual.Add(r);
         }

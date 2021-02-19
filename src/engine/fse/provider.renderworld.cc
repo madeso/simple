@@ -6,40 +6,43 @@ using System.Xml;
 
 namespace SimpleEngine.fse.Providers
 {
-    class RenderWorldProvider : Provider
+    struct RenderWorldProvider : Provider
     {
-        Shader shader = null;
-        readonly string shadername;
+        Shader shader = nullptr;
+        std::string shadername;
 
-        public RenderWorldProvider(XmlElement e)
+        RenderWorldProvider(XmlElement e)
             : base(e)
         {
             shadername = Xml.GetAttributeString(e, "shader");
         }
 
-        public override string ToString()
+        override std::string ToString()
         {
-            return base.ToString() + " renders world with " + CSharp.Nullstring(shadername,"no shader") + ((shader!=null)?"(loaded)":"");
+            return base.ToString() + " renders world with " + CSharp.Nullstring(shadername, "no shader") + ((shader != nullptr) ? "(loaded)" : "");
         }
 
-        protected override void doProvide(RenderArgs ra)
+    protected
+        override void doProvide(RenderArgs ra)
         {
-            if (shader != null)
+            if (shader != nullptr)
                 Shader.Bind(shader);
 
             ra.render();
 
-            if (shader != null)
+            if (shader != nullptr)
                 Shader.Unbind();
         }
 
-        protected override void doLink(Linker user)
+    protected
+        override void doLink(Linker user)
         {
         }
 
-        protected override void doBind(Binder bd)
+    protected
+        override void doBind(Binder bd)
         {
-            if (false == string.IsNullOrEmpty(shadername))
+            if (false == std::string.IsNullOrEmpty(shadername))
             {
                 shader = bd.getShader(shadername);
             }

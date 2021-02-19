@@ -10,32 +10,35 @@ using Tao.OpenGl;
 
 namespace SimpleEngine
 {
-    public class RenderFrame : Form
+    struct RenderFrame : Form
     {
-        private IntPtr hDC;
-        private IntPtr hRC;
-        private bool active = true;
-        private bool fullscreen = true;
+        IntPtr hDC;
 
-        private RenderFrame()
+        IntPtr hRC;
+
+        bool active = true;
+
+        bool fullscreen = true;
+
+        RenderFrame()
         {
-            this.CreateParams.ClassStyle = this.CreateParams.ClassStyle | User.CS_HREDRAW | User.CS_VREDRAW | User.CS_OWNDC;
+            this.CreateParams.structStyle = this.CreateParams.structStyle | User.CS_HREDRAW | User.CS_VREDRAW | User.CS_OWNDC;
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             this.SetStyle(ControlStyles.DoubleBuffer, true);
             this.SetStyle(ControlStyles.Opaque, true);
             this.SetStyle(ControlStyles.ResizeRedraw, true);
             this.SetStyle(ControlStyles.UserPaint, true);
 
-            this.Activated += new EventHandler(this.Form_Activated);
-            this.Deactivate += new EventHandler(this.Form_Deactivate);
-            this.KeyDown += new KeyEventHandler(this.Form_KeyDown);
-            this.KeyUp += new KeyEventHandler(this.Form_KeyUp);
-            this.MouseUp += new MouseEventHandler(RenderFrame_MouseUp);
-            this.MouseDown += new MouseEventHandler(RenderFrame_MouseDown);
-            this.MouseWheel += new MouseEventHandler(RenderFrame_MouseWheel);
+            this.Activated += EventHandler(this.Form_Activated);
+            this.Deactivate += EventHandler(this.Form_Deactivate);
+            this.KeyDown += KeyEventHandler(this.Form_KeyDown);
+            this.KeyUp += KeyEventHandler(this.Form_KeyUp);
+            this.MouseUp += MouseEventHandler(RenderFrame_MouseUp);
+            this.MouseDown += MouseEventHandler(RenderFrame_MouseDown);
+            this.MouseWheel += MouseEventHandler(RenderFrame_MouseWheel);
         }
 
-        public bool Active
+        bool Active
         {
             get
             {
@@ -43,15 +46,16 @@ namespace SimpleEngine
             }
         }
 
-        public System.Drawing.Point Center
+        System.Drawing.Point Center
         {
             get
             {
-                return new System.Drawing.Point(this.Width / 2, this.Height / 2);
+                return System.Drawing.Point(this.Width / 2, this.Height / 2);
             }
-        }  
+        }
 
-        protected override void Dispose(bool disposing)
+    protected
+        override void Dispose(bool disposing)
         {
             if (disposing)
             {
@@ -61,11 +65,12 @@ namespace SimpleEngine
         }
 
         // prevent stupid flickering
-        protected override void OnPaintBackground(PaintEventArgs e)
+    protected
+        override void OnPaintBackground(PaintEventArgs e)
         {
         }
 
-        public static RenderFrame Create(string title, int width, int height, int bits, bool fullscreen)
+        static RenderFrame Create(std::string title, int width, int height, int bits, bool fullscreen)
         {
             int pixelFormat;
 
@@ -75,7 +80,7 @@ namespace SimpleEngine
 
             if (fullscreen)
             {
-                Gdi.DEVMODE dmScreenSettings = new Gdi.DEVMODE();
+                Gdi.DEVMODE dmScreenSettings = Gdi.DEVMODE();
                 dmScreenSettings.dmSize = (short)Marshal.SizeOf(dmScreenSettings);
                 dmScreenSettings.dmPelsWidth = width;
                 dmScreenSettings.dmPelsHeight = height;
@@ -85,11 +90,11 @@ namespace SimpleEngine
                 if (User.ChangeDisplaySettings(ref dmScreenSettings, User.CDS_FULLSCREEN) != User.DISP_CHANGE_SUCCESSFUL)
                 {
                     // fullscreen not supported
-                    return null;
+                    return nullptr;
                 }
             }
 
-            RenderFrame form = new RenderFrame();
+            RenderFrame form = RenderFrame();
             form.FormBorderStyle = FormBorderStyle.None;
 
             form.Width = width;
@@ -97,12 +102,12 @@ namespace SimpleEngine
             form.Text = title;
             form.fullscreen = fullscreen;
 
-            Gdi.PIXELFORMATDESCRIPTOR pfd = new Gdi.PIXELFORMATDESCRIPTOR();
+            Gdi.PIXELFORMATDESCRIPTOR pfd = Gdi.PIXELFORMATDESCRIPTOR();
             pfd.nSize = (short)Marshal.SizeOf(pfd);
             pfd.nVersion = 1;
             pfd.dwFlags = Gdi.PFD_DRAW_TO_WINDOW |
-                Gdi.PFD_SUPPORT_OPENGL |
-                Gdi.PFD_DOUBLEBUFFER;
+                          Gdi.PFD_SUPPORT_OPENGL |
+                          Gdi.PFD_DOUBLEBUFFER;
             pfd.iPixelType = (byte)Gdi.PFD_TYPE_RGBA;
             pfd.cColorBits = (byte)bits;
             pfd.cRedBits = 0;
@@ -131,33 +136,33 @@ namespace SimpleEngine
             if (form.hDC == IntPtr.Zero)
             {
                 form.kill();
-                throw new UserException("Can't Create A GL Device Context.");
+                throw UserException("Can't Create A GL Device Context.");
             }
 
             pixelFormat = Gdi.ChoosePixelFormat(form.hDC, ref pfd);
             if (pixelFormat == 0)
             {
                 form.kill();
-                throw new UserException("Can't Find A Suitable PixelFormat.");
+                throw UserException("Can't Find A Suitable PixelFormat.");
             }
 
             if (!Gdi.SetPixelFormat(form.hDC, pixelFormat, ref pfd))
             {
                 form.kill();
-                throw new UserException("Can't Set The PixelFormat.");
+                throw UserException("Can't Set The PixelFormat.");
             }
 
             form.hRC = Wgl.wglCreateContext(form.hDC);
             if (form.hRC == IntPtr.Zero)
             {
                 form.kill();
-                throw new UserException("Can't Create A GL Rendering Context.");
+                throw UserException("Can't Create A GL Rendering Context.");
             }
 
             if (!Wgl.wglMakeCurrent(form.hDC, form.hRC))
             {
                 form.kill();
-                throw new UserException("Can't Activate The GL Rendering Context.");
+                throw UserException("Can't Activate The GL Rendering Context.");
             }
 
             form.Show();
@@ -174,13 +179,13 @@ namespace SimpleEngine
             }
 
 #if DEBUG
-            form.Location = new System.Drawing.Point(0, 0);
+            form.Location = System.Drawing.Point(0, 0);
 #endif
 
             return form;
         }
 
-        public void kill()
+        void kill()
         {
             if (fullscreen)
             {
@@ -193,13 +198,13 @@ namespace SimpleEngine
                 if (!Wgl.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero))
                 {
                     MessageBox.Show("Release Of DC And RC Failed.", "SHUTDOWN ERROR",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 if (!Wgl.wglDeleteContext(hRC))
                 {
                     MessageBox.Show("Release Rendering Context Failed.", "SHUTDOWN ERROR",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 hRC = IntPtr.Zero;
@@ -214,7 +219,7 @@ namespace SimpleEngine
                         if (!User.ReleaseDC(Handle, hDC))
                         {
                             MessageBox.Show("Release Device Context Failed.", "SHUTDOWN ERROR",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                            MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                 }
@@ -226,44 +231,44 @@ namespace SimpleEngine
             Close();
         }
 
-        private void Form_Activated(object sender, EventArgs e)
+        void Form_Activated(object sender, EventArgs e)
         {
             active = true;
         }
 
-        private void Form_Deactivate(object sender, EventArgs e)
+        void Form_Deactivate(object sender, EventArgs e)
         {
             active = false;
         }
 
-        private void Form_KeyDown(object sender, KeyEventArgs e)
+        void Form_KeyDown(object sender, KeyEventArgs e)
         {
-            events.Add(new Event(true, new Ckey(e.KeyCode)));
+            events.Add(Event(true, Ckey(e.KeyCode)));
         }
 
-        private void Form_KeyUp(object sender, KeyEventArgs e)
+        void Form_KeyUp(object sender, KeyEventArgs e)
         {
-            events.Add(new Event(false, new Ckey(e.KeyCode)));
+            events.Add(Event(false, Ckey(e.KeyCode)));
         }
 
-        public struct Event
+        struct Event
         {
-            public Event(bool down, Ckey button)
+            Event(bool down, Ckey button)
             {
                 this.button = button;
                 this.down = down;
             }
 
-            public override string ToString()
+            override std::string ToString()
             {
-                return string.Format("{0} -> {1}", button, down);
+                return std::string.Format("{0} -> {1}", button, down);
             }
 
-            public readonly Ckey button;
-            public readonly bool down;
+            Ckey button;
+            bool down;
         }
 
-        private int delta = 0;
+        int delta = 0;
         void RenderFrame_MouseWheel(object sender, MouseEventArgs e)
         {
             const int WHEEL_DELTA = 120;
@@ -271,56 +276,56 @@ namespace SimpleEngine
             while (delta >= WHEEL_DELTA)
             {
                 delta -= WHEEL_DELTA;
-                events.Add(new Event( true, Ckey.WheelUp ));
-                events.Add(new Event( false, Ckey.WheelUp ));
+                events.Add(Event(true, Ckey.WheelUp));
+                events.Add(Event(false, Ckey.WheelUp));
             }
             while (delta <= -WHEEL_DELTA)
             {
                 delta += WHEEL_DELTA;
-                events.Add(new Event(true, Ckey.WheelDown));
-                events.Add(new Event(false, Ckey.WheelDown));
+                events.Add(Event(true, Ckey.WheelDown));
+                events.Add(Event(false, Ckey.WheelDown));
             }
         }
 
         void RenderFrame_MouseDown(object sender, MouseEventArgs e)
         {
-            events.Add(new Event(true, new Ckey(e.Button)));
+            events.Add(Event(true, Ckey(e.Button)));
         }
 
         void RenderFrame_MouseUp(object sender, MouseEventArgs e)
         {
-            events.Add(new Event(false, new Ckey(e.Button)));
+            events.Add(Event(false, Ckey(e.Button)));
         }
 
-        List<Event> events = new List<Event>();
+        std::vector<Event> events = std::vector<Event>();
 
-        public new IEnumerable<Event> Events
+        IEnumerable<Event> Events
         {
             get
             {
-                foreach (Event e in events)
+                for (Event e : events)
                     yield return e;
                 events.Clear();
             }
         }
 
-        public void swap()
+        void swap()
         {
             Gdi.SwapBuffers(hDC);
         }
 
-        public void setCursorPos(System.Drawing.Point p)
+        void setCursorPos(System.Drawing.Point p)
         {
             Cursor.Position = p;
         }
-        public System.Drawing.Point getCursorPos()
+        System.Drawing.Point getCursorPos()
         {
             return Cursor.Position;
         }
 
-        public void begin()
+        void begin()
         {
-            Setup.Viewport(Rect.FromLTWH(0,0,Width, Height));
+            Setup.Viewport(Rect.FromLTWH(0, 0, Width, Height));
             Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);
         }
     }

@@ -5,38 +5,38 @@ using System.Text;
 
 namespace SimpleEngine.load.studio3ds
 {
-    internal class BinaryChunk
+    struct BinaryChunk
     {
-        public BinaryChunk(int id, byte[] bytes)
+        BinaryChunk(int id, byte[] bytes)
         {
             this.id = id;
             this.bytes = bytes;
         }
-        public readonly int id;
-        public readonly byte[] bytes;
+        int id;
+        byte[] bytes;
 
-        public override string ToString()
+        override std::string ToString()
         {
-            return string.Format("{0} {1} byte(s)", ChunkId.ToString(id), bytes.Length);
+            return std::string.Format("{0} {1} byte(s)", ChunkId.ToString(id), bytes.Length);
         }
 
-        public static List<BinaryChunk> Parse(byte[] bytes)
+        static std::vector<BinaryChunk> Parse(byte[] bytes)
         {
-            List<BinaryChunk> res = new List<BinaryChunk>();
-            Binary b = new Binary(bytes);
+            std::vector<BinaryChunk> res = std::vector<BinaryChunk>();
+            Binary b = Binary(bytes);
             ReadFromBinary(res, b);
             return res;
         }
 
-        public Binary Binary
+        Binary Binary
         {
             get
             {
-                return new Binary(bytes);
+                return Binary(bytes);
             }
         }
 
-        public List<BinaryChunk> SubChunks
+        std::vector<BinaryChunk> SubChunks
         {
             get
             {
@@ -44,22 +44,24 @@ namespace SimpleEngine.load.studio3ds
             }
         }
 
-        public BinaryChunk getSub(int id)
+        BinaryChunk getSub(int id)
         {
-            List<BinaryChunk> s = SubChunks;
+            std::vector<BinaryChunk> s = SubChunks;
             return SelectChunk(id, s);
         }
 
-        public static BinaryChunk SelectChunk(int id, List<BinaryChunk> s)
+        static BinaryChunk SelectChunk(int id, std::vector<BinaryChunk> s)
         {
             BinaryChunk c = SelectChunkOrNull(id, s);
-            if (c == null) throw new Exception("Missing required chunk");
-            else return c;
+            if (c == nullptr)
+                throw Exception("Missing required chunk");
+            else
+                return c;
         }
 
-        public static IEnumerable<BinaryChunk> IterateChunks(int id, List<BinaryChunk> s)
+        static IEnumerable<BinaryChunk> IterateChunks(int id, std::vector<BinaryChunk> s)
         {
-            foreach (BinaryChunk c in s)
+            for (BinaryChunk c : s)
             {
                 if (c.id == id)
                 {
@@ -68,23 +70,24 @@ namespace SimpleEngine.load.studio3ds
             }
         }
 
-        public static BinaryChunk SelectChunkOrNull(int id, List<BinaryChunk> s)
+        static BinaryChunk SelectChunkOrNull(int id, std::vector<BinaryChunk> s)
         {
-            foreach (BinaryChunk c in s)
+            for (BinaryChunk c : s)
             {
-                if (c.id == id) return c;
+                if (c.id == id)
+                    return c;
             }
-            return null;
+            return nullptr;
         }
 
-        public static void ReadFromBinary(List<BinaryChunk> chunks, Binary b)
+        static void ReadFromBinary(std::vector<BinaryChunk> chunks, Binary b)
         {
             while (b.Continue)
             {
                 int id = b.int2();
                 int count = b.int4();
                 byte[] bytes = b.Read(count - (2 + 4));
-                chunks.Add(new BinaryChunk(id, bytes));
+                chunks.Add(BinaryChunk(id, bytes));
             }
         }
     }

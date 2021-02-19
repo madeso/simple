@@ -5,14 +5,14 @@ using System.Text;
 
 namespace SimpleEngine
 {
-    public class StringCounter
+    struct StringCounter
     {
-        Dictionary<string, int> counts = new Dictionary<string, int>();
+        std::map<std::string, int> counts = std::map<std::string, int>();
 
-        public void add(string s)
+        void add(std::string s)
         {
             int c = countsOf(s);
-            
+
             if (c > 0)
             {
                 counts.Remove(s);
@@ -22,7 +22,7 @@ namespace SimpleEngine
             counts.Add(s, nc);
         }
 
-        public int countsOf(string s)
+        int countsOf(std::string s)
         {
             if (counts.ContainsKey(s))
             {

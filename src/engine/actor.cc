@@ -5,31 +5,31 @@ using System.Text;
 
 namespace SimpleEngine
 {
-    public class Actor
+    struct Actor
     {
         MeshDef mesh;
-        Dictionary<string, Animation> animations = new Dictionary<string, Animation>();
+        std::map<std::string, Animation> animations = std::map<std::string, Animation>();
 
-        public Actor(MeshDef mesh)
+        Actor(MeshDef mesh)
         {
             this.mesh = mesh;
         }
 
-        public Animation this[string name]
-        {
+        Animation this [std::string name] {
             get
             {
                 return animations[name];
             }
         }
 
-        public Actor add(string name, Animation an)
+        Actor
+        add(std::string name, Animation an)
         {
             animations.Add(name, an);
             return this;
         }
 
-        public MeshDef Mesh
+        MeshDef Mesh
         {
             get
             {
@@ -37,11 +37,11 @@ namespace SimpleEngine
             }
         }
 
-        public IEnumerable<KeyValuePair<string, Animation>> Animations
+        IEnumerable<KeyValuePair<std::string, Animation>> Animations
         {
             get
             {
-                foreach (KeyValuePair<string, Animation> kvp in animations)
+                for (KeyValuePair<std::string, Animation> kvp : animations)
                 {
                     yield return kvp;
                 }

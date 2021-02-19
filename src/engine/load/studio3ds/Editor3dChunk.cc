@@ -5,25 +5,26 @@ using System.Text;
 
 namespace SimpleEngine.load.studio3ds
 {
-    class Editor3dChunk
+    struct Editor3dChunk
     {
-        public readonly List<ObjectChunk> objects;
-        public readonly List<MaterialChunk> materials;
-        public Editor3dChunk(BinaryChunk c)
+        std::vector<ObjectChunk> objects;
+        std::vector<MaterialChunk> materials;
+        Editor3dChunk(BinaryChunk c)
         {
-            if (c.id != ChunkId.EDITOR_3D_CHUNK) throw new Exception("Not a 3d editor chunk");
-            List<BinaryChunk> chunks = c.SubChunks;
+            if (c.id != ChunkId.EDITOR_3D_CHUNK)
+                throw Exception("Not a 3d editor chunk");
+            std::vector<BinaryChunk> chunks = c.SubChunks;
 
-            List<ObjectChunk> objects = new List<ObjectChunk>();
-            List<MaterialChunk> materials = new List<MaterialChunk>();
+            std::vector<ObjectChunk> objects = std::vector<ObjectChunk>();
+            std::vector<MaterialChunk> materials = std::vector<MaterialChunk>();
 
-            foreach (BinaryChunk oc in BinaryChunk.IterateChunks(ChunkId.OBJECT_BLOCK, chunks))
+            for (BinaryChunk oc : BinaryChunk.IterateChunks(ChunkId.OBJECT_BLOCK, chunks))
             {
-                objects.Add( new ObjectChunk(oc) );
+                objects.Add(ObjectChunk(oc));
             }
-            foreach (BinaryChunk mc in BinaryChunk.IterateChunks(ChunkId.MATERIAL_BLOCK, chunks))
+            for (BinaryChunk mc : BinaryChunk.IterateChunks(ChunkId.MATERIAL_BLOCK, chunks))
             {
-                materials.Add(new MaterialChunk(mc));
+                materials.Add(MaterialChunk(mc));
             }
 
             this.objects = objects;

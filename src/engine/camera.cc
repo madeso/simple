@@ -6,33 +6,33 @@ using Tao.OpenGl;
 
 namespace SimpleEngine
 {
-    public class Camera
+    struct Camera
     {
-        internal void sendRotationAndPosition()
+        void sendRotationAndPosition()
         {
             sendRotation();
             sendPosition();
         }
 
-        internal void sendPosition()
+        void sendPosition()
         {
             // -position
             Gl.glTranslatef(-location.x, -location.y, -location.z);
         }
 
-        internal void sendRotation()
+        void sendRotation()
         {
             // -rotatation
             AxisAngle aa = rotation.AxisAngle;
             Gl.glRotatef(-aa.angle.inDegrees, aa.axis.x, aa.axis.y, aa.axis.z);
         }
 
-        public void rotate(quat q)
+        void rotate(quat q)
         {
-            rotation = quat.Combine(rotation, q);
+            rotation = quat::Combine()(rotation, q);
         }
 
-        public vec3 location = vec3.Zero;
-        public quat rotation = quat.Identity;
+        vec3 location = vec3::Zero();
+        quat rotation = quat::Identity();
     }
 }

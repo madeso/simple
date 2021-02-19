@@ -6,18 +6,18 @@ using System.IO;
 
 namespace SimpleEngine
 {
-    public class FileSystem
+    struct FileSystem
     {
-        public FileSystem()
+        FileSystem()
         {
         }
 
-        public void addRoot(string root)
+        void addRoot(std::string root)
         {
             roots.Add(root);
         }
 
-        public void addDefaultRoots(string app, string game)
+        void addDefaultRoots(std::string app, std::string game)
         {
             addRoot(Environment.CurrentDirectory);
             addRoot(combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), app, game));
@@ -27,40 +27,42 @@ namespace SimpleEngine
             addRoot(combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), app, game));
         }
 
-        private Stream doOpen(string path)
+        Stream doOpen(std::string path)
         {
-            if (path.Contains("..")) throw new Exception("do not specify parent directory");
-            string p = path;//.Replace(':', Path.DirectorySeparatorChar);
-            foreach (string r in roots)
+            if (path.Contains(".."))
+                throw Exception("do not specify parent directory");
+            std::string p = path;  //.Replace(':', Path.DirectorySeparatorChar);
+            for (std::string r : roots)
             {
-                string fp = Path.Combine(r, p);
-                if (File.Exists(fp)) return new FileStream(fp, FileMode.Open);
+                std::string fp = Path.Combine(r, p);
+                if (File.Exists(fp))
+                    return FileStream(fp, FileMode.Open);
             }
-            throw new Exception("Failed to open file " + path);
+            throw Exception("Failed to open file " + path);
         }
 
-        public Stream open(string path)
+        Stream open(std::string path)
         {
             return doOpen(MapFile(overrides, path));
         }
 
-        private string combine(string s, params string[] args)
+        std::string combine(std::string s, params std::string[] args)
         {
-            string r = s;
-            foreach (string a in args)
+            std::string r = s;
+            for (std::string a : args)
             {
                 r = Path.Combine(r, a);
             }
             return r;
         }
 
-        List<string> roots = new List<string>();
+        std::vector<std::string> roots = std::vector<std::string>();
 
-        public IEnumerable<string> readLines(string path)
+        IEnumerable<std::string> readLines(std::string path)
         {
-            using (Stream s = open(path))
+            using(Stream s = open(path))
             {
-                using (StreamReader sr = new StreamReader(s))
+                using(StreamReader sr = StreamReader(s))
                 {
                     while (sr.EndOfStream == false)
                     {
@@ -70,22 +72,22 @@ namespace SimpleEngine
             }
         }
 
-        Dictionary<string, string> overrides = null;
+        std::map<std::string, std::string> overrides = nullptr;
 
-        internal void setOverrides(Dictionary<string, string> overrides)
+        void setOverrides(std::map<std::string, std::string> overrides)
         {
             this.overrides = overrides;
         }
 
-        internal void clearOverrides(Dictionary<string, string> overrides)
+        void clearOverrides(std::map<std::string, std::string> overrides)
         {
-            this.overrides = null;
+            this.overrides = nullptr;
         }
 
-        internal static string MapFile(Dictionary<string, string> overrides, string path)
+        static std::string MapFile(std::map<std::string, std::string> overrides, std::string path)
         {
-            string finalpath = path.ToLower();
-            if (overrides != null)
+            std::string finalpath = path.ToLower();
+            if (overrides != nullptr)
             {
                 while (overrides.ContainsKey(finalpath))
                 {

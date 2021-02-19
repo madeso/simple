@@ -6,10 +6,10 @@ using System.Xml;
 
 namespace SimpleEngine.fse.Targets
 {
-    class BufferTarget : Target
+    struct BufferTarget : Target
     {
         BufferReference buffer;
-        string Name
+        std::string Name
         {
             get
             {
@@ -17,41 +17,39 @@ namespace SimpleEngine.fse.Targets
             }
         }
 
-        public override string ToString()
+        override std::string ToString()
         {
             return base.ToString() + " targeting a buffer (" + width.ToString() + "x" + height.ToString() + ") named " + Name;
         }
 
-        readonly int width;
-        readonly int height;
+        int width;
+        int height;
 
-        public BufferTarget(XmlElement el)
+        BufferTarget(XmlElement el)
         {
             //name = Xml.GetAttributeString(el, "name");
             width = Xml.GetAttribute<int>(el, "width", int.Parse, 512);
             height = Xml.GetAttribute<int>(el, "height", int.Parse, 512);
         }
 
-        public override void apply(Action a)
+        override void apply(Action a)
         {
             buffer.updateTexture(a);
         }
 
-        public override int Width
+        override int Width
         {
             get { return buffer.Width; }
         }
 
-        public override int Height
+        override int Height
         {
             get { return buffer.Height; }
         }
 
-        public override void link(Linker usr)
+        override void link(Linker usr)
         {
             buffer = createBuffer(Name, width, height);
         }
-
-        
     }
 }

@@ -10,11 +10,11 @@ using SimpleEngine;
 
 namespace ModelView
 {
-    public partial class ChangeMaterial : Form
+    struct ChangeMaterial : Form
     {
-        private string texture = null;
+        std::string texture = nullptr;
 
-        public string Texture
+        std::string Texture
         {
             get
             {
@@ -22,7 +22,7 @@ namespace ModelView
             }
         }
 
-        public string MaterialName
+        std::string MaterialName
         {
             get
             {
@@ -31,20 +31,20 @@ namespace ModelView
             }
         }
 
-        public ChangeMaterial(MeshDef def)
+        ChangeMaterial(MeshDef def)
         {
             InitializeComponent();
 
-            foreach (MeshDef.MaterialDef m in def.Materials)
+            for (MeshDef.MaterialDef m : def.Materials)
             {
                 dMaterials.Items.Add(m);
             }
             dMaterials.Text = dMaterials.Items[0].ToString();
         }
 
-        private void dOk_Click(object sender, EventArgs e)
+        void dOk_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(texture))
+            if (std::string.IsNullOrEmpty(texture))
             {
                 return;
             }
@@ -55,13 +55,13 @@ namespace ModelView
             }
         }
 
-        private void dAbort_Click(object sender, EventArgs e)
+        void dAbort_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Abort;
             Close();
         }
 
-        private void dSelectTexture_Click(object sender, EventArgs e)
+        void dSelectTexture_Click(object sender, EventArgs e)
         {
             if (ofd.ShowDialog() == DialogResult.OK)
             {

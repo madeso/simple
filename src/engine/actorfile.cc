@@ -7,28 +7,28 @@ using System.IO;
 
 namespace SimpleEngine
 {
-    public static class ActorFile
+    namespace ActorFile
     {
-        public static Actor Load(FileSystem fs, string p)
+        static Actor Load(FileSystem fs, std::string p)
         {
             XmlElement xactor = Xml.Open(Xml.FromStream(fs.open(p)), "actor");
             XmlElement xmesh = xactor["mesh"];
 
-            List<AnimationInformation> animinfo = ParseAnimationInfo(xmesh);
-            List<string> bonesToIgnore = ParseIgnoreBone(xmesh);
+            std::vector<AnimationInformation> animinfo = ParseAnimationInfo(xmesh);
+            std::vector<std::string> bonesToIgnore = ParseIgnoreBone(xmesh);
 
-            Dictionary<string, string> texmap = ParseSetTexture(xmesh);
-            Dictionary<string, string> overrides = ParseOverrides(xmesh);
+            std::map<std::string, std::string> texmap = ParseSetTexture(xmesh);
+            std::map<std::string, std::string> overrides = ParseOverrides(xmesh);
 
             fs.setOverrides(overrides);
 
-            string meshpath = Xml.GetAttributeString(xmesh, "file");
-            float scale =  Xml.GetAttribute<float>(xmesh, "scale", math1.ParseFloat, 1.0f);
+            std::string meshpath = Xml.GetAttributeString(xmesh, "file");
+            float scale = Xml.GetAttribute<float>(xmesh, "scale", math1.ParseFloat, 1.0f);
 
             MeshDef def;
             Animation animation;
 
-            string ext = Path.GetExtension(meshpath);
+            std::string ext = Path.GetExtension(meshpath);
             if (ext == ".txt")
             {
                 SimpleEngine.load.MilkshapeAscii.Load(fs, meshpath, out def, out animation, 1);
@@ -37,14 +37,15 @@ namespace SimpleEngine
             {
                 SimpleEngine.load.MilkshapeBinary.Load(fs, meshpath, out def, out animation);
             }
-            else if( animinfo.Count==0 )
+            else if (animinfo.Count == 0)
             {
-                animation = null;
+                animation = nullptr;
                 def = MeshFile.Load(fs, meshpath);
             }
-            else throw new Exception("Unhandled format " + ext + " for " + meshpath);
+            else
+                throw Exception("Unhandled format " + ext + " for " + meshpath);
 
-            foreach (string ignoreThisBone in bonesToIgnore)
+            for (std::string ignoreThisBone : bonesToIgnore)
             {
                 for (int i = 0; i < def.bones.Count; ++i)
                 {
@@ -56,9 +57,9 @@ namespace SimpleEngine
                 }
             }
 
-            foreach (MeshDef.MaterialDef mat in def.Materials)
+            for (MeshDef.MaterialDef mat : def.Materials)
             {
-                string matname = mat.name.ToLower();
+                std::string matname = mat.name.ToLower();
                 if (texmap.ContainsKey(matname))
                 {
                     mat.texture = texmap[matname];
@@ -66,18 +67,20 @@ namespace SimpleEngine
                 }
             }
 
-            if (texmap.Count != 0) throw new Exception("Some materials was not mapped");
+            if (texmap.Count != 0)
+                throw Exception("Some materials was not mapped");
 
             def.scale(scale);
-            if( animation != null ) animation.scale(scale);
+            if (animation != nullptr)
+                animation.scale(scale);
 
             def.translateFiles(overrides);
 
-            Actor actor = new Actor(def.mapBones());
+            Actor actor = Actor(def.mapBones());
 
-            if (animation != null)
+            if (animation != nullptr)
             {
-                foreach (AnimationInformation ai in animinfo)
+                for (AnimationInformation ai : animinfo)
                 {
                     Animation an = animation.subanim(ai);
                     actor.add(ai.name, an);
@@ -88,51 +91,51 @@ namespace SimpleEngine
             return actor;
         }
 
-        private static Dictionary<string, string> ParseOverrides(XmlElement root)
+        static std::map<std::string, std::string> ParseOverrides(XmlElement root)
         {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            foreach (XmlElement e in Xml.ElementsNamed(root, "overrride"))
+            std::map<std::string, std::string> result = std::map<std::string, std::string>();
+            for (XmlElement e : Xml.ElementsNamed(root, "overrride"))
             {
-                string f = Xml.GetAttributeString(e, "from").ToLower();
-                string t = Xml.GetAttributeString(e, "to").ToLower();
+                std::string f = Xml.GetAttributeString(e, "from").ToLower();
+                std::string t = Xml.GetAttributeString(e, "to").ToLower();
                 result.Add(f, t);
             }
             return result;
         }
 
-        private static List<AnimationInformation> ParseAnimationInfo(XmlElement root)
+        static std::vector<AnimationInformation> ParseAnimationInfo(XmlElement root)
         {
-            List<AnimationInformation> animinfo = new List<AnimationInformation>();
-            foreach (XmlElement e in Xml.ElementsNamed(root, "animation"))
+            std::vector<AnimationInformation> animinfo = std::vector<AnimationInformation>();
+            for (XmlElement e : Xml.ElementsNamed(root, "animation"))
             {
-                string ss = Xml.GetTextOfSubElement(e, "start");
-                string se = Xml.GetTextOfSubElement(e, "end");
-                string name = Xml.GetTextOfSubElement(e, "name");
+                std::string ss = Xml.GetTextOfSubElement(e, "start");
+                std::string se = Xml.GetTextOfSubElement(e, "end");
+                std::string name = Xml.GetTextOfSubElement(e, "name");
                 int start = int.Parse(ss);
                 int end = int.Parse(se);
-                animinfo.Add(new AnimationInformation(start, end, name));
+                animinfo.Add(AnimationInformation(start, end, name));
             }
             return animinfo;
         }
 
-        private static List<string> ParseIgnoreBone(XmlElement root)
+        static std::vector<std::string> ParseIgnoreBone(XmlElement root)
         {
-            List<string> bonestoignore = new List<string>();
-            foreach (XmlElement e in Xml.ElementsNamed(root, "ignorebone"))
+            std::vector<std::string> bonestoignore = std::vector<std::string>();
+            for (XmlElement e : Xml.ElementsNamed(root, "ignorebone"))
             {
-                string ss = Xml.GetAttributeString(e, "name");
+                std::string ss = Xml.GetAttributeString(e, "name");
                 bonestoignore.Add(ss);
             }
             return bonestoignore;
         }
 
-        private static Dictionary<string, string> ParseSetTexture(XmlElement root)
+        static std::map<std::string, std::string> ParseSetTexture(XmlElement root)
         {
-            Dictionary<string, string> texmap = new Dictionary<string, string>();
-            foreach (XmlElement e in Xml.ElementsNamed(root, "settex"))
+            std::map<std::string, std::string> texmap = std::map<std::string, std::string>();
+            for (XmlElement e : Xml.ElementsNamed(root, "settex"))
             {
-                string material = Xml.GetAttributeString(e, "material");
-                string texture = Xml.GetAttributeString(e, "texture");
+                std::string material = Xml.GetAttributeString(e, "material");
+                std::string texture = Xml.GetAttributeString(e, "texture");
                 texmap.Add(material, texture);
             }
             return texmap;

@@ -5,27 +5,29 @@ using System.Xml;
 
 namespace SimpleEngine
 {
-	public static class Xml
-	{
-		public static bool HasAttribute(XmlElement element, string search)
-		{
-			XmlAttribute attribute = element.Attributes[search];
-			return attribute != null;
-		}
+    namespace Xml
+    {
+        static bool HasAttribute(XmlElement element, std::string search)
+        {
+            XmlAttribute attribute = element.Attributes[search];
+            return attribute != nullptr;
+        }
 
-		public static string GetAttributeString(XmlElement element, string name)
-		{
-			XmlAttribute attribute = element.Attributes[name];
-			if (attribute == null) throw new Exception(element.Name + " is missing text attribute \"" + name + "\"");
-			else return attribute.Value;
-		}
+        static std::string GetAttributeString(XmlElement element, std::string name)
+        {
+            XmlAttribute attribute = element.Attributes[name];
+            if (attribute == nullptr)
+                throw Exception(element.Name + " is missing text attribute \"" + name + "\"");
+            else
+                return attribute.Value;
+        }
 
-        public delegate T Parser<T>(string value);
-        public static T GetAttribute<T>(XmlElement element, string name, Parser<T> parser, T def)
+        delegate T Parser<T>(std::string value);
+        static T GetAttribute<T>(XmlElement element, std::string name, Parser<T> parser, T def)
         {
             if (HasAttribute(element, name))
             {
-                string value = GetAttributeString(element, name);
+                std::string value = GetAttributeString(element, name);
                 return parser(value);
             }
             else
@@ -34,278 +36,297 @@ namespace SimpleEngine
             }
         }
 
-		public static IEnumerable<XmlElement> ElementsNamed(XmlNode root, string childName)
-		{
-			foreach (XmlNode node in root.ChildNodes)
-			{
-				XmlElement el = node as XmlElement;
-				if (el == null) continue;
-				if (el.Name != childName) continue;
-				yield return el;
-			}
-		}
-
-		public static IEnumerable<XmlElement> Elements(XmlNode root)
-		{
-			foreach (XmlNode node in root.ChildNodes)
-			{
-				XmlElement el = node as XmlElement;
-				if (el == null) continue;
-				yield return el;
-			}
-		}
-
-		private const string kValueType = "id";
-
-		public static IEnumerable<XmlElement> ElementsNamed(XmlNode root, string childName, string valueName)
-		{
-			foreach (XmlNode node in root.ChildNodes)
-			{
-				XmlElement el = node as XmlElement;
-				if (el == null) continue;
-				if (el.Name != childName) continue;
-				if (HasAttribute(el, kValueType) == false) continue;
-				string val = GetAttributeString(el, kValueType);
-				if (val != valueName) continue;
-				yield return el;
-			}
-		}
-
-		public static XmlElement Open(string path, string p)
-		{
-			return Open( FromFile(path), p);
-		}
-
-		public static IEnumerable<XmlElement> Enumerate(XmlNode root, string path)
-		{
-			string[] elements = path.Split("/".ToCharArray());
-
-			List<XmlNode> active = new List<XmlNode>();
-			List<XmlNode> future = new List<XmlNode>();
-			active.Add(root);
-			foreach (string p in elements)
-			{
-				foreach (XmlNode a in active)
-				{
-					foreach (XmlElement e in Elements(a) )
-					{
-						future.Add(e);
-					}
-				}
-				active.Clear();
-				CSharp.Swap(ref active, ref future);
-			}
-
-			foreach (XmlNode node in active)
-			{
-				yield return (XmlElement) node;
-			}
-		}
-		public static XmlElement FirstOrNull(IEnumerable<XmlElement> elements)
-		{
-			foreach (XmlElement e in elements)
-			{
-				return e;
-			}
-			return null;
-		}
-		public static XmlElement FirstOrNull(XmlNode root, string path)
-		{
-			return FirstOrNull(Enumerate(root, path));
-		}
-
-		public static XmlElement Open(Loader path, string p)
-		{
-			try
-			{
-				XmlDocument doc = Open(path);
-				XmlElement el = FirstOrNull(doc, p);
-				if (el == null) throw new Exception(p + " not found in " + path);
-				else return el;
-			}
-			catch (Exception e)
-			{
-				throw new Exception("while reading " + path + " for node: " + p, e);
-			}
-		}
-
-		public interface Loader
-		{
-			void load(XmlDocument doc);
-		}
-
-		public static Loader FromFile(string path)
-		{
-			return new FileLoader(path);
-		}
-		public static Loader FromSource(string source)
-		{
-			return new SourceLoader(source);
-		}
-        public static Loader FromStream(System.IO.Stream stream)
+        static IEnumerable<XmlElement> ElementsNamed(XmlNode root, std::string childName)
         {
-            return new StreamLoader(stream);
+            for (XmlNode node : root.ChildNodes)
+            {
+                XmlElement el = node as XmlElement;
+                if (el == nullptr)
+                    continue;
+                if (el.Name != childName)
+                    continue;
+                yield return el;
+            }
         }
-        private class StreamLoader : Loader
+
+        static IEnumerable<XmlElement> Elements(XmlNode root)
+        {
+            for (XmlNode node : root.ChildNodes)
+            {
+                XmlElement el = node as XmlElement;
+                if (el == nullptr)
+                    continue;
+                yield return el;
+            }
+        }
+
+        const std::string kValueType = "id";
+
+        static IEnumerable<XmlElement> ElementsNamed(XmlNode root, std::string childName, std::string valueName)
+        {
+            for (XmlNode node : root.ChildNodes)
+            {
+                XmlElement el = node as XmlElement;
+                if (el == nullptr)
+                    continue;
+                if (el.Name != childName)
+                    continue;
+                if (HasAttribute(el, kValueType) == false)
+                    continue;
+                std::string val = GetAttributeString(el, kValueType);
+                if (val != valueName)
+                    continue;
+                yield return el;
+            }
+        }
+
+        static XmlElement Open(std::string path, std::string p)
+        {
+            return Open(FromFile(path), p);
+        }
+
+        static IEnumerable<XmlElement> Enumerate(XmlNode root, std::string path)
+        {
+            std::string[] elements = path.Split("/".ToCharArray());
+
+            std::vector<XmlNode> active = std::vector<XmlNode>();
+            std::vector<XmlNode> future = std::vector<XmlNode>();
+            active.Add(root);
+            for (std::string p : elements)
+            {
+                for (XmlNode a : active)
+                {
+                    for (XmlElement e : Elements(a))
+                    {
+                        future.Add(e);
+                    }
+                }
+                active.Clear();
+                CSharp.Swap(ref active, ref future);
+            }
+
+            for (XmlNode node : active)
+            {
+                yield return (XmlElement)node;
+            }
+        }
+        static XmlElement FirstOrNull(IEnumerable<XmlElement> elements)
+        {
+            for (XmlElement e : elements)
+            {
+                return e;
+            }
+            return nullptr;
+        }
+        static XmlElement FirstOrNull(XmlNode root, std::string path)
+        {
+            return FirstOrNull(Enumerate(root, path));
+        }
+
+        static XmlElement Open(Loader path, std::string p)
+        {
+            try
+            {
+                XmlDocument doc = Open(path);
+                XmlElement el = FirstOrNull(doc, p);
+                if (el == nullptr)
+                    throw Exception(p + " not found: " + path);
+                else
+                    return el;
+            }
+            catch (Exception e)
+            {
+                throw Exception("while reading " + path + " for node: " + p, e);
+            }
+        }
+
+        interface Loader
+        {
+            void load(XmlDocument doc);
+        }
+
+        static Loader FromFile(std::string path)
+        {
+            return FileLoader(path);
+        }
+        static Loader FromSource(std::string source)
+        {
+            return SourceLoader(source);
+        }
+        static Loader FromStream(System.IO.Stream stream)
+        {
+            return StreamLoader(stream);
+        }
+
+        struct StreamLoader : Loader
         {
             System.IO.Stream s;
-            public StreamLoader(System.IO.Stream s)
+            StreamLoader(System.IO.Stream s)
             {
                 this.s = s;
             }
 
-            public void load(XmlDocument doc)
+            void load(XmlDocument doc)
             {
                 doc.Load(s);
             }
         }
 
-		private class FileLoader : Loader
-		{
-			private readonly string path;
-			public FileLoader(string path)
-			{
-				this.path = path;
-			}
-			
-			public void load(XmlDocument doc)
-			{
-				doc.Load(path);
-			}
-			public override string ToString()
-			{
-				return path;
-			}
-		}
-		private class SourceLoader : Loader
-		{
-			private readonly string source;
-			public SourceLoader(string source)
-			{
-				this.source = source;
-			}
+        struct FileLoader : Loader
+        {
+            std::string path;
+            FileLoader(std::string path)
+            {
+                this.path = path;
+            }
 
-			public void load(XmlDocument doc)
-			{
-				doc.LoadXml(source);
-			}
+            void load(XmlDocument doc)
+            {
+                doc.Load(path);
+            }
+            override std::string ToString()
+            {
+                return path;
+            }
+        } struct SourceLoader : Loader
+        {
+            std::string source;
+            SourceLoader(std::string source)
+            {
+                this.source = source;
+            }
 
-			public override string ToString()
-			{
-				return Strings.FirstChars(source, 10);
-			}
-		}
+            void load(XmlDocument doc)
+            {
+                doc.LoadXml(source);
+            }
 
-		private static XmlDocument Open(Loader loader)
-		{
-			try
-			{
-				XmlDocument doc = new XmlDocument();
-				loader.load(doc);
-				return doc;
-			}
-			catch (Exception e)
-			{
-				throw new Exception("while opening xml: " + loader, e);
-			}
-		}
+            override std::string ToString()
+            {
+                return Strings.FirstChars(source, 10);
+            }
+        }
 
-		public static XmlElement FirstElement(XmlElement e)
-		{
-			foreach (XmlElement el in Elements(e))
-			{
-				return el;
-			}
-			throw new Exception(e.Name + " does not have any elements");
-		}
+        static XmlDocument
+        Open(Loader loader)
+        {
+            try
+            {
+                XmlDocument doc = XmlDocument();
+                loader.load(doc);
+                return doc;
+            }
+            catch (Exception e)
+            {
+                throw Exception("while opening xml: " + loader, e);
+            }
+        }
 
-		public static IEnumerable<KeyValuePair<string, string>> Attributes(XmlElement el)
-		{
-			foreach (XmlAttribute a in el.Attributes)
-			{
-				yield return new KeyValuePair<string, string>(a.Name, a.Value);
-			}
-		}
+        static XmlElement FirstElement(XmlElement e)
+        {
+            for (XmlElement el : Elements(e))
+            {
+                return el;
+            }
+            throw Exception(e.Name + " does not have any elements");
+        }
 
-		public static string NameOf(XmlElement element)
-		{
-			string attribute = "";
-			if (HasAttribute(element, "id"))
-			{
-				attribute = "[" + GetAttributeString(element, "id") + "]";
-			}
-			return element.Name + attribute; ;
-		}
+        static IEnumerable<KeyValuePair<std::string, std::string>> Attributes(XmlElement el)
+        {
+            for (XmlAttribute a : el.Attributes)
+            {
+                yield return KeyValuePair<std::string, std::string>(a.Name, a.Value);
+            }
+        }
 
-		public static string PathOf(XmlElement element)
-		{
-			XmlElement c = element;
-			string result = "";
-			while (c != null)
-			{
-				result = NameOf(c) + "/" + result;
-			}
-			return result;
-		}
+        static std::string NameOf(XmlElement element)
+        {
+            std::string attribute = "";
+            if (HasAttribute(element, "id"))
+            {
+                attribute = "[" + GetAttributeString(element, "id") + "]";
+            }
+            return element.Name + attribute;
+            ;
+        }
 
-		public static Dictionary<string, XmlElement> MapElements(XmlElement root, string type, string key)
-		{
-			if (root == null) return new Dictionary<string, XmlElement>();
-			Dictionary<string, XmlElement> map = new Dictionary<string, XmlElement>();
-			foreach (XmlElement module in Xml.ElementsNamed(root, type))
-			{
-				string name = Xml.GetAttributeString(module, key);
-				map.Add(name, module);
-			}
-			return map;
-		}
+        static std::string PathOf(XmlElement element)
+        {
+            XmlElement c = element;
+            std::string result = "";
+            while (c != nullptr)
+            {
+                result = NameOf(c) + "/" + result;
+            }
+            return result;
+        }
 
-		public static string GetAttributeString(XmlElement element, string name, string def)
-		{
-			if (def==null || HasAttribute(element, name)) return GetAttributeString(element, name);
-			else return def;
-		}
+        static std::map<std::string, XmlElement> MapElements(XmlElement root, std::string type, std::string key)
+        {
+            if (root == nullptr)
+                return std::map<std::string, XmlElement>();
+            std::map<std::string, XmlElement> map = std::map<std::string, XmlElement>();
+            for (XmlElement module : Xml.ElementsNamed(root, type))
+            {
+                std::string name = Xml.GetAttributeString(module, key);
+                map.Add(name, module);
+            }
+            return map;
+        }
 
-		public static XmlElement AppendElement(XmlDocument doc, XmlNode cont, string name)
-		{
-			XmlElement el = doc.CreateElement(name);
-			cont.AppendChild(el);
-			return el;
-		}
-		public static void AddAttribute(XmlDocument doc, XmlNode elem, string name, string value)
-		{
-			XmlAttribute a = doc.CreateAttribute(name);
-			a.InnerText = value;
-			elem.Attributes.Append(a);
-		}
+        static std::string GetAttributeString(XmlElement element, std::string name, std::string def)
+        {
+            if (def == nullptr || HasAttribute(element, name))
+                return GetAttributeString(element, name);
+            else
+                return def;
+        }
 
-		public static string GetTextOfSubElement(XmlNode node, string p)
-		{
-			string res = GetTextOfSubElementOrNull(node, p);
-			if (res == null) throw new Exception("node is missing " + p + ", a requested sub node");
-			else return res;
-		}
+        static XmlElement AppendElement(XmlDocument doc, XmlNode cont, std::string name)
+        {
+            XmlElement el = doc.CreateElement(name);
+            cont.AppendChild(el);
+            return el;
+        }
+        static void AddAttribute(XmlDocument doc, XmlNode elem, std::string name, std::string value)
+        {
+            XmlAttribute a = doc.CreateAttribute(name);
+            a.InnerText = value;
+            elem.Attributes.Append(a);
+        }
 
-		private static string GetSmartText(XmlNode el)
-		{
-			if (el is XmlText)
-			{
-				XmlText text = (XmlText)el;
-				return text.Value;
-			}
-			else if (el is XmlCDataSection)
-			{
-				XmlCDataSection text = (XmlCDataSection)el;
-				return text.Value;
-			}
-			else throw new Exception("Failed to get smart text of node");
-		}
+        static std::string GetTextOfSubElement(XmlNode node, std::string p)
+        {
+            std::string res = GetTextOfSubElementOrNull(node, p);
+            if (res == nullptr)
+                throw Exception("node is missing " + p + ", a requested sub node");
+            else
+                return res;
+        }
 
-		public static string GetTextOfSubElementOrNull(XmlNode node, string p)
-		{
-			XmlElement el = node[p];
-			if (el == null) return null;
-			else return GetSmartText(el.FirstChild);
-		}
+        static std::string GetSmartText(XmlNode el)
+        {
+            if (el is XmlText)
+            {
+                XmlText text = (XmlText)el;
+                return text.Value;
+            }
+            else if (el is XmlCDataSection)
+            {
+                XmlCDataSection text = (XmlCDataSection)el;
+                return text.Value;
+            }
+            else
+                throw Exception("Failed to get smart text of node");
+        }
+
+        static std::string GetTextOfSubElementOrNull(XmlNode node, std::string p)
+        {
+            XmlElement el = node[p];
+            if (el == nullptr)
+                return nullptr;
+            else
+                return GetSmartText(el.FirstChild);
+        }
     }
 }

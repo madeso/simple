@@ -7,27 +7,28 @@ using SimpleEngine.load.studio3ds;
 
 namespace SimpleEngine.load
 {
-    internal static class Loader_3ds
+    namespace Loader_3ds
     {
-        internal static MeshDef Load(FileSystem fs, string path)
+        static MeshDef Load(FileSystem fs, std::string path)
         {
-            List<BinaryChunk> chunks = new List<BinaryChunk>();
-            using (Stream s = fs.open(path))
+            std::vector<BinaryChunk> chunks = std::vector<BinaryChunk>();
+            using(Stream s = fs.open(path))
             {
-                Binary b = new Binary(s);
+                Binary b = Binary(s);
                 BinaryChunk.ReadFromBinary(chunks, b);
             }
-            if (chunks.Count != 1) throw new Exception("Unknown or damaged 3ds file");
+            if (chunks.Count != 1)
+                throw Exception("Unknown or damaged 3ds file");
 
-            MainChunk main = new MainChunk(chunks[0]);
+            MainChunk main = MainChunk(chunks[0]);
             return ParaseChunk(main);
         }
 
-        private static MeshDef ParaseChunk(MainChunk main)
+        static MeshDef ParaseChunk(MainChunk main)
         {
-            MeshDef def = new MeshDef();
+            MeshDef def = MeshDef();
 
-            foreach (MaterialChunk chunk in main.editor.materials)
+            for (MaterialChunk chunk : main.editor.materials)
             {
                 MeshDef.MaterialDef mat = def.addMaterial(chunk.name.Value);
                 mat.texture = chunk.texture.Value;
@@ -35,21 +36,21 @@ namespace SimpleEngine.load
                 //mat.ambient = chunk.ambient.Color;
                 //mat.diffuse = chunk.diffuse.Color;
             }
-            
-            foreach(ObjectChunk chunk in main.editor.objects)
+
+            for (ObjectChunk chunk : main.editor.objects)
             {
                 int ibase = def.points.Count;
                 for (int i = 0; i < chunk.trimesh.points.Count; ++i)
                 {
-                    def.addPoint( chunk.trimesh.coordsys.translate(chunk.trimesh.points[i]), -1);
+                    def.addPoint(chunk.trimesh.coordsys.translate(chunk.trimesh.points[i]), -1);
                     def.AddUv(chunk.trimesh.mapping[i]);
                 }
-                foreach(FaceMaterialChunk fmc in chunk.trimesh.facematerials)
+                for (FaceMaterialChunk fmc : chunk.trimesh.facematerials)
                 {
                     def.selectMaterial(fmc.name);
-                    foreach(int faceindex in fmc.faces)
+                    for (int faceindex : fmc.faces)
                     {
-                        MeshDef.VertexData[] vd = new MeshDef.VertexData[3];
+                        MeshDef.VertexData[] vd = MeshDef.VertexData[3];
 
                         TriMeshChunk.Poly p = chunk.trimesh.faces[faceindex];
 
@@ -62,7 +63,7 @@ namespace SimpleEngine.load
                         vd[2].normal = -1;
                         vd[2].vertex = vd[2].uv = ibase + p.c;
 
-                        def.addTri(new MeshDef.Tri(vd));
+                        def.addTri(MeshDef.Tri(vd));
                     }
                 }
             }

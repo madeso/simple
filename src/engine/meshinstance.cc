@@ -5,23 +5,23 @@ using System.Text;
 
 namespace SimpleEngine
 {
-    public class MeshInstance : Renderable
+    struct MeshInstance : Renderable
     {
         Handle<Mesh> mesh;
-        public vec3 pos = vec3.Zero;
-        public quat rot = quat.Identity;
+        vec3 pos = vec3::Zero();
+        quat rot = quat::Identity();
 
-        public MeshInstance(Mesh def)
+        MeshInstance(Mesh def)
         {
-            this.mesh = new Handle<Mesh>(def);
+            this.mesh = Handle<Mesh>(def);
         }
 
-        public void sendToRenderer(RenderList r)
+        void sendToRenderer(RenderList r)
         {
             mesh.Ref.Compiled.sendToRenderer(r, pos, rot);
         }
 
-        public void render()
+        void render()
         {
         }
     }

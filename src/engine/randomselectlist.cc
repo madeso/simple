@@ -5,39 +5,41 @@ using System.Text;
 
 namespace SimpleEngine
 {
-    public class RandomSelectList<T>
+    struct RandomSelectstd::vector<T>
     {
-        private class Entry
+        struct Entry
         {
-            public T t;
-            public float val;
+            T t;
+            float val;
         }
 
-        private List<Entry> entries = new List<Entry>();
-        Random r = new Random();
+        std::vector<Entry>
+            entries = std::vector<Entry>();
+        Random r = Random();
 
-        public void add(T t, float percent)
+        void add(T t, float percent)
         {
-            Entry e = new RandomSelectList<T>.Entry();
+            Entry e = RandomSelectstd::vector<T>.Entry();
             e.t = t;
             e.val = percent;
             entries.Add(e);
         }
 
-        public T random()
+        T random()
         {
             float v = 0;
-            float r = (float) this.r.NextDouble();
-            foreach (Entry e in entries)
+            float r = (float)this.r.NextDouble();
+            for (Entry e : entries)
             {
-                if (math1.IsWithin(v, r, v + e.val)) return e.t;
+                if (math1.IsWithin(v, r, v + e.val))
+                    return e.t;
                 else
                 {
                     v += e.val;
                 }
             }
 
-            throw new Exception("Not enough or too many values");
+            throw Exception("Not enough or too many values");
         }
     }
 }

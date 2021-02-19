@@ -5,9 +5,9 @@ using System.Text;
 
 namespace SimpleEngine
 {
-    class UserException : Exception
+    struct UserException : Exception
     {
-        public UserException(string message)
+        UserException(std::string message)
             : base(message)
         {
         }

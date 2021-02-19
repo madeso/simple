@@ -5,38 +5,38 @@ using System.Text;
 
 namespace SimpleEngine.fse.Targets
 {
-    public class FormTarget : Target
+    struct FormTarget : Target
     {
         int width;
         int height;
 
-        public FormTarget(int width, int height)
+        FormTarget(int width, int height)
         {
             this.width = width;
             this.height = height;
         }
 
-        public override string ToString()
+        override std::string ToString()
         {
             return base.ToString() + " targeting a form";
         }
 
-        public override void apply(Action a)
+        override void apply(Action a)
         {
             a();
         }
 
-        public override int Width
+        override int Width
         {
             get { return width; }
         }
 
-        public override int Height
+        override int Height
         {
             get { return height; }
         }
 
-        public override void link(Linker usr)
+        override void link(Linker usr)
         {
         }
     }
