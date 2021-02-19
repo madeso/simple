@@ -1,100 +1,99 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
+﻿#include <cassert>
+#include <filesystem>
+#include <fstream>
+#include <map>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+#include "engine/cpp.h"
 
 namespace SimpleEngine
 {
+    namespace fs = std::filesystem;
+
     struct FileSystem
     {
+        std::vector<std::string> roots;
+        std::map<std::string, std::string> overrides;
+
         FileSystem()
         {
         }
 
-        void addRoot(std::string root)
+        void addRoot(const std::string& root)
         {
-            roots.Add(root);
+            roots.emplace_back(root);
         }
 
-        void addDefaultRoots(std::string app, std::string game)
+        void addDefaultRoots(const std::string& app, const std::string& game)
         {
-            addRoot(Environment.CurrentDirectory);
-            addRoot(combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), app, game));
-            addRoot(combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), app, game));
-            addRoot(combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), app, game));
-            addRoot(combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), app, game));
-            addRoot(combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), app, game));
+            addRoot(fs::current_path().string());
+            // addRoot(combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), app, game));
+            // addRoot(combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), app, game));
+            // addRoot(combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), app, game));
+            // addRoot(combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), app, game));
+            // addRoot(combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), app, game));
         }
 
-        Stream doOpen(std::string path)
+        std::string doOpen(const std::string& path) const
         {
-            if (path.Contains(".."))
-                throw std::runtime_error("do not specify parent directory");
-            std::string p = path;  //.Replace(':', Path.DirectorySeparatorChar);
-            for (std::string r : roots)
+            if (path.find("..") != std::string::npos)
             {
-                std::string fp = Path.Combine(r, p);
-                if (File.Exists(fp))
-                    return FileStream(fp, FileMode.Open);
+                throw std::runtime_error("do not specify parent directory");
+            }
+            for (auto& r : roots)
+            {
+                auto fp = fs::path{r} / path;
+                if (fs::exists(fp))
+                {
+                    return fp.string();
+                }
             }
             throw std::runtime_error("Failed to open file " + path);
         }
 
-        Stream open(std::string path)
+        std::string open(const std::string& path) const
         {
             return doOpen(MapFile(overrides, path));
         }
 
-        std::string combine(std::string s, params std::string[] args)
+        std::vector<std::string> readLines(std::string path) const
         {
-            std::string r = s;
-            for (std::string a : args)
+            const auto p = open(path);
+            std::ifstream infile(p.c_str());
+            std::string line;
+            std::vector<std::string> r;
+            while (std::getline(infile, line))
             {
-                r = Path.Combine(r, a);
+                r.emplace_back(line);
             }
             return r;
         }
 
-        std::vector<std::string> roots = std::vector<std::string>();
-
-        IEnumerable<std::string> readLines(std::string path)
+        void setOverrides(const std::map<std::string, std::string>& new_overrides)
         {
-            using(Stream s = open(path))
+            overrides = new_overrides;
+        }
+
+        void clearOverrides(const std::map<std::string, std::string>& new_overrides)
+        {
+            assert(overrides == new_overrides);
+            overrides = {};
+        }
+
+        static std::string MapFile(const std::map<std::string, std::string>& overrides, const std::string& path)
+        {
+            std::string finalpath = Lower(path);
+
+            auto found = overrides.find(finalpath);
+            while (found != overrides.end())
             {
-                using(StreamReader sr = StreamReader(s))
-                {
-                    while (sr.EndOfStream == false)
-                    {
-                        yield return sr.ReadLine();
-                    }
-                }
+                finalpath = found->second;
+                found = overrides.find(finalpath);
             }
-        }
 
-        std::map<std::string, std::string> overrides = nullptr;
-
-        void setOverrides(std::map<std::string, std::string> overrides)
-        {
-            this.overrides = overrides;
-        }
-
-        void clearOverrides(std::map<std::string, std::string> overrides)
-        {
-            this.overrides = nullptr;
-        }
-
-        static std::string MapFile(std::map<std::string, std::string> overrides, std::string path)
-        {
-            std::string finalpath = path.ToLower();
-            if (overrides != nullptr)
-            {
-                while (overrides.ContainsKey(finalpath))
-                {
-                    finalpath = overrides[finalpath];
-                }
-            }
             return finalpath;
         }
-    }
+    };
 }

@@ -11,14 +11,18 @@ set(src
 
     engine/meshdef.cc engine/meshdef.h
     engine/pushedmatrix.cc engine/pushedmatrix.h
+    engine/cpp.cc engine/cpp.h
+    engine/filesystem.cc
 
     engine/main.cc engine/main.h
 )
 
+find_package(Filesystem REQUIRED)
+
 add_library(engine STATIC ${src})
 target_link_libraries(engine
     PUBLIC sdl2 opengl imgui fmt::fmt stb glm
-    PRIVATE project_options project_warnings
+    PRIVATE project_options project_warnings std::filesystem
 )
 target_include_directories(engine
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
