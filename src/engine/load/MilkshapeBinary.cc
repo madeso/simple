@@ -302,7 +302,7 @@ namespace SimpleEngine.load
 
             override std::string ToString()
             {
-                return std::string.Format("{0} ({1} {2} {3})", (int)boneID, vertex[0], vertex[1], vertex[2]);
+                return fmt::format("{0} ({1} {2} {3})", (int)boneID, vertex[0], vertex[1], vertex[2]);
             }
         }
 

@@ -70,7 +70,7 @@ namespace ModelView
 
                 dModelActions.Text = filename;
 
-                dMeshInfo.Text = std::string.Format("{0} points, {1} texcoords {2} tris, {3}/{4} bones", def.points.Count, def.uvs.Count, def.TriCount, def.bones.Count, std::vector<MeshDef.Bone>(def.RootBones).Count);
+                dMeshInfo.Text = fmt::format("{0} points, {1} texcoords {2} tris, {3}/{4} bones", def.points.Count, def.uvs.Count, def.TriCount, def.bones.Count, std::vector<MeshDef.Bone>(def.RootBones).Count);
 
                 forceRedraw();
             }
@@ -217,7 +217,7 @@ namespace ModelView
             dAnimation.Value = 0;
             dAnimations.Text = name;
 
-            dAnimInfo.Text = std::string.Format("{0} bones, {1}s long", anim.bones.Count, anim.Length);
+            dAnimInfo.Text = fmt::format("{0} bones, {1}s long", anim.bones.Count, anim.Length);
 
             updatePose();
         }

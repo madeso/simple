@@ -30,7 +30,7 @@ namespace SimpleEngine.load.studio3ds
 
         override std::string ToString()
         {
-            return std::string.Format("{0} {1} {2}", red, green, blue);
+            return fmt::format("{0} {1} {2}", red, green, blue);
         }
 
         vec3 Color

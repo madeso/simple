@@ -260,7 +260,7 @@ namespace SimpleEngine
 
             override std::string ToString()
             {
-                return std::string.Format("{0} -> {1}", button, down);
+                return fmt::format("{0} -> {1}", button, down);
             }
 
             Ckey button;

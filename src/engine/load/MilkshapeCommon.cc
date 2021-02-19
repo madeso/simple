@@ -116,7 +116,7 @@ namespace SimpleEngine.load
 
         override std::string ToString()
         {
-            return std::string.Format("{0} {1} / {2}", bone, pos, uv);
+            return fmt::format("{0} {1} / {2}", bone, pos, uv);
         }
 
         vec2 uv = vec2(0, 0);
@@ -202,7 +202,7 @@ namespace SimpleEngine.load
 
         override std::string ToString()
         {
-            return std::string.Format("{0} {1}", time, MilkshapeCommon.makeQuat(vec3(x, y, z)).AxisAngle);
+            return fmt::format("{0} {1}", time, MilkshapeCommon.makeQuat(vec3(x, y, z)).AxisAngle);
         }
     } struct Bone
     {

@@ -18,7 +18,7 @@ namespace SimpleEngine.load.studio3ds
 
             override std::string ToString()
             {
-                return std::string.Format("{0}, {1}, {2}", a, b, c);
+                return fmt::format("{0}, {1}, {2}", a, b, c);
             }
 
             int a;

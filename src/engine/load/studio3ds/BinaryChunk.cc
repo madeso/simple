@@ -17,7 +17,7 @@ namespace SimpleEngine.load.studio3ds
 
         override std::string ToString()
         {
-            return std::string.Format("{0} {1} byte(s)", ChunkId.ToString(id), bytes.Length);
+            return fmt::format("{0} {1} byte(s)", ChunkId.ToString(id), bytes.Length);
         }
 
         static std::vector<BinaryChunk> Parse(byte[] bytes)

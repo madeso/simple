@@ -62,13 +62,13 @@ namespace SimpleEngine
             switch (type)
             {
             case Type.Key:
-                return std::string.Format("key: {0}", key);
+                return fmt::format("key: {0}", key);
             case Type.Mouse:
-                return std::string.Format("mouse: {0}", mouse);
+                return fmt::format("mouse: {0}", mouse);
             case Type.WheelUp:
-                return std::string.Format("wheel up");
+                return fmt::format("wheel up");
             case Type.WheelDown:
-                return std::string.Format("wheel down");
+                return fmt::format("wheel down");
             default:
                 return "invalid " + type.ToString();
             }
