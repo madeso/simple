@@ -1,11 +1,14 @@
 ﻿#include <memory>
 #include <vector>
 
+#include "engine/animation.h"
+#include "engine/axisangle.h"
 #include "engine/material.h"
 #include "engine/medialoader.h"
 #include "engine/meshdef.h"
 #include "engine/opengl.h"
 #include "engine/poseable.h"
+#include "engine/pushedmatrix.h"
 #include "engine/texture.h"
 
 namespace SimpleEngine
@@ -22,8 +25,8 @@ namespace SimpleEngine
         MeshPart(MediaLoader* ml, const MaterialDef& m, MeshDef* def, std::shared_ptr<Poseable> p)
             : poseable(p)
         {
-            mat = Material(m.diffuse, ml->fetch<Texture>(m.texture));
-            for (Tri tri : def->TrianglesFor(m))
+            mat = std::make_shared<Material>(m.diffuse, ml->fetch<Texture>(m.texture));
+            for (const auto& tri : def->TrianglesFor(m))
             {
                 faces.emplace_back(def->lookup(tri));
             }
@@ -50,7 +53,7 @@ namespace SimpleEngine
                 glTranslatef(p.x, p.y, p.z);
                 AxisAngle aa = rot.AxisAngle();
                 // apply rotation
-                glRotatef(aa.angle.inDegrees, aa.axis.x, aa.axis.y, aa.axis.z);
+                glRotatef(aa.angle.inDegrees(), aa.axis.x, aa.axis.y, aa.axis.z);
                 glBegin(GL_TRIANGLES);
                 for (auto& face : faces)
                 {
@@ -58,7 +61,7 @@ namespace SimpleEngine
                     {
                         Vertex v = face[i];
                         vec3 vert = (poseable->CurrentPose() != nullptr)
-                                        ? poseable->CurrentPose().transforms[v.bone] * v.vertex
+                                        ? poseable->CurrentPose()->transforms[v.bone] * v.vertex
                                         : v.vertex;
                         glNormal3f(v.normal.x, v.normal.y, v.normal.z);
                         glTexCoord2f(v.uv.x, v.uv.y);
@@ -68,5 +71,5 @@ namespace SimpleEngine
                 glEnd();
             }
         }
-    }
+    };
 }

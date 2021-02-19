@@ -22,6 +22,8 @@ set(src
     engine/poseable.cc engine/poseable.h
     engine/animation.cc engine/animation.h
 
+    engine/meshpart.cc
+
     engine/main.cc engine/main.h
 )
 
