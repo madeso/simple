@@ -1,61 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "catch.hpp"
+#include "engine/vec3.h"
+#include "test.h"
 
-using NUnit.Framework;
+using namespace SimpleEngine;
 
-using SimpleEngine;
-using NUnit.Framework.SyntaxHelpers;
-
-namespace SimpleUnit
+TEST_CASE("testX")
 {
-    [TestFixture]
-    public class TestVec : Test
-    {
-        [Test]
-        public void testX()
-        {
-            AreEqual(new vec3(1, 0, 0), new vec3(1, 0, 0));
-            AreEqual(new vec3(2, 0, 0), new vec3(1, 0, 0) * 2);
-            AreEqual(new vec3(2, 0, 0), new vec3(1, 0, 0) + new vec3(1, 0, 0));
-        }
+    CHECK(AreEqual(vec3(1, 0, 0), vec3(1, 0, 0)));
+    CHECK(AreEqual(vec3(2, 0, 0), vec3(1, 0, 0) * 2));
+    CHECK(AreEqual(vec3(2, 0, 0), vec3(1, 0, 0) + vec3(1, 0, 0)));
+}
 
-        [Test]
-        public void testY()
-        {
-            AreEqual(new vec3(0, 1, 0), new vec3(0, 1, 0));
-            AreEqual(new vec3(0, 2, 0), new vec3(0, 1, 0) * 2);
-            AreEqual(new vec3(0, 2, 0), new vec3(0, 1, 0) + new vec3(0, 1, 0));
-        }
+TEST_CASE("testY")
+{
+    CHECK(AreEqual(vec3(0, 1, 0), vec3(0, 1, 0)));
+    CHECK(AreEqual(vec3(0, 2, 0), vec3(0, 1, 0) * 2));
+    CHECK(AreEqual(vec3(0, 2, 0), vec3(0, 1, 0) + vec3(0, 1, 0)));
+}
 
-        [Test]
-        public void testZ()
-        {
-            AreEqual(new vec3(0, 0, 1), new vec3(0, 0, 1));
-            AreEqual(new vec3(0, 0, 2), new vec3(0, 0, 1) * 2);
-            AreEqual(new vec3(0, 0, 2), new vec3(0, 0, 1) + new vec3(0, 0, 1));
-        }
+TEST_CASE("testZ")
+{
+    CHECK(AreEqual(vec3(0, 0, 1), vec3(0, 0, 1)));
+    CHECK(AreEqual(vec3(0, 0, 2), vec3(0, 0, 1) * 2));
+    CHECK(AreEqual(vec3(0, 0, 2), vec3(0, 0, 1) + vec3(0, 0, 1)));
+}
 
-        [Test]
-        public void testDot()
-        {
-            Assert.AreEqual(0, vec3.dot(new vec3(1, 0, 0), new vec3(0, 1, 0)));
-            Assert.AreEqual(1, vec3.dot(new vec3(1, 0, 0), new vec3(1, 0, 0)));
-        }
+TEST_CASE("testDot")
+{
+    CHECK(AreEqual(0, vec3::dot(vec3(1, 0, 0), vec3(0, 1, 0))));
+    CHECK(AreEqual(1, vec3::dot(vec3(1, 0, 0), vec3(1, 0, 0))));
+}
 
-        [Test]
-        public void testCross()
-        {
-            AreEqual(new vec3(0, 1, 0), vec3.cross(new vec3(0, 0, -1), new vec3(-1, 0, 0)));
-        }
+TEST_CASE("testCross")
+{
+    CHECK(AreEqual(vec3(0, 1, 0), vec3::cross(vec3(0, 0, -1), vec3(-1, 0, 0))));
+}
 
-        [Test]
-        public void testInterpolate()
-        {
-            AreEqual(new vec3(0, 1, 0), vec3.Interpolate(new vec3(0, 1, 0), 0, new vec3(2, 4, 6)));
-            AreEqual(new vec3(2, 4, 6), vec3.Interpolate(new vec3(0, 1, 0), 1, new vec3(2, 4, 6)));
-            AreEqual(new vec3(3, 5, 7), vec3.Interpolate(new vec3(2, 4, 6), 0.5f, new vec3(4, 6, 8)));
-        }
-    }
+TEST_CASE("testInterpolate")
+{
+    CHECK(AreEqual(vec3(0, 1, 0), vec3::Interpolate(vec3(0, 1, 0), 0, vec3(2, 4, 6))));
+    CHECK(AreEqual(vec3(2, 4, 6), vec3::Interpolate(vec3(0, 1, 0), 1, vec3(2, 4, 6))));
+    CHECK(AreEqual(vec3(3, 5, 7), vec3::Interpolate(vec3(2, 4, 6), 0.5f, vec3(4, 6, 8))));
 }

@@ -1,41 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/axisangle.h"
+
+#include "fmt/core.h"
 
 namespace SimpleEngine
 {
-    public struct AxisAngle
+    std::string AxisAngle::ToString() const
     {
-        private AxisAngle(vec3 axis, angle angle)
-        {
-            this.axis = axis;
-            this.angle = angle;
-        }
-        public static AxisAngle RightHandAround(vec3 axis, angle angle)
-        {
-	        return new AxisAngle(axis, angle);
-        }
+        return fmt::format("({} {})", axis.ToString(), angle.ToString());
+    }
 
-        public override string ToString()
-        {
-            return axis.ToString() + " " + angle.inDegrees.ToString();
-        }
+    AxisAngle::AxisAngle(const vec3& ax, const SimpleEngine::angle& an)
+        : axis(ax)
+        , angle(an)
+    {
+    }
 
-        public AxisAngle Negative
-        {
-            get
-            {
-                return new AxisAngle(-axis, -angle);
-            }
-        }
+    AxisAngle AxisAngle::RightHandAround(const vec3& axis, const SimpleEngine::angle& angle)
+    {
+        return AxisAngle(axis, angle);
+    }
 
-        public static AxisAngle operator-(AxisAngle me)
-        {
-            return me.Negative;
-        }
+    AxisAngle AxisAngle::Negative() const
+    {
+        return AxisAngle(-axis, -angle);
+    }
 
-        public readonly vec3 axis;
-        public readonly angle angle;
+    AxisAngle operator-(const AxisAngle& me)
+    {
+        return me.Negative();
     }
 }

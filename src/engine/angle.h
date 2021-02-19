@@ -1,9 +1,13 @@
 #pragma once
 
+#include <string>
+
 namespace SimpleEngine
 {
     struct angle
     {
+        std::string ToString() const;
+
         static angle Zero();
 
         float inRadians() const;

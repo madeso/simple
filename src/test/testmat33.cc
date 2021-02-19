@@ -1,71 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using SimpleEngine;
-using NUnit.Framework.SyntaxHelpers;
+﻿#include "catch.hpp"
+#include "engine/mat33.h"
+#include "engine/mat44.h"
+#include "test.h"
 
-namespace SimpleUnit
+using namespace SimpleEngine;
+
+TEST_CASE("TestColumnMajor")
 {
-    [TestFixture]
-    public class TestMat33 : Test
-    {
-        private const float fe = 0.001f;
-        [Test]
-        public void TestColumnMajor()
-        {
-            mat33 m = mat33.FromColumnMajor(new float[] { 0,1,2,3,4,5,6,7,8 });
-            Assert.That(m[0, 0], Is.EqualTo(0).Within(fe));
-            Assert.That(m[1, 0], Is.EqualTo(1).Within(fe));
-            Assert.That(m[2, 0], Is.EqualTo(2).Within(fe));
+    mat33 m = mat33::FromColumnMajor(mat33::FA{0, 1, 2, 3, 4, 5, 6, 7, 8});
+    CHECK(m(0, 0) == Approx(0));
+    CHECK(m(1, 0) == Approx(1));
+    CHECK(m(2, 0) == Approx(2));
 
-            Assert.That(m[0, 1], Is.EqualTo(3).Within(fe));
-            Assert.That(m[1, 1], Is.EqualTo(4).Within(fe));
-            Assert.That(m[2, 1], Is.EqualTo(5).Within(fe));
+    CHECK(m(0, 1) == Approx(3));
+    CHECK(m(1, 1) == Approx(4));
+    CHECK(m(2, 1) == Approx(5));
 
-            Assert.That(m[0, 2], Is.EqualTo(6).Within(fe));
-            Assert.That(m[1, 2], Is.EqualTo(7).Within(fe));
-            Assert.That(m[2, 2], Is.EqualTo(8).Within(fe));
-        }
-        /*[Test]
-        public void TestTransposed()
-        {
-            mat33 m = mat33.FromColumnMajor(new float[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 }).Transposed;
-            Assert.That(m[0, 0], Is.EqualTo(0).Within(fe));
-            Assert.That(m[0, 1], Is.EqualTo(1).Within(fe));
-            Assert.That(m[0, 2], Is.EqualTo(2).Within(fe));
+    CHECK(m(0, 2) == Approx(6));
+    CHECK(m(1, 2) == Approx(7));
+    CHECK(m(2, 2) == Approx(8));
+}
 
-            Assert.That(m[1, 0], Is.EqualTo(3).Within(fe));
-            Assert.That(m[1, 1], Is.EqualTo(4).Within(fe));
-            Assert.That(m[1, 2], Is.EqualTo(5).Within(fe));
+TEST_CASE("TestRowMajor")
+{
+    mat33 m = mat33::FromRowMajor(mat33::FA{0, 1, 2, 3, 4, 5, 6, 7, 8});
+    CHECK(m(0, 0) == Approx(0));
+    CHECK(m(0, 1) == Approx(1));
+    CHECK(m(0, 2) == Approx(2));
 
-            Assert.That(m[2, 0], Is.EqualTo(6).Within(fe));
-            Assert.That(m[2, 1], Is.EqualTo(7).Within(fe));
-            Assert.That(m[2, 2], Is.EqualTo(8).Within(fe));
-        }*/
+    CHECK(m(1, 0) == Approx(3));
+    CHECK(m(1, 1) == Approx(4));
+    CHECK(m(1, 2) == Approx(5));
 
-        [Test]
-        public void TestRowMajor()
-        {
-            mat33 m = mat33.FromRowMajor(new float[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 });
-            Assert.That(m[0, 0], Is.EqualTo(0).Within(fe));
-            Assert.That(m[0, 1], Is.EqualTo(1).Within(fe));
-            Assert.That(m[0, 2], Is.EqualTo(2).Within(fe));
+    CHECK(m(2, 0) == Approx(6));
+    CHECK(m(2, 1) == Approx(7));
+    CHECK(m(2, 2) == Approx(8));
+}
 
-            Assert.That(m[1, 0], Is.EqualTo(3).Within(fe));
-            Assert.That(m[1, 1], Is.EqualTo(4).Within(fe));
-            Assert.That(m[1, 2], Is.EqualTo(5).Within(fe));
-
-            Assert.That(m[2, 0], Is.EqualTo(6).Within(fe));
-            Assert.That(m[2, 1], Is.EqualTo(7).Within(fe));
-            Assert.That(m[2, 2], Is.EqualTo(8).Within(fe));
-        }
-
-        [Test]
-        public void TestFromToMat44()
-        {
-            AreEqual(mat33.Identity.mat44.mat33, mat33.Identity);
-        }
-    }
+TEST_CASE("TestFromToMat44")
+{
+    CHECK(AreEqual(mat33::Identity().mat44().mat33(), mat33::Identity()));
 }

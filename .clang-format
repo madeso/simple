@@ -9,3 +9,5 @@ AllowShortIfStatementsOnASingleLine: false
 IndentCaseLabels: false
 NamespaceIndentation: All
 AccessModifierOffset: -4
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerAllOnOneLineOrOnePerLine: false

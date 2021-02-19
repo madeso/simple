@@ -1,58 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/matrixhelper.h"
+
+#include "engine/mat33.h"
+#include "engine/quat.h"
+#include "engine/vec3.h"
 
 namespace SimpleEngine
 {
-    public class MatrixHelper
+    MatrixHelper::MatrixHelper(const SimpleEngine::mat44& m)
+        : mat(m)
     {
-        mat44 mat;
+    }
 
-        public MatrixHelper(mat44 mat)
-        {
-            this.mat = mat;
-        }
+    MatrixHelper& MatrixHelper::mult(const SimpleEngine::mat44& m)
+    {
+        mat = mat * m;
+        return *this;
+    }
 
-        public MatrixHelper mult(mat44 m)
-        {
-            mat = mat * m;
-            return this;
-        }
+    MatrixHelper& MatrixHelper::Rotate(const AxisAngle& aa)
+    {
+        return mult(mat44::FromAxisAngle(aa));
+    }
 
-        public MatrixHelper Rotate(AxisAngle aa)
-        {
-            return mult(mat44.FromAxisAngle(aa));
-        }
-        public MatrixHelper Rotate(quat q)
-        {
-            return mult(q.Conjugate.mat33.mat44);
-        }
+    MatrixHelper& MatrixHelper::Rotate(const quat& q)
+    {
+        return mult(q.Conjugate().mat33().mat44());
+    }
 
-        public MatrixHelper Translate(vec3 t)
-        {
-            return mult(mat44.TranslationFor(t));
-        }
+    MatrixHelper& MatrixHelper::Translate(const vec3& t)
+    {
+        return mult(mat44::TranslationFor(t));
+    }
 
-        public vec3 transform(vec3 v)
-        {
-            return mat * v;
-        }
+    vec3 MatrixHelper::transform(const vec3& v) const
+    {
+        return mat * v;
+    }
 
-        public mat33 mat33
-        {
-            get
-            {
-                return mat.mat33;
-            }
-        }
+    mat33 MatrixHelper::mat33() const
+    {
+        return mat.mat33();
+    }
 
-        public mat44 mat44
-        {
-            get
-            {
-                return mat;
-            }
-        }
+    mat44 MatrixHelper::mat44() const
+    {
+        return mat;
     }
 }

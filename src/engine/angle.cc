@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "fmt/core.h"
+
 namespace
 {
     constexpr float pi = M_PI;
@@ -19,6 +21,11 @@ namespace
 
 namespace SimpleEngine
 {
+    std::string angle::ToString() const
+    {
+        return fmt::format("{}", inDegrees());
+    }
+
     angle angle::Zero()
     {
         return angle::FromRadians(0);
@@ -89,7 +96,8 @@ namespace SimpleEngine
         return angle::FromRadians((float)std::atan(v));
     }
 
-    angle::angle(float r) : rad(r)
+    angle::angle(float r)
+        : rad(r)
     {
     }
 

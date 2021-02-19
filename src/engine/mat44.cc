@@ -1,182 +1,146 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/mat44.h"
+
+#include "engine/axisangle.h"
+#include "engine/mat33.h"
+#include "engine/matrixhelper.h"
+#include "engine/quat.h"
+#include "engine/vec3.h"
+#include "fmt/core.h"
 
 namespace SimpleEngine
 {
-    public class mat44
+    namespace
     {
-        const int kSize = 4;
-
-        /*
-         *     | 0 4 8  12 |
-         * M = | 1 5 9  13 |
-         *     | 2 5 10 14 |
-         *     | 3 7 11 15 |
-         */
-
-        private float[] dataColumnMajor;
-        public float[] DataArray
+        float multsum(const mat44& a, const mat44& b, int row, int col)
         {
-            get
-            {
-                return dataColumnMajor;
-            }
+            return a(row, 0) * b(0, col) + a(row, 1) * b(1, col) + a(row, 2) * b(2, col) + a(row, 3) * b(3, col);
         }
 
-        public float this[int row, int column]
+        float multsum(const mat44& a, const vec3& b, int row)
         {
-            get
-            {
-                return dataColumnMajor[row + column * kSize];
-            }
-            set
-            {
-                dataColumnMajor[row + column * kSize] = value;
-            }
+            return a(row, 0) * b(0) + a(row, 1) * b(1) + a(row, 2) * b(2) + a(row, 3) * 1;
         }
+    }
 
-        private mat44(float[] dataColumnMajor)
-        {
-            if(dataColumnMajor.Length != math1.Square(kSize) ) throw new Exception("size is " + dataColumnMajor.Length);
-            this.dataColumnMajor = dataColumnMajor;
-        }
+    std::string mat44::ToString() const
+    {
+        const auto& m = dataColumnMajor;
+        return fmt::format(
+            "\n| {0} {4} {8} {12} |"
+            "\n| {1} {5} {9} {13} |"
+            "\n| {2} {5} {10} {14} |"
+            "\n| {3} {7} {11} {15} |",
+            m[0], m[1], m[2], m[3], m[4], m[5], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15]);
+    }
 
-        public static mat44 FromColumnMajor(float[] data)
-        {
-            return new mat44(data);
-        }
+    float* mat44::DataArray()
+    {
+        return &dataColumnMajor[0];
+    }
 
-        public static mat44 FromRowMajor(float[] data)
-        {
-            return new mat44(new float[] {
-                data[0], data[4], data[8],  data[12],
-                data[1], data[5], data[9],  data[13],
-                data[2], data[6], data[10], data[14],
-                data[3], data[7], data[11], data[15]
-            } );
-        }
+    float mat44::operator()(int row, int column) const
+    {
+        return dataColumnMajor[row + column * kSize];
+    }
+    float& mat44::operator()(int row, int column)
+    {
+        return dataColumnMajor[row + column * kSize];
+    }
 
-        public static mat44 operator* (mat44 a, mat44 b)
-        {
-            return mat44.FromRowMajor(new float[] {
-                multsum(a,b, 0,0), multsum(a, b, 0, 1), multsum(a, b, 0, 2), multsum(a, b, 0, 3),
-                multsum(a,b, 1,0), multsum(a, b, 1, 1), multsum(a, b, 1, 2), multsum(a, b, 1, 3),
-                multsum(a,b, 2,0), multsum(a, b, 2, 1), multsum(a, b, 2, 2), multsum(a, b, 2, 3),
-                multsum(a,b, 3,0), multsum(a, b, 3, 1), multsum(a, b, 3, 2), multsum(a, b, 3, 3),
-            });
-        }
-        public static vec3 operator *(mat44 m, vec3 v)
-        {
-            return new vec3(multsum(m, v, 0), multsum(m, v, 1), multsum(m, v, 2));
-        }
+    mat44::mat44(mat44::FA d)
+        : dataColumnMajor(d)
+    {
+    }
 
-        private static float multsum(mat44 a, mat44 b, int row, int col)
-        {
-            return a[row, 0] * b[0, col] + a[row, 1] * b[1, col] + a[row, 2] * b[2, col] + a[row, 3] * b[3, col];
-        }
-        private static float multsum(mat44 a, vec3 b, int row)
-        {
-            return a[row, 0] * b[0] + a[row, 1] * b[1] + a[row, 2] * b[2]+ a[row, 3] * 1;
-        }
+    mat44 mat44::FromColumnMajor(FA data)
+    {
+        return mat44(data);
+    }
 
-        public static mat44 TranslationFor(vec3 v)
-        {
-            return FromRowMajor(new float[] {
-                1,0,0,v.x,
-                0,1,0,v.y,
-                0,0,1,v.z,
-                0,0,0,1
-            });
-        }
+    mat44 mat44::FromRowMajor(FA data)
+    {
+        return mat44({data[0], data[4], data[8], data[12],
+                      data[1], data[5], data[9], data[13],
+                      data[2], data[6], data[10], data[14],
+                      data[3], data[7], data[11], data[15]});
+    }
 
-        public mat33 mat33
-        {
-            get
-            {
-                return mat33.FromRowMajor(new float[] {
-                    this[0, 0], this[0, 1], this[0, 2],
-                    this[1, 0], this[1, 1], this[1, 2],
-                    this[2, 0], this[2, 1], this[2, 2]
-                });
-            }
-        }
+    mat44 mat44::TranslationFor(const vec3& v)
+    {
+        return FromRowMajor(FA{
+            1, 0, 0, v.x,
+            0, 1, 0, v.y,
+            0, 0, 1, v.z,
+            0, 0, 0, 1});
+    }
 
-        public vec3 Location
-        {
-            get
-            {
-                return new vec3(this[0, 3], this[1, 3], this[2, 3]);
-            }
-            /* is this mathematically correct?
-            set
-            {
-                this[0, 3] = value.x;
-                this[1, 3] = value.y;
-                this[2, 3] = value.z;
-            }*/
-        }
+    SimpleEngine::mat33 mat44::mat33() const
+    {
+        const auto& self = *this;
+        return SimpleEngine::mat33::FromRowMajor({self(0, 0), self(0, 1), self(0, 2),
+                                                  self(1, 0), self(1, 1), self(1, 2),
+                                                  self(2, 0), self(2, 1), self(2, 2)});
+    }
 
-        public MatrixHelper Help
-        {
-            get
-            {
-                return new MatrixHelper(this);
-            }
-        }
+    vec3 mat44::Location() const
+    {
+        const auto& self = *this;
+        return vec3(self(0, 3), self(1, 3), self(2, 3));
+    }
 
-        /*public mat44 Transposed
-        {
-            get
-            {
-                return FromRowMajor(dataColumnMajor);
-            }
-        }*/
+    MatrixHelper mat44::Help() const
+    {
+        return MatrixHelper(*this);
+    }
 
-        public override string ToString()
-        {
-            return string.Format("({0} {1} {2} {3})", rowAsString(0), rowAsString(1), rowAsString(2), rowAsString(3));
-        }
+    mat44 mat44::FromAxisAngle(const AxisAngle& aa)
+    {
+        float c = aa.angle.Cos();
+        float s = aa.angle.Sin();
+        float x = aa.axis.x;
+        float y = aa.axis.y;
+        float z = aa.axis.z;
 
-        private string rowAsString(int row)
-        {
-            return string.Format("({0} {1} {2} {3})", nice(this[row, 0]), nice(this[row, 1]), nice(this[row, 2]), nice(this[row, 3]));
-        }
+        return mat44(FA{
+            x * x * (1 - c) + c, x * y * (1 - c) - z * s, x * z * (1 - c) + y * s, 0,
+            y * x * (1 - c) + z * s, y * y * (1 - c) + c, y * z * (1 - c) - x * s, 0,
+            x * z * (1 - c) - y * s, y * z * (1 - c) + x * s, z * z * (1 - c) + c, 0,
+            0, 0, 0, 1});
+    }
 
-        private float nice(float p)
-        {
-            if (math1.IsZero(p)) return 0;
-            else return p;
-        }
+    mat44 mat44::Identity()
+    {
+        return mat44(FA{
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1});
+    }
 
-        public static mat44 FromAxisAngle(AxisAngle aa)
-        {
-            float c = aa.angle.Cos;
-            float s = aa.angle.Sin;
-            float x = aa.axis.x;
-            float y = aa.axis.y;
-            float z = aa.axis.z;
+    mat44 operator*(const mat44& a, const mat44& b)
+    {
+        return mat44::FromRowMajor(mat44::FA{
+            multsum(a, b, 0, 0),
+            multsum(a, b, 0, 1),
+            multsum(a, b, 0, 2),
+            multsum(a, b, 0, 3),
+            multsum(a, b, 1, 0),
+            multsum(a, b, 1, 1),
+            multsum(a, b, 1, 2),
+            multsum(a, b, 1, 3),
+            multsum(a, b, 2, 0),
+            multsum(a, b, 2, 1),
+            multsum(a, b, 2, 2),
+            multsum(a, b, 2, 3),
+            multsum(a, b, 3, 0),
+            multsum(a, b, 3, 1),
+            multsum(a, b, 3, 2),
+            multsum(a, b, 3, 3),
+        });
+    }
 
-            return new mat44(new float[] {
-    	      x*x*(1-c)+c,      x*y*(1-c)-z*s,  x*z*(1-c)+y*s,  0,
-		      y*x*(1-c)+z*s,    y*y*(1-c)+c,    y*z*(1-c)-x*s,  0,
-		      x*z*(1-c)-y*s,    y*z*(1-c)+x*s,  z*z*(1-c)+c,    0,
-		      0,                0,              0,              1
-            });
-        }
-
-        public static mat44 Identity
-        {
-            get
-            {
-                return new mat44(new float[] {
-                    1,0,0,0,
-                    0,1,0,0,
-                    0,0,1,0,
-                    0,0,0,1
-                });
-            }
-        }
+    vec3 operator*(const mat44& m, const vec3& v)
+    {
+        return vec3(multsum(m, v, 0), multsum(m, v, 1), multsum(m, v, 2));
     }
 }

@@ -1,172 +1,144 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/mat33.h"
+
+#include "engine/mat44.h"
+#include "engine/math1.h"
+#include "engine/quat.h"
+#include "engine/vec3.h"
+#include "fmt/core.h"
 
 namespace SimpleEngine
 {
-    // matrix order:3x3
-    public class mat33
+    std::string mat33::ToString() const
     {
-        const int kSize = 3;
+        const auto& m = dataColumnMajor;
 
-        /*
-         *     | 0 3 6 |
-         * M = | 1 4 7 |
-         *     | 2 5 8 |
-         */
+        return fmt::format(
+            "\n| {0} {3} {6} |"
+            "\n| {1} {4} {7} |"
+            "\n| {2} {5} {8} |",
+            m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8]);
+    }
 
-        private float[] dataColumnMajor;
-        public float[] DataArray
+    float* mat33::DataArray()
+    {
+        return &dataColumnMajor[0];
+    }
+
+    float mat33::operator()(int row, int column) const
+    {
+        return dataColumnMajor[row + column * kSize];
+    }
+    float& mat33::operator()(int row, int column)
+    {
+        return dataColumnMajor[row + column * kSize];
+    }
+
+    mat33::mat33(FA data)
+        : dataColumnMajor(data)
+    {
+    }
+
+    mat33 mat33::FromColumnMajor(FA data)
+    {
+        return mat33(data);
+    }
+
+    mat33 mat33::FromRowMajor(FA data)
+    {
+        return mat33(FA{
+            data[0], data[3], data[6],
+            data[1], data[4], data[7],
+            data[2], data[5], data[8]});
+    }
+
+    vec3 mat33::XAxis() const
+    {
+        const auto& self = *this;
+        return vec3(self(0, 0), self(1, 0), self(2, 0));
+    }
+
+    vec3 mat33::YAxis() const
+    {
+        const auto& self = *this;
+        return vec3(self(0, 1), self(1, 1), self(2, 1));
+    }
+
+    vec3 mat33::ZAxis() const
+    {
+        const auto& self = *this;
+        return -vec3(self(0, 2), self(1, 2), self(2, 2));
+    }
+
+    mat44 mat33::mat44() const
+    {
+        const auto& self = *this;
+        return mat44::FromRowMajor(mat44::FA{
+            self(0, 0), self(0, 1), self(0, 2), 0,
+            self(1, 0), self(1, 1), self(1, 2), 0,
+            self(2, 0), self(2, 1), self(2, 2), 0,
+            0, 0, 0, 1});
+    }
+
+    mat33 mat33::Identity()
+    {
+        return mat33(FA{
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1});
+    }
+
+    mat33 mat33::Scale(const vec3& scale)
+    {
+        return FromRowMajor(FA{
+            scale.x, 0, 0,
+            0, scale.y, 0,
+            0, 0, scale.z});
+    }
+
+    quat mat33::quat() const
+    {
+        const auto& self = *this;
+
+        // check the diagonal
+        float tr = self(0, 0) + self(1, 1) + self(2, 2);
+        if (tr > 0.0f)
         {
-            get
-            {
-                return dataColumnMajor;
-            }
+            float s = math1::Sqrt(tr + 1.0f);
+            float t = 0.5f / s;
+
+            return SimpleEngine::quat(
+                s * 0.5f,
+                vec3((self(1, 2) - self(2, 1)) * t,
+                     (self(2, 0) - self(0, 2)) * t,
+                     (self(0, 1) - self(1, 0)) * t));
         }
-        public float this[int row, int column]
+        else
         {
-            get
-            {
-                return dataColumnMajor[row + column * kSize];
-            }
-            set
-            {
-                dataColumnMajor[row + column * kSize] = value;
-            }
+            std::array<int, 3> NXT = {1, 2, 0};
+            SimpleEngine::quat q = SimpleEngine::quat::Identity();
+            // diagonal is negative
+            // get biggest diagonal element
+            int i = 0;
+            if (self(1, 1) > self(0, 0))
+                i = 1;
+            if (self(2, 2) > self(i, i))
+                i = 2;
+            //setup index sequence
+            int j = NXT[i];
+            int k = NXT[j];
+
+            float s = math1::Sqrt((self(i, i) - (self(j, j) + self(k, k))) + 1.0f);
+
+            q(i) = s * 0.5f;
+
+            if (math1::IsZero(s) == false)
+                s = 0.5f / s;
+
+            q(j) = (self(i, j) + self(j, i)) * s;
+            q(k) = (self(i, k) + self(k, i)) * s;
+            q(3) = (self(j, k) - self(k, j)) * s;
+
+            return q;
         }
-
-        private mat33(float[] data)
-        {
-            System.Diagnostics.Debug.Assert(data.Length == math1.Square(kSize));
-            this.dataColumnMajor = data;
-        }
-
-        public static mat33 FromColumnMajor(float[] data)
-        {
-            return new mat33(data);
-        }
-
-        public static mat33 FromRowMajor(float[] data)
-        {
-            return new mat33( new float[] {
-                data[0], data[3], data[6],
-                data[1], data[4], data[7],
-                data[2], data[5], data[8]
-            } );
-        }
-
-        public vec3 XAxis
-        {
-            get
-            {
-                return new vec3(this[0, 0], this[1, 0], this[2, 0]);
-            }
-        }
-
-        public vec3 YAxis
-        {
-            get
-            {
-                return new vec3(this[0, 1], this[1, 1], this[2, 1]);
-            }
-        }
-
-        public vec3 ZAxis
-        {
-            get
-            {
-                return - new vec3(this[0, 2], this[1, 2], this[2, 2]);
-            }
-        }
-
-        public mat44 mat44
-        {
-            get
-            {
-                return mat44.FromRowMajor(new float[] {
-                    this[0, 0], this[0, 1], this[0, 2], 0,
-                    this[1, 0], this[1, 1], this[1, 2], 0,
-                    this[2, 0], this[2, 1], this[2, 2], 0,
-                    0,0,0,1
-                });
-            }
-        }
-
-        /*public mat33 Transposed
-        {
-            get
-            {
-                return FromRowMajor(dataColumnMajor);
-            }
-        }*/
-
-
-        public static mat33 Identity
-        {
-            get
-            {
-                return new mat33(new float[] {
-                    1,0,0,
-                    0,1,0,
-                    0,0,1
-                });
-            }
-        }
-
-        public static mat33 Scale(vec3 scale)
-        {
-            return FromRowMajor(new float[] {
-                scale.x, 0, 0,
-                0, scale.y, 0,
-                0, 0, scale.z
-            });
-        }
-
-        public quat quat
-		{
-            get
-            {
-                // check the diagonal
-                float tr = this[0, 0] + this[1, 1] + this[2, 2];
-                if (tr > 0.0f)
-                {
-                    float s = math1.Sqrt(tr + 1.0f);
-                    float t = 0.5f / s;
-
-                    return new quat(
-                        s * 0.5f,
-                        new vec3((this[1, 2] - this[2, 1]) * t,
-                                 (this[2, 0] - this[0, 2]) * t,
-                                 (this[0, 1] - this[1, 0]) * t));
-                }
-                else
-                {
-                    int[] NXT = new int[] { 1, 2, 0 };
-                    quat q = quat.Identity;
-                    // diagonal is negative
-                    // get biggest diagonal element
-                    int i = 0;
-                    if (this[1, 1] > this[0, 0]) i = 1;
-                    if (this[2, 2] > this[i, i]) i = 2;
-                    //setup index sequence
-                    int j = NXT[i];
-                    int k = NXT[j];
-
-                    float s = math1.Sqrt((this[i, i] - (this[j, j] + this[k, k])) + 1.0f);
-
-                    q[i] = s * 0.5f;
-
-                    
-                    if (math1.IsZero(s)==false) s = 0.5f / s;
-
-                    q[j] = (this[i, j] + this[j, i]) * s;
-                    q[k] = (this[i, k] + this[k, i]) * s;
-                    q[3] = (this[j, k] - this[k, j]) * s;
-
-                    return q;
-                }
-            }
-		}
     }
 }
