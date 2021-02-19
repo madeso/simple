@@ -31,7 +31,7 @@ namespace SimpleEngine
             float r = (float)this.r.NextDouble();
             for (Entry e : entries)
             {
-                if (math1.IsWithin(v, r, v + e.val))
+                if (math1::IsWithin(v, r, v + e.val))
                     return e.t;
                 else
                 {

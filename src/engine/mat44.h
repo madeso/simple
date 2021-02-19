@@ -55,7 +55,7 @@ namespace SimpleEngine
         // }
         // float nice(float p)
         // {
-        //     if (math1.IsZero(p)) return 0;
+        //     if (math1::IsZero(p)) return 0;
         //     else return p;
         // }
 

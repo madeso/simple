@@ -23,7 +23,7 @@ namespace SimpleEngine
             fs.setOverrides(overrides);
 
             std::string meshpath = Xml.GetAttributeString(xmesh, "file");
-            float scale = Xml.GetAttribute<float>(xmesh, "scale", math1.ParseFloat, 1.0f);
+            float scale = Xml.GetAttribute<float>(xmesh, "scale", math1::ParseFloat, 1.0f);
 
             MeshDef def;
             Animation animation;

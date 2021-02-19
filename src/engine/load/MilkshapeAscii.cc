@@ -75,12 +75,12 @@ namespace SimpleEngine.load
 
                     std::string[] data = readLine().Split(" ".ToCharArray());
                     bone.flags = int.Parse(data[0]);
-                    bone.x = math1.ParseFloat(data[1]) * scale;
-                    bone.y = math1.ParseFloat(data[2]) * scale;
-                    bone.z = math1.ParseFloat(data[3]) * scale;
-                    bone.rx = math1.ParseFloat(data[4]);
-                    bone.ry = math1.ParseFloat(data[5]);
-                    bone.rz = math1.ParseFloat(data[6]);
+                    bone.x = math1::ParseFloat(data[1]) * scale;
+                    bone.y = math1::ParseFloat(data[2]) * scale;
+                    bone.z = math1::ParseFloat(data[3]) * scale;
+                    bone.rx = math1::ParseFloat(data[4]);
+                    bone.ry = math1::ParseFloat(data[5]);
+                    bone.rz = math1::ParseFloat(data[6]);
 
                     readPositionFrames(bone);
                     readRotationFrame(bone);
@@ -95,10 +95,10 @@ namespace SimpleEngine.load
                 {
                     std::string[] data = readLine().Split(" ".ToCharArray());
                     RotatonKey key = bone.newRotationKey();
-                    key.time = math1.ParseFloat(data[0]);
-                    key.x = math1.ParseFloat(data[1]);
-                    key.y = math1.ParseFloat(data[2]);
-                    key.z = math1.ParseFloat(data[3]);
+                    key.time = math1::ParseFloat(data[0]);
+                    key.x = math1::ParseFloat(data[1]);
+                    key.y = math1::ParseFloat(data[2]);
+                    key.z = math1::ParseFloat(data[3]);
                 }
             }
 
@@ -110,10 +110,10 @@ namespace SimpleEngine.load
                 {
                     std::string[] data = readLine().Split(" ".ToCharArray());
                     PositionKey key = bone.newPositionKey();
-                    key.time = math1.ParseFloat(data[0]);
-                    key.x = math1.ParseFloat(data[1]) * scale;
-                    key.y = math1.ParseFloat(data[2]) * scale;
-                    key.z = math1.ParseFloat(data[3]) * scale;
+                    key.time = math1::ParseFloat(data[0]);
+                    key.x = math1::ParseFloat(data[1]) * scale;
+                    key.y = math1::ParseFloat(data[2]) * scale;
+                    key.z = math1::ParseFloat(data[3]) * scale;
                 }
             }
 
@@ -134,8 +134,8 @@ namespace SimpleEngine.load
                 mat.diffuse.parse(readLine());
                 mat.specular.parse(readLine());
                 mat.emissive.parse(readLine());
-                mat.shininess = math1.ParseFloat(readLine());
-                mat.transperency = math1.ParseFloat(readLine());
+                mat.shininess = math1::ParseFloat(readLine());
+                mat.transperency = math1::ParseFloat(readLine());
                 mat.diffuseTexture = Cleanup(readLine());
                 mat.alphatexture = Cleanup(readLine());
             }
@@ -202,9 +202,9 @@ namespace SimpleEngine.load
                 std::string normalline = readLine();
                 std::string[] normalcmd = normalline.Split(" ".ToCharArray());
                 Normal n = mesh.newNormal();
-                n.x = math1.ParseFloat(normalcmd[0]);
-                n.y = math1.ParseFloat(normalcmd[1]);
-                n.z = math1.ParseFloat(normalcmd[2]);
+                n.x = math1::ParseFloat(normalcmd[0]);
+                n.y = math1::ParseFloat(normalcmd[1]);
+                n.z = math1::ParseFloat(normalcmd[2]);
                 n.normalize();
             }
 
@@ -214,11 +214,11 @@ namespace SimpleEngine.load
                 std::string[] vertexcmd = vertexline.Split(" ".ToCharArray());
                 Vertex v = mesh.newVertex();
                 v.flags = int.Parse(vertexcmd[0]);
-                v.x = math1.ParseFloat(vertexcmd[1]) * scale;
-                v.y = math1.ParseFloat(vertexcmd[2]) * scale;
-                v.z = math1.ParseFloat(vertexcmd[3]) * scale;
-                v.u = math1.ParseFloat(vertexcmd[4]);
-                v.v = math1.ParseFloat(vertexcmd[5]);
+                v.x = math1::ParseFloat(vertexcmd[1]) * scale;
+                v.y = math1::ParseFloat(vertexcmd[2]) * scale;
+                v.z = math1::ParseFloat(vertexcmd[3]) * scale;
+                v.u = math1::ParseFloat(vertexcmd[4]);
+                v.v = math1::ParseFloat(vertexcmd[5]);
                 v.bone = int.Parse(vertexcmd[6]);
             }
 

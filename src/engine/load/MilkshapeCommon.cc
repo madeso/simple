@@ -171,10 +171,10 @@ namespace SimpleEngine.load
         void parse(std::string p)
         {
             std::string[] data = p.Split(" ".ToCharArray());
-            r = math1.ParseFloat(data[0]);
-            g = math1.ParseFloat(data[1]);
-            b = math1.ParseFloat(data[2]);
-            a = math1.ParseFloat(data[3]);
+            r = math1::ParseFloat(data[0]);
+            g = math1::ParseFloat(data[1]);
+            b = math1::ParseFloat(data[2]);
+            a = math1::ParseFloat(data[3]);
         }
     } struct Material
     {
