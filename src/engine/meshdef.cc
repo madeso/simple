@@ -1,9 +1,7 @@
-﻿#include <array>
+﻿#include "engine/meshdef.h"
+
 #include <cassert>
-#include <map>
-#include <memory>
 #include <stdexcept>
-#include <vector>
 
 #include "engine/mat44.h"
 #include "engine/matrixhelper.h"
@@ -14,348 +12,270 @@
 
 namespace SimpleEngine
 {
-    struct CompiledMesh;
-    struct MediaLoader;
-
-    struct PointData
+    PointData::PointData(int bone, const vec3& loc)
+        : boneid(bone)
+        , location(loc)
     {
-        int boneid;
-        vec3 location;
+    }
 
-        PointData(int bone, const vec3& loc)
-            : boneid(bone)
-            , location(loc)
-        {
-        }
-
-        std::string ToString() const
-        {
-            return fmt::format("{0} {1}", boneid, location.ToString());
-        }
-    };
-
-    struct VertexData
+    std::string PointData::ToString() const
     {
-        int vertex;
-        int normal;
-        int uv;
-    };
+        return fmt::format("{0} {1}", boneid, location.ToString());
+    }
 
-    using Tri = std::array<VertexData, 3>;
-    struct Data
+    std::string Bone::ToString() const
     {
-        std::vector<Tri> tris = std::vector<Tri>();
-    };
+        if (parentBone == nullptr)
+        {
+            return name;
+        }
+        else
+            return parentBone->ToString() + "->" + name;
+    }
 
-    struct Vertex
+    bool Bone::hasParent() const
     {
-        vec3 vertex;
-        vec3 normal;
-        vec2 uv;
-        int bone;
-    };
+        return parent != -1;
+    }
 
-    struct Bone
+    MaterialDef::MaterialDef(const std::string& n)
+        : name(n)
     {
-        int parent;
-        std::string name;
-        vec3 pos;
-        quat rot;
+    }
 
-        int index = 0;
-        std::shared_ptr<Bone> parentBone;
-
-        std::string ToString() const
-        {
-            if (parentBone == nullptr)
-            {
-                return name;
-            }
-            else
-                return parentBone->ToString() + "->" + name;
-        }
-
-        bool hasParent() const
-        {
-            return parent != -1;
-        }
-
-        std::vector<std::shared_ptr<Bone>> childs;
-    };
-
-    struct MaterialDef
+    std::string MaterialDef::TextureOrName() const
     {
-        MaterialDef(const std::string& n)
-            : name(n)
-        {
-        }
+        if (texture == "")
+            return name;
+        else
+            return texture;
+    }
 
-        std::string name;
-        vec3 ambient = vec3(0.2f, 0.2f, 0.2f);
-        vec3 diffuse = vec3(0.8f, 0.8f, 0.8f);
-        vec3 specular = vec3(1, 1, 1);
-        vec3 emissive = vec3(0, 0, 0);
-
-        float alpha = 1;
-        float shininess = 0;
-
-        std::string texture;
-
-        std::string TextureOrName() const
-        {
-            if (texture == "")
-                return name;
-            else
-                return texture;
-        }
-
-        std::string ToString() const
-        {
-            return name + ": " + texture;
-        }
-    };
-
-    struct Mpd
+    std::string MaterialDef::ToString() const
     {
-        Mpd()
-            : m(mat44::Identity())
-        {
-        }
+        return name + ": " + texture;
+    }
 
-        Mpd(const mat44& mm)
-            : m(mm)
-        {
-        }
-
-        mat44 m;
-        std::vector<PointData> pd;
-    };
-
-    struct MeshDef
+    Mpd::Mpd()
+        : m(mat44::Identity())
     {
-        std::vector<PointData> points;
-        std::vector<vec2> uvs;
-        std::vector<vec3> normals;
-        std::vector<std::shared_ptr<Bone>> bones;
+    }
 
-        std::map<std::string, std::shared_ptr<Data>> datas;
-        std::shared_ptr<Data> currentd;
+    Mpd::Mpd(const mat44& mm)
+        : m(mm)
+    {
+    }
 
-        std::map<std::string, std::shared_ptr<MaterialDef>> materials;
-
-        std::shared_ptr<CompiledMesh> compiledMesh;
-
-        int TriCount() const
+    int MeshDef::TriCount() const
+    {
+        int c = 0;
+        for (const auto& d : datas)
         {
-            int c = 0;
-            for (const auto& d : datas)
-            {
-                c += d.second->tris.size();
-            }
-            return c;
+            c += d.second->tris.size();
         }
+        return c;
+    }
 
-        MeshDef& mapBones()
+    MeshDef& MeshDef::mapBones()
+    {
+        std::map<int, Mpd> bdp;
+
+        for (int i = 0; i < bones.size(); ++i)
         {
-            std::map<int, Mpd> bdp;
-
-            for (int i = 0; i < bones.size(); ++i)
+            int parent = bones[i]->parent;
+            bones[i]->index = i;
+            if (bones[i]->hasParent())
             {
-                int parent = bones[i]->parent;
-                bones[i]->index = i;
-                if (bones[i]->hasParent())
-                {
-                    bones[i]->parentBone = bones[parent];
-                    bones[i]->parentBone->childs.emplace_back(bones[i]);
-                }
-
-                auto& bone = bones[i];
-                mat44 m = MatrixHelper(mat44::Identity()).Translate(-bone->pos).Rotate(-bone->rot).mat44();
-                bdp.emplace(i, Mpd{m});
+                bones[i]->parentBone = bones[parent];
+                bones[i]->parentBone->childs.emplace_back(bones[i]);
             }
 
-            for (auto& pd : points)
+            auto& bone = bones[i];
+            mat44 m = MatrixHelper(mat44::Identity()).Translate(-bone->pos).Rotate(-bone->rot).mat44();
+            bdp.emplace(i, Mpd{m});
+        }
+
+        for (auto& pd : points)
+        {
+            if (pd.boneid == -1)
+                continue;
+            const auto& bone = bones[pd.boneid];
+            Mpd& mpd = bdp[pd.boneid];
+            mpd.pd.emplace_back(pd);
+        }
+
+        for (auto& k : bdp)
+        {
+            auto& bone = bones[k.first];
+            mat44 m = mat44::Identity();
+            for (auto& b = bone; b != nullptr; b = b->parentBone)
             {
-                if (pd.boneid == -1)
-                    continue;
-                const auto& bone = bones[pd.boneid];
-                Mpd& mpd = bdp[pd.boneid];
-                mpd.pd.emplace_back(pd);
+                m = m * bdp[b->index].m;
             }
 
-            for (auto& k : bdp)
+            for (PointData& pd : k.second.pd)
             {
-                auto& bone = bones[k.first];
-                mat44 m = mat44::Identity();
-                for (auto& b = bone; b != nullptr; b = b->parentBone)
-                {
-                    m = m * bdp[b->index].m;
-                }
+                pd.location = m * pd.location;
+            }
+        }
 
-                for (PointData& pd : k.second.pd)
-                {
-                    pd.location = m * pd.location;
-                }
+        return *this;
+    }
+
+    std::vector<std::shared_ptr<Bone>> MeshDef::RootBones()
+    {
+        std::vector<std::shared_ptr<Bone>> r;
+
+        for (auto& b : bones)
+        {
+            if (b->parentBone == nullptr)
+            {
+                r.emplace_back(b);
+            }
+        }
+
+        return r;
+    }
+
+    std::vector<Tri> MeshDef::TrianglesFor(const MaterialDef& material) const
+    {
+        std::vector<Tri> r;
+
+        if (auto found = datas.find(material.name); found != datas.end())
+        {
+            for (Tri t : found->second->tris)
+            {
+                r.emplace_back(t);
+            }
+        }
+
+        return r;
+    }
+
+    std::vector<std::shared_ptr<MaterialDef>> MeshDef::Materials()
+    {
+        std::vector<std::shared_ptr<MaterialDef>> r;
+        for (auto& k : materials)
+        {
+            r.emplace_back(k.second);
+        }
+        return r;
+    }
+
+    std::vector<Vertex> MeshDef::lookup(const Tri& tri) const
+    {
+        std::vector<Vertex> v;
+        for (int i = 0; i < 3; ++i)
+        {
+            Vertex c;
+            c.vertex = points[tri[i].vertex].location;
+            c.bone = points[tri[i].vertex].boneid;
+
+            if (tri[i].normal != -1)
+            {
+                c.normal = normals[tri[i].normal];
             }
 
-            return *this;
+            c.uv = uvs[tri[i].uv];
+            v.emplace_back(c);
         }
+        return v;
+    }
 
-        std::vector<std::shared_ptr<Bone>> RootBones()
+    void MeshDef::addPoint(const vec3& p, int bone)
+    {
+        points.emplace_back(PointData(bone, p));
+    }
+
+    void MeshDef::AddUv(const vec2& u)
+    {
+        uvs.emplace_back(u);
+    }
+
+    std::shared_ptr<MaterialDef> MeshDef::addMaterial(const std::string& name)
+    {
+        auto mat = std::make_shared<MaterialDef>(name);
+        materials.emplace(name, mat);
+        return mat;
+    }
+
+    void MeshDef::selectMaterial(const std::string& name)
+    {
+        if (materials.find(name) == materials.end())
         {
-            std::vector<std::shared_ptr<Bone>> r;
-
-            for (auto& b : bones)
-            {
-                if (b->parentBone == nullptr)
-                {
-                    r.emplace_back(b);
-                }
-            }
-
-            return r;
+            throw std::runtime_error(fmt::format("mesh does not contain a material named {}", name));
         }
-
-        std::vector<Tri> TrianglesFor(const MaterialDef& material) const
+        if (datas.find(name) == datas.end())
         {
-            std::vector<Tri> r;
-
-            if (auto found = datas.find(material.name); found != datas.end())
-            {
-                for (Tri t : found->second->tris)
-                {
-                    r.emplace_back(t);
-                }
-            }
-
-            return r;
+            datas.emplace(name, std::make_shared<Data>());
         }
+        currentd = datas[name];
+    }
 
-        std::vector<std::shared_ptr<MaterialDef>> Materials()
+    void MeshDef::addTri(const Tri& t)
+    {
+        currentd->tris.emplace_back(t);
+    }
+
+    void MeshDef::addNomal(const vec3& v)
+    {
+        normals.emplace_back(v);
+    }
+
+    std::shared_ptr<CompiledMesh> MeshDef::Compiled()
+    {
+        if (compiledMesh == nullptr)
         {
-            std::vector<std::shared_ptr<MaterialDef>> r;
-            for (auto& k : materials)
-            {
-                r.emplace_back(k.second);
-            }
-            return r;
+            assert(false && "mesh is not compiled");
         }
+        return compiledMesh;
+    }
 
-        std::vector<Vertex> lookup(const Tri& tri) const
-        {
-            std::vector<Vertex> v;
-            for (int i = 0; i < 3; ++i)
-            {
-                Vertex c;
-                c.vertex = points[tri[i].vertex].location;
-                c.bone = points[tri[i].vertex].boneid;
-
-                if (tri[i].normal != -1)
-                {
-                    c.normal = normals[tri[i].normal];
-                }
-
-                c.uv = uvs[tri[i].uv];
-                v.emplace_back(c);
-            }
-            return v;
-        }
-
-        void addPoint(const vec3& p, int bone)
-        {
-            points.emplace_back(PointData(bone, p));
-        }
-
-        void AddUv(const vec2& u)
-        {
-            uvs.emplace_back(u);
-        }
-
-        std::shared_ptr<MaterialDef> addMaterial(const std::string& name)
-        {
-            auto mat = std::make_shared<MaterialDef>(name);
-            materials.emplace(name, mat);
-            return mat;
-        }
-
-        void selectMaterial(const std::string& name)
-        {
-            if (materials.find(name) == materials.end())
-            {
-                throw std::runtime_error(fmt::format("mesh does not contain a material named {}", name));
-            }
-            if (datas.find(name) == datas.end())
-            {
-                datas.emplace(name, std::make_shared<Data>());
-            }
-            currentd = datas[name];
-        }
-
-        void addTri(const Tri& t)
-        {
-            currentd->tris.emplace_back(t);
-        }
-
-        void addNomal(const vec3& v)
-        {
-            normals.emplace_back(v);
-        }
-
-        std::shared_ptr<CompiledMesh> Compiled()
-        {
-            if (compiledMesh == nullptr)
-            {
-                assert(false && "mesh is not compiled");
-            }
-            return compiledMesh;
-        }
-
-        void compile(MediaLoader* ml)
-        {
+    void MeshDef::compile(MediaLoader* ml)
+    {
 #ifdef NOTYET
-            compiledMesh = new CompiledMesh(ml, this);
+        compiledMesh = new CompiledMesh(ml, this);
 #endif
+    }
+
+    std::shared_ptr<Bone> MeshDef::newBone()
+    {
+        auto b = std::make_shared<Bone>();
+        bones.emplace_back(b);
+        return b;
+    }
+
+    bool MeshDef::hasTrianglesFor(MaterialDef m)
+    {
+        auto t = std::vector<Tri>(TrianglesFor(m));
+        return t.empty() == false;
+    }
+
+    void MeshDef::scale(float scale)
+    {
+        for (auto& pd : points)
+        {
+            pd.location = pd.location * scale;
         }
 
-        std::shared_ptr<Bone> newBone()
+        for (auto b : bones)
         {
-            auto b = std::make_shared<Bone>();
-            bones.emplace_back(b);
-            return b;
+            b->pos = b->pos * scale;
         }
+    }
 
-        bool hasTrianglesFor(MaterialDef m)
-        {
-            auto t = std::vector<Tri>(TrianglesFor(m));
-            return t.empty() == false;
-        }
+    std::shared_ptr<MaterialDef> MeshDef::getMaterialNamed(const std::string& name)
+    {
+        return materials[name];
+    }
 
-        void scale(float scale)
-        {
-            for (auto& pd : points)
-            {
-                pd.location = pd.location * scale;
-            }
-
-            for (auto b : bones)
-            {
-                b->pos = b->pos * scale;
-            }
-        }
-
-        std::shared_ptr<MaterialDef> getMaterialNamed(const std::string& name)
-        {
-            return materials[name];
-        }
-
-        void translateFiles(const std::map<std::string, std::string>& overrides)
-        {
+    void MeshDef::translateFiles(const std::map<std::string, std::string>& overrides)
+    {
 #ifdef NOTYET
-            for (auto d : Materials())
-            {
-                d.texture = FileSystem::MapFile(overrides, d.TextureOrName());
-            }
-#endif
+        for (auto d : Materials())
+        {
+            d.texture = FileSystem::MapFile(overrides, d.TextureOrName());
         }
-    };
+#endif
+    }
 }
