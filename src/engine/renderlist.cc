@@ -1,96 +1,76 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/renderlist.h"
+
+#include <algorithm>
+#include <memory>
+
+#include "engine/meshpart.h"
+#include "engine/quat.h"
+#include "engine/renderable.h"
+#include "engine/vec3.h"
 
 namespace SimpleEngine
 {
-    struct RenderList
+    struct RenderMeshPart : public RenderDta
     {
-        struct RenderDta
-        {
-            int Id
-            {
-                get;
-            }
+        std::shared_ptr<MeshPart> part;
+        vec3 pos;
+        quat rot;
 
-            void render();
+        int Id() override
+        {
+            return part->Id();
         }
 
-        struct RenderMeshPart : RenderDta
+        void render() override
         {
-            MeshPart part;
-            vec3 pos;
-            quat rot;
+            part->render(pos, rot);
+        }
+    };
 
-            override int Id
-            {
-                get { return part.Id; }
-            }
+    struct RenderRenderable : public RenderDta
+    {
+        int id;
+        std::shared_ptr<Renderable> r;
 
-            override void render()
-            {
-                part.render(pos, rot);
-            }
+        int Id() override
+        {
+            return id;
         }
 
-        struct RenderRenderable : RenderDta
+        void render() override
         {
-            int id;
-            Renderable r;
-
-            override int Id
-            {
-                get { return id; }
-            }
-
-            override void render()
-            {
-                r.render();
-            }
+            r->render();
         }
+    };
 
-        std::vector<RenderDta>
-            datas = std::vector<RenderDta>();
+    bool Compare(std::shared_ptr<RenderDta> x, std::shared_ptr<RenderDta> y)
+    {
+        return x->Id() < y->Id();
+    }
 
-        struct RenderDataComparer : Comparer<RenderDta>
+    void RenderList::add(std::shared_ptr<MeshPart> part, const vec3& pos, const quat& rot)
+    {
+        auto d = std::make_shared<RenderMeshPart>();
+        d->part = part;
+        d->pos = pos;
+        d->rot = rot;
+        datas.emplace_back(d);
+    }
+
+    void RenderList::add(std::shared_ptr<Renderable> r, int id)
+    {
+        auto rr = std::make_shared<RenderRenderable>();
+        rr->id = id;
+        rr->r = r;
+        datas.emplace_back(rr);
+    }
+
+    void RenderList::render()
+    {
+        std::sort(datas.begin() + 4, datas.end(), Compare);
+        for (auto& data : datas)
         {
-            override int Compare(RenderDta x, RenderDta y)
-            {
-                if (x.Id == y.Id)
-                    return 0;
-                else if (x.Id < y.Id)
-                    return -1;
-                else
-                    return 1;
-            }
-        }
-
-        void
-        add(MeshPart part, vec3 pos, quat rot)
-        {
-            RenderMeshPart d = RenderMeshPart();
-            d.part = part;
-            d.pos = pos;
-            d.rot = rot;
-            datas.Add(d);
-        }
-
-        void add(Renderable r, int id)
-        {
-            RenderRenderable rr = RenderRenderable();
-            rr.id = id;
-            rr.r = r;
-            datas.Add(rr);
-        }
-
-        void render()
-        {
-            datas.Sort(RenderDataComparer());
-            for (RenderDta data : datas)
-            {
-                data.render();
-            }
+            data->render();
         }
     }
 }

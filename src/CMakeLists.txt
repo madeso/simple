@@ -23,6 +23,8 @@ set(src
     engine/animation.cc engine/animation.h
 
     engine/meshpart.cc engine/meshpart.h
+    engine/renderable.cc engine/renderable.h
+    engine/renderlist.cc engine/renderlist.h
 
     engine/main.cc engine/main.h
 )

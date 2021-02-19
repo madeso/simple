@@ -2,6 +2,8 @@
 #include <stdexcept>
 
 #include "engine/meshdef.h"
+#include "engine/meshpart.h"
+#include "engine/poseable.h"
 
 namespace SimpleEngine
 {
