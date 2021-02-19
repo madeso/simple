@@ -1,334 +1,361 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include <array>
+#include <cassert>
+#include <map>
+#include <memory>
+#include <stdexcept>
+#include <vector>
+
+#include "engine/mat44.h"
+#include "engine/matrixhelper.h"
+#include "engine/quat.h"
+#include "engine/vec2.h"
+#include "engine/vec3.h"
+#include "fmt/core.h"
 
 namespace SimpleEngine
 {
-    public class MeshDef
+    struct CompiledMesh;
+    struct MediaLoader;
+
+    struct PointData
     {
-        public class PointData
-        {
-            public PointData(int bone, vec3 loc)
-            {
-                this.boneid = bone;
-                this.location = loc;
-            }
-            public int boneid;
-            public vec3 location;
+        int boneid;
+        vec3 location;
 
-            public override string ToString()
-            {
-                return string.Format("{0} {1}", boneid, location);
-            }
+        PointData(int bone, const vec3& loc)
+            : boneid(bone)
+            , location(loc)
+        {
         }
 
-        public List<PointData> points = new List<PointData>();
-        public List<vec2> uvs = new List<vec2>();
-        public List<vec3> normals = new List<vec3>();
-        public List<Bone> bones = new List<Bone>();
-
-        public int TriCount
+        std::string ToString() const
         {
-            get
+            return fmt::format("{0} {1}", boneid, location.ToString());
+        }
+    };
+
+    struct VertexData
+    {
+        int vertex;
+        int normal;
+        int uv;
+    };
+
+    using Tri = std::array<VertexData, 3>;
+    struct Data
+    {
+        std::vector<Tri> tris = std::vector<Tri>();
+    };
+
+    struct Vertex
+    {
+        vec3 vertex;
+        vec3 normal;
+        vec2 uv;
+        int bone;
+    };
+
+    struct Bone
+    {
+        int parent;
+        std::string name;
+        vec3 pos;
+        quat rot;
+
+        int index = 0;
+        std::shared_ptr<Bone> parentBone;
+
+        std::string ToString() const
+        {
+            if (parentBone == nullptr)
             {
-                int c = 0;
-                foreach (KeyValuePair<string, Data> d in datas)
-                {
-                    c += d.Value.tris.Count;
-                }
-                return c;
+                return name;
             }
+            else
+                return parentBone->ToString() + "->" + name;
         }
 
-        public MeshDef mapBones()
+        bool hasParent() const
         {
-            Dictionary<int, KeyValuePair<mat44, List<PointData>>> bdp = new Dictionary<int, KeyValuePair<mat44, List<PointData>>>();
+            return parent != -1;
+        }
 
-            for (int i = 0; i < bones.Count; ++i)
+        std::vector<std::shared_ptr<Bone>> childs;
+    };
+
+    struct MaterialDef
+    {
+        MaterialDef(const std::string& n)
+            : name(n)
+        {
+        }
+
+        std::string name;
+        vec3 ambient = vec3(0.2f, 0.2f, 0.2f);
+        vec3 diffuse = vec3(0.8f, 0.8f, 0.8f);
+        vec3 specular = vec3(1, 1, 1);
+        vec3 emissive = vec3(0, 0, 0);
+
+        float alpha = 1;
+        float shininess = 0;
+
+        std::string texture;
+
+        std::string TextureOrName() const
+        {
+            if (texture == "")
+                return name;
+            else
+                return texture;
+        }
+
+        std::string ToString() const
+        {
+            return name + ": " + texture;
+        }
+    };
+
+    struct Mpd
+    {
+        Mpd()
+            : m(mat44::Identity())
+        {
+        }
+
+        Mpd(const mat44& mm)
+            : m(mm)
+        {
+        }
+
+        mat44 m;
+        std::vector<PointData> pd;
+    };
+
+    struct MeshDef
+    {
+        std::vector<PointData> points;
+        std::vector<vec2> uvs;
+        std::vector<vec3> normals;
+        std::vector<std::shared_ptr<Bone>> bones;
+
+        std::map<std::string, std::shared_ptr<Data>> datas;
+        std::shared_ptr<Data> currentd;
+
+        std::map<std::string, std::shared_ptr<MaterialDef>> materials;
+
+        std::shared_ptr<CompiledMesh> compiledMesh;
+
+        int TriCount() const
+        {
+            int c = 0;
+            for (const auto& d : datas)
             {
-                int parent = bones[i].parent;
-                bones[i].index = i;
-                if (bones[i].hasParent)
+                c += d.second->tris.size();
+            }
+            return c;
+        }
+
+        MeshDef& mapBones()
+        {
+            std::map<int, Mpd> bdp;
+
+            for (int i = 0; i < bones.size(); ++i)
+            {
+                int parent = bones[i]->parent;
+                bones[i]->index = i;
+                if (bones[i]->hasParent())
                 {
-                    bones[i].parentBone = bones[parent];
-                    bones[i].parentBone.childs.Add(bones[i]);
+                    bones[i]->parentBone = bones[parent];
+                    bones[i]->parentBone->childs.emplace_back(bones[i]);
                 }
 
-                Bone bone = bones[i];
-                mat44 m = new MatrixHelper(mat44.Identity).Translate(-bone.pos).Rotate(-bone.rot).mat44;
-                bdp.Add(i, new KeyValuePair<mat44, List<PointData>>(m, new List<PointData>()));
+                auto& bone = bones[i];
+                mat44 m = MatrixHelper(mat44::Identity()).Translate(-bone->pos).Rotate(-bone->rot).mat44();
+                bdp.emplace(i, Mpd{m});
             }
 
-            foreach (PointData pd in points)
+            for (auto& pd : points)
             {
-                if (pd.boneid == -1) continue;
-                Bone bone = bones[pd.boneid];
-                bdp[pd.boneid].Value.Add(pd);
+                if (pd.boneid == -1)
+                    continue;
+                const auto& bone = bones[pd.boneid];
+                Mpd& mpd = bdp[pd.boneid];
+                mpd.pd.emplace_back(pd);
             }
 
-            foreach(KeyValuePair<int, KeyValuePair<mat44, List<PointData>>> k in bdp )
+            for (auto& k : bdp)
             {
-                Bone bone = bones[k.Key];
-                mat44 m = mat44.Identity;
-                for(Bone b = bone; b != null; b = b.parentBone)
+                auto& bone = bones[k.first];
+                mat44 m = mat44::Identity();
+                for (auto& b = bone; b != nullptr; b = b->parentBone)
                 {
-                    m *= bdp[b.index].Key;
+                    m = m * bdp[b->index].m;
                 }
 
-                foreach(PointData pd in k.Value.Value )
+                for (PointData& pd : k.second.pd)
                 {
                     pd.location = m * pd.location;
                 }
             }
-            
 
-            return this;
+            return *this;
         }
 
-        public IEnumerable<Bone> RootBones
+        std::vector<std::shared_ptr<Bone>> RootBones()
         {
-            get
+            std::vector<std::shared_ptr<Bone>> r;
+
+            for (auto& b : bones)
             {
-                foreach (Bone b in bones)
+                if (b->parentBone == nullptr)
                 {
-                    if (b.parentBone == null)
-                        yield return b;
-                }
-            }
-        }
-
-        public class Data
-        {
-            public List<Tri> tris = new List<Tri>();
-        }
-        Dictionary<string, Data> datas = new Dictionary<string, Data>();
-        Data currentd = null;
-
-        public class MaterialDef 
-        {
-            public MaterialDef(string name)
-            {
-                this.name = name;
-            }
-            public readonly string name;
-            public vec3 ambient = new vec3(0.2f, 0.2f, 0.2f);
-            public vec3 diffuse = new vec3(0.8f, 0.8f, 0.8f);
-            public vec3 specular = new vec3(1,1,1);
-            public vec3 emissive = new vec3(0,0,0);
-
-            public float alpha = 1;
-            public float shininess = 0;
-
-            public string texture = "";
-
-            public string TextureOrName
-            {
-                get
-                {
-                    if (texture == "") return name;
-                    else return texture;
+                    r.emplace_back(b);
                 }
             }
 
-            public override string ToString()
-            {
-                return name + ": " + texture;
-            }
+            return r;
         }
 
-        public IEnumerable<Tri> TrianglesFor(MaterialDef material)
+        std::vector<Tri> TrianglesFor(const MaterialDef& material) const
         {
-            if (datas.ContainsKey(material.name))
+            std::vector<Tri> r;
+
+            if (auto found = datas.find(material.name); found != datas.end())
             {
-                foreach (Tri t in datas[material.name].tris)
+                for (Tri t : found->second->tris)
                 {
-                    yield return t;
-                }
-            }
-        }
-
-        Dictionary<string, MaterialDef> materials = new Dictionary<string, MaterialDef>();
-
-        public IEnumerable<MaterialDef> Materials
-        {
-            get
-            {
-                foreach (KeyValuePair<string, MaterialDef> k in materials)
-                {
-                    yield return k.Value;
-                }
-            }
-        }
-
-        public struct VertexData
-        {
-            public int vertex;
-            public int normal;
-            public int uv;
-        }
-
-        public struct Vertex
-        {
-            public vec3 vertex;
-            public vec3 normal;
-            public vec2 uv;
-            public int bone;
-        }
-
-        public class Bone
-        {
-            public int parent;
-            public string name;
-            public vec3 pos;
-            public quat rot;
-
-            public int index = 0;
-            public Bone parentBone = null;
-
-            public override string ToString()
-            {
-                if (parentBone == null)
-                {
-                    return name;
-                }
-                else return parentBone.ToString() + "->" + name;
-            }
-
-            public bool hasParent
-            {
-                get
-                {
-                    return parent != -1;
+                    r.emplace_back(t);
                 }
             }
 
-            public List<Bone> childs = new List<Bone>();
+            return r;
         }
 
-        public Vertex[] lookup(Tri tri)
+        std::vector<std::shared_ptr<MaterialDef>> Materials()
         {
-            List<Vertex> v = new List<Vertex>();
+            std::vector<std::shared_ptr<MaterialDef>> r;
+            for (auto& k : materials)
+            {
+                r.emplace_back(k.second);
+            }
+            return r;
+        }
+
+        std::vector<Vertex> lookup(const Tri& tri) const
+        {
+            std::vector<Vertex> v;
             for (int i = 0; i < 3; ++i)
             {
-                Vertex c = new Vertex();
-                c.vertex = points[tri.data[i].vertex].location;
-                c.bone = points[tri.data[i].vertex].boneid;
+                Vertex c;
+                c.vertex = points[tri[i].vertex].location;
+                c.bone = points[tri[i].vertex].boneid;
 
-                if (tri.data[i].normal != -1)
+                if (tri[i].normal != -1)
                 {
-                    c.normal = normals[tri.data[i].normal];
+                    c.normal = normals[tri[i].normal];
                 }
 
-                c.uv = uvs[tri.data[i].uv];
-                v.Add(c);
+                c.uv = uvs[tri[i].uv];
+                v.emplace_back(c);
             }
-            return v.ToArray();
+            return v;
         }
 
-        public class Tri
+        void addPoint(const vec3& p, int bone)
         {
-            public Tri(VertexData[] data)
-            {
-                System.Diagnostics.Debug.Assert(data.Length == 3, "It is a triangle");
-                this.data = data;
-            }
-            public VertexData[] data;
+            points.emplace_back(PointData(bone, p));
         }
 
-        public void addPoint(vec3 p, int bone)
+        void AddUv(const vec2& u)
         {
-            points.Add( new PointData(bone, p) );
+            uvs.emplace_back(u);
         }
 
-        public void AddUv(vec2 u)
+        std::shared_ptr<MaterialDef> addMaterial(const std::string& name)
         {
-            uvs.Add(u);
-        }
-
-        public MaterialDef addMaterial(string name)
-        {
-            MaterialDef mat = new MaterialDef(name);
-            materials.Add(name, mat);
+            auto mat = std::make_shared<MaterialDef>(name);
+            materials.emplace(name, mat);
             return mat;
         }
 
-        public void selectMaterial(string name)
+        void selectMaterial(const std::string& name)
         {
-            if (materials.ContainsKey(name)==false)
+            if (materials.find(name) == materials.end())
             {
-                throw new Exception("mesh does not contain a material named " + name);
+                throw std::runtime_error(fmt::format("mesh does not contain a material named {}", name));
             }
-            if (datas.ContainsKey(name)==false)
+            if (datas.find(name) == datas.end())
             {
-                datas.Add(name, new Data());
+                datas.emplace(name, std::make_shared<Data>());
             }
             currentd = datas[name];
         }
 
-        public void addTri(Tri t)
+        void addTri(const Tri& t)
         {
-            currentd.tris.Add(t);
+            currentd->tris.emplace_back(t);
         }
 
-        public void addNomal(vec3 v)
+        void addNomal(const vec3& v)
         {
-            normals.Add(v);
+            normals.emplace_back(v);
         }
 
-        private CompiledMesh compiledMesh = null;
-
-        public CompiledMesh Compiled
+        std::shared_ptr<CompiledMesh> Compiled()
         {
-            get
+            if (compiledMesh == nullptr)
             {
-                if (compiledMesh == null) throw new Exception("mesh is not compiled");
-                return compiledMesh;
+                assert(false && "mesh is not compiled");
             }
+            return compiledMesh;
         }
 
-        public void compile(MediaLoader ml)
+        void compile(MediaLoader* ml)
         {
+#ifdef NOTYET
             compiledMesh = new CompiledMesh(ml, this);
+#endif
         }
 
-        public Bone newBone()
+        std::shared_ptr<Bone> newBone()
         {
-            Bone b = new Bone();
-            bones.Add(b);
+            auto b = std::make_shared<Bone>();
+            bones.emplace_back(b);
             return b;
         }
 
-        public bool hasTrianglesFor(MaterialDef m)
+        bool hasTrianglesFor(MaterialDef m)
         {
-            List<Tri> t = new List<Tri>(TrianglesFor(m));
-            return t.Count != 0;
+            auto t = std::vector<Tri>(TrianglesFor(m));
+            return t.empty() == false;
         }
 
-        internal void scale(float scale)
+        void scale(float scale)
         {
-            foreach (PointData pd in points)
+            for (auto& pd : points)
             {
                 pd.location = pd.location * scale;
             }
 
-            foreach (Bone b in bones)
+            for (auto b : bones)
             {
-                b.pos = b.pos * scale;
+                b->pos = b->pos * scale;
             }
         }
 
-        public MeshDef.MaterialDef getMaterialNamed(string name)
+        std::shared_ptr<MaterialDef> getMaterialNamed(const std::string& name)
         {
             return materials[name];
         }
 
-        internal void translateFiles(Dictionary<string, string> overrides)
+        void translateFiles(const std::map<std::string, std::string>& overrides)
         {
-            foreach (MaterialDef d in Materials)
+#ifdef NOTYET
+            for (auto d : Materials())
             {
-                d.texture = FileSystem.MapFile(overrides, d.TextureOrName);
+                d.texture = FileSystem::MapFile(overrides, d.TextureOrName());
             }
+#endif
         }
-    }
+    };
 }

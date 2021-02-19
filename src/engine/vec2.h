@@ -8,7 +8,7 @@ namespace SimpleEngine
     {
         float x, y;
 
-        vec2(float xx, float yy);
+        vec2(float xx = 0.0f, float yy = 0.0f);
 
         static vec2 Zero();
 

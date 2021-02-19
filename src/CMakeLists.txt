@@ -9,6 +9,8 @@ set(src
     engine/math1.cc engine/math1.h
     engine/quat.cc engine/quat.h
 
+    engine/meshdef.cc
+
     engine/main.cc engine/main.h
 )
 

@@ -17,6 +17,7 @@ namespace SimpleEngine
 
         std::string ToString() const;
 
+        quat();
         quat(float w, const vec3& vec);
         quat(const vec3& v, float w);
         quat(const quat& other);

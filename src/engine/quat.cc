@@ -16,6 +16,14 @@ namespace SimpleEngine
         return fmt::format("({} {} {} {})", x, y, z, w);
     }
 
+    quat::quat()
+        : x(0.0f)
+        , y(0.0f)
+        , z(0.0f)
+        , w(1.0f)
+    {
+    }
+
     quat::quat(float ww, const vec3& v)
         : x(v.x)
         , y(v.y)

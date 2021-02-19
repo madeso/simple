@@ -13,7 +13,7 @@ namespace SimpleEngine
 
         std::string ToString() const;
 
-        vec3(float ax, float ay, float az);
+        vec3(float ax = 0.0f, float ay = 0.0f, float az = 0.0f);
 
         vec3(const vec3& a);
 
