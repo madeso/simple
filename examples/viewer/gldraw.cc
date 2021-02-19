@@ -48,16 +48,16 @@ namespace ModelView
 
             dgl.InitializeContexts();
             dgl.MakeCurrent();
-            Gl.glClearColor(1, 1, 1, 1);
-            Gl.glShadeModel(Gl.GL_SMOOTH);
-            Gl.glEnable(Gl.GL_TEXTURE_2D);
-            Gl.glClearColor(1, 1, 1, 1.0f);
-            Gl.glClearDepth(1);
-            Gl.glEnable(Gl.GL_DEPTH_TEST);
-            Gl.glDepthFunc(Gl.GL_LEQUAL);
-            Gl.glHint(Gl.GL_PERSPECTIVE_CORRECTION_HINT, Gl.GL_NICEST);
-            Gl.glMatrixMode(Gl.GL_MODELVIEW);
-            Gl.glEnable(Gl.GL_CULL_FACE);  // backface culling
+            glClearColor(1, 1, 1, 1);
+            glShadeModel(GL_SMOOTH);
+            glEnable(GL_TEXTURE_2D);
+            glClearColor(1, 1, 1, 1.0f);
+            glClearDepth(1);
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LEQUAL);
+            glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+            glMatrixMode(GL_MODELVIEW);
+            glEnable(GL_CULL_FACE);  // backface culling
             dgl.Paint += PaintEventHandler(dgl_Paint);
         }
 
@@ -80,13 +80,13 @@ namespace ModelView
         {
             dgl.MakeCurrent();
 
-            Gl.glViewport(0, 0, Width, Height);
-            Gl.glMatrixMode(Gl.GL_PROJECTION);
-            Gl.glLoadIdentity();
+            glViewport(0, 0, Width, Height);
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
             Glu.gluPerspective(45, Width / (double)Height, 0.1, 100);
-            Gl.glMatrixMode(Gl.GL_MODELVIEW);
-            Gl.glLoadIdentity();
-            Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             if (paint != nullptr)
                 paint();

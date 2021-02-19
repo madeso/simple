@@ -23,7 +23,7 @@ namespace ModelView
         override void rotateGl()
         {
             AxisAngle aa = rotation.AxisAngle;
-            Gl.glRotatef(aa.angle.inDegrees, aa.axis.x, aa.axis.y, aa.axis.z);
+            glRotatef(aa.angle.inDegrees, aa.axis.x, aa.axis.y, aa.axis.z);
         }
     }
 
@@ -43,8 +43,8 @@ namespace ModelView
 
         override void rotateGl()
         {
-            Gl.glRotatef(-ry, 1, 0, 0);
-            Gl.glRotatef(rx, 0, 1, 0);
+            glRotatef(-ry, 1, 0, 0);
+            glRotatef(rx, 0, 1, 0);
         }
     }
 

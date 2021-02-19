@@ -10,38 +10,38 @@ namespace SimpleEngine
     {
         static void basicOpenGL()
         {
-            Gl.glShadeModel(Gl.GL_SMOOTH);
-            Gl.glEnable(Gl.GL_TEXTURE_2D);
-            Gl.glClearColor(0, 0, 0, 1.0f);
-            Gl.glClearDepth(1);
-            Gl.glEnable(Gl.GL_DEPTH_TEST);
-            Gl.glDepthFunc(Gl.GL_LEQUAL);
-            Gl.glHint(Gl.GL_PERSPECTIVE_CORRECTION_HINT, Gl.GL_NICEST);
-            Gl.glMatrixMode(Gl.GL_MODELVIEW);
-            Gl.glEnable(Gl.GL_CULL_FACE);  // backface culling
+            glShadeModel(GL_SMOOTH);
+            glEnable(GL_TEXTURE_2D);
+            glClearColor(0, 0, 0, 1.0f);
+            glClearDepth(1);
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LEQUAL);
+            glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+            glMatrixMode(GL_MODELVIEW);
+            glEnable(GL_CULL_FACE);  // backface culling
         }
 
         static void view3d(int Width, int Height)
         {
-            Gl.glMatrixMode(Gl.GL_PROJECTION);
-            Gl.glLoadIdentity();
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
             Glu.gluPerspective(45, Width / (double)Height, 0.1, 100);
-            Gl.glMatrixMode(Gl.GL_MODELVIEW);
-            Gl.glLoadIdentity();
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
         }
 
         static void Viewport(Rect rect)
         {
-            Gl.glViewport(rect.Left, rect.Top, rect.Width, rect.Height);
+            glViewport(rect.Left, rect.Top, rect.Width, rect.Height);
         }
 
         static void view2d(int Width, int Height)
         {
-            Gl.glMatrixMode(Gl.GL_PROJECTION);
-            Gl.glLoadIdentity();
-            Gl.glOrtho(0, Width, Height, 0, 0, 1);
-            Gl.glMatrixMode(Gl.GL_MODELVIEW);
-            Gl.glLoadIdentity();
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glOrtho(0, Width, Height, 0, 0, 1);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
         }
     }
 }

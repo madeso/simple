@@ -101,7 +101,7 @@ namespace SimpleTest
                 World world = World.Load(loader, "level01.lvl");
                 //world.add(MeshInstance(loader.fetch<Mesh>("basicroad.obj")));
                 Camera cam = Camera();
-                //Gl.glLoadIdentity();
+                //glLoadIdentity();
                 float delta = 0;
 
                 Key rightleft = PlusMinus(Hold(Ckey(Keys.D)), Hold(Ckey(Keys.A)));

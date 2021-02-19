@@ -28,7 +28,7 @@ namespace SimpleEngine
                 cameraSendTo(list);
                 list.render();
             }
-            Gl.glClear(Gl.GL_DEPTH_BUFFER_BIT);
+            glClear(GL_DEPTH_BUFFER_BIT);
             using(PushedMatrix fm = PushedMatrix())
             {
                 c.sendRotationAndPosition();

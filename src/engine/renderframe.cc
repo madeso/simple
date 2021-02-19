@@ -325,7 +325,7 @@ namespace SimpleEngine
         void begin()
         {
             Setup.Viewport(Rect.FromLTWH(0, 0, Width, Height));
-            Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
     }
 }

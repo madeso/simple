@@ -11,10 +11,10 @@ namespace SimpleEngine
     {
         ShaderSource(std::string name, std::string source, int type)
         {
-            mShader = Gl.glCreateShader(type);
+            mShader = glCreateShader(type);
             var src = std::string[]{source};
-            Gl.glShaderSource(Shader, 1, ref src, int[]{source.Length});
-            Gl.glCompileShader(mShader);
+            glShaderSource(Shader, 1, ref src, int[]{source.Length});
+            glCompileShader(mShader);
 
             if (false == CompileStatus)
             {
@@ -25,11 +25,11 @@ namespace SimpleEngine
         std::string getInfoLog()
         {
             int size;
-            Gl.glGetShaderiv(Shader, Gl.GL_INFO_LOG_LENGTH, out size);
+            glGetShaderiv(Shader, GL_INFO_LOG_LENGTH, out size);
 
             std::string log;
             int length;
-            Gl.glGetShaderInfoLog(Shader, size, out length, out log);
+            glGetShaderInfoLog(Shader, size, out length, out log);
 
             return log;
         }
@@ -41,8 +41,8 @@ namespace SimpleEngine
             get
             {
                 int status;
-                Gl.glGetShaderiv(Shader, Gl.GL_COMPILE_STATUS, out status);
-                return status == Gl.GL_TRUE;
+                glGetShaderiv(Shader, GL_COMPILE_STATUS, out status);
+                return status == GL_TRUE;
             }
         }
 
@@ -54,8 +54,8 @@ namespace SimpleEngine
             }
         }
 
-        const int Vertex = Gl.GL_VERTEX_SHADER;
-        const int Fragment = Gl.GL_FRAGMENT_SHADER;
+        const int Vertex = GL_VERTEX_SHADER;
+        const int Fragment = GL_FRAGMENT_SHADER;
     }
 
     struct Uniform
@@ -64,23 +64,23 @@ namespace SimpleEngine
 
         Uniform(Shader s, std::string name)
         {
-            var = Gl.glGetUniformLocation(s.Program, ref name);
+            var = glGetUniformLocation(s.Program, ref name);
             if (var == -1)
                 throw std::runtime_error(name + " is not a recognized uniform");
         }
 
         void bindUniform(int location)
         {
-            Gl.glUniform1i(var, location);
+            glUniform1i(var, location);
         }
         void bindUniform(float value)
         {
-            Gl.glUniform1f(var, value);
+            glUniform1f(var, value);
         }
 
         void bindUniform(vec2 v)
         {
-            Gl.glUniform2f(var, v.x, v.y);
+            glUniform2f(var, v.x, v.y);
         }
     }
 
@@ -135,14 +135,14 @@ namespace SimpleEngine
             std::string vertexsource = Xml.GetTextOfSubElement(shader, "vertex");
             std::string fragmentsource = Xml.GetTextOfSubElement(shader, "fragment");
 
-            mProgram = Gl.glCreateProgram();
+            mProgram = glCreateProgram();
 
             vertex = ShaderSource(path + " (vert)", vertexsource, ShaderSource.Vertex);
             fragment = ShaderSource(path + " (frag)", fragmentsource, ShaderSource.Fragment);
 
             attach(vertex);
             attach(fragment);
-            Gl.glLinkProgram(Program);
+            glLinkProgram(Program);
 
             if (false == LinkStatus)
             {
@@ -158,18 +158,18 @@ namespace SimpleEngine
         std::string getInfoLog()
         {
             int size;
-            Gl.glGetProgramiv(Program, Gl.GL_INFO_LOG_LENGTH, out size);
+            glGetProgramiv(Program, GL_INFO_LOG_LENGTH, out size);
 
             std::string log;
             int length;
-            Gl.glGetProgramInfoLog(Program, size, out length, out log);
+            glGetProgramInfoLog(Program, size, out length, out log);
 
             return log;
         }
 
         void attach(ShaderSource src)
         {
-            Gl.glAttachShader(Program, src.Shader);
+            glAttachShader(Program, src.Shader);
         }
 
         bool LinkStatus
@@ -177,8 +177,8 @@ namespace SimpleEngine
             get
             {
                 int result;
-                Gl.glGetProgramiv(Program, Gl.GL_LINK_STATUS, out result);
-                return result == Gl.GL_TRUE;
+                glGetProgramiv(Program, GL_LINK_STATUS, out result);
+                return result == GL_TRUE;
             }
         }
 
@@ -194,8 +194,8 @@ namespace SimpleEngine
         {
             get
             {
-                bool hasVertex = true;    // Gl.IsExtensionSupported("GL_ARB_vertex_shader");
-                bool hasFragment = true;  // Gl.IsExtensionSupported("GL_ARB_fragment_shader");
+                bool hasVertex = true;    // IsExtensionSupported("GL_ARB_vertex_shader");
+                bool hasFragment = true;  // IsExtensionSupported("GL_ARB_fragment_shader");
                 return hasVertex && hasFragment;
             }
         }
@@ -204,7 +204,7 @@ namespace SimpleEngine
 
         static void Bind(Shader shader)
         {
-            Gl.glUseProgram(shader.Program);
+            glUseProgram(shader.Program);
             for (ShaderBind sb : shader.binds)
             {
                 sb.bind();
@@ -213,7 +213,7 @@ namespace SimpleEngine
 
         static void Unbind()
         {
-            Gl.glUseProgram(0);
+            glUseProgram(0);
         }
 
         Uniform getUniform(std::string varname)

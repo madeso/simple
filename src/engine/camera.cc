@@ -17,14 +17,14 @@ namespace SimpleEngine
         void sendPosition()
         {
             // -position
-            Gl.glTranslatef(-location.x, -location.y, -location.z);
+            glTranslatef(-location.x, -location.y, -location.z);
         }
 
         void sendRotation()
         {
             // -rotatation
             AxisAngle aa = rotation.AxisAngle;
-            Gl.glRotatef(-aa.angle.inDegrees, aa.axis.x, aa.axis.y, aa.axis.z);
+            glRotatef(-aa.angle.inDegrees, aa.axis.x, aa.axis.y, aa.axis.z);
         }
 
         void rotate(quat q)

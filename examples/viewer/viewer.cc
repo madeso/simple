@@ -97,7 +97,7 @@ namespace ModelView
         void dView_Paint()
         {
             vec3 c = vec3::In() * distance;
-            Gl.glTranslatef(c.x, c.y, c.z);
+            glTranslatef(c.x, c.y, c.z);
             rotation.rotateGl();
 
             RenderList list = RenderList();

@@ -17,16 +17,16 @@ namespace SimpleEngine
                 texture.bindTexture();
             }
 
-            Gl.glBegin(Gl.GL_QUADS);
-            Gl.glTexCoord2f(0, 1);
-            Gl.glVertex2f(0, 0);  // top left
-            Gl.glTexCoord2f(0, 0);
-            Gl.glVertex2f(0, Height);  // bottom left
-            Gl.glTexCoord2f(1, 0);
-            Gl.glVertex2f(Width, Height);  // bottom right
-            Gl.glTexCoord2f(1, 1);
-            Gl.glVertex2f(Width, 0);  // top right
-            Gl.glEnd();
+            glBegin(GL_QUADS);
+            glTexCoord2f(0, 1);
+            glVertex2f(0, 0);  // top left
+            glTexCoord2f(0, 0);
+            glVertex2f(0, Height);  // bottom left
+            glTexCoord2f(1, 0);
+            glVertex2f(Width, Height);  // bottom right
+            glTexCoord2f(1, 1);
+            glVertex2f(Width, 0);  // top right
+            glEnd();
         }
     }
 }

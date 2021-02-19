@@ -19,8 +19,8 @@ namespace SimpleEngine
 
         void render()
         {
-            Gl.glVertex3f(start.x, start.y, start.z);
-            Gl.glVertex3f(end.x, end.y, end.z);
+            glVertex3f(start.x, start.y, start.z);
+            glVertex3f(end.x, end.y, end.z);
         }
     }
 
@@ -57,13 +57,13 @@ namespace SimpleEngine
                 lines.Add(Line(b - ydir * halflength, b + ydir * halflength));
             }
 
-            Gl.glDisable(Gl.GL_TEXTURE_2D);
-            Gl.glColor3f(c.R / 255.0f, c.G / 255.0f, c.B / 255.0f);
-            Gl.glBegin(Gl.GL_LINES);
+            glDisable(GL_TEXTURE_2D);
+            glColor3f(c.R / 255.0f, c.G / 255.0f, c.B / 255.0f);
+            glBegin(GL_LINES);
             for (Line l : lines)
                 l.render();
-            Gl.glEnd();
-            Gl.glEnable(Gl.GL_TEXTURE_2D);
+            glEnd();
+            glEnable(GL_TEXTURE_2D);
         }
     }
 }

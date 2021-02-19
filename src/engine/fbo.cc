@@ -20,15 +20,15 @@ namespace SimpleEngine
 
         RenderBuffer(int internalFormat, int width, int height)
         {
-            Gl.glGenRenderbuffersEXT(1, out buffer);
+            glGenRenderbuffersEXT(1, out buffer);
 
             bind();
-            Gl.glRenderbufferStorageEXT(Gl.GL_RENDERBUFFER_EXT, internalFormat, width, height);
+            glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, internalFormat, width, height);
         }
 
         void bind()
         {
-            Gl.glBindRenderbufferEXT(Gl.GL_RENDERBUFFER_EXT, buffer);
+            glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, buffer);
         }
     }
 
@@ -124,17 +124,17 @@ namespace SimpleEngine
             this.height = height;
             this.mipmap = mipmap;
 
-            Gl.glGenFramebuffersEXT(1, out fbo);
+            glGenFramebuffersEXT(1, out fbo);
             Bind(this);
 
-            depth = RenderBuffer(Gl.GL_DEPTH_COMPONENT, width, height);
-            attach(depth, Gl.GL_DEPTH_ATTACHMENT_EXT);
+            depth = RenderBuffer(GL_DEPTH_COMPONENT, width, height);
+            attach(depth, GL_DEPTH_ATTACHMENT_EXT);
 
-            texture = Image(true, width, height, IntPtr.Zero, mipmap, Gl.GL_RGBA);
-            attach(texture, Gl.GL_COLOR_ATTACHMENT0_EXT);
+            texture = Image(true, width, height, IntPtr.Zero, mipmap, GL_RGBA);
+            attach(texture, GL_COLOR_ATTACHMENT0_EXT);
 
-            int status = Gl.glCheckFramebufferStatusEXT(Gl.GL_FRAMEBUFFER_EXT);
-            if (status != Gl.GL_FRAMEBUFFER_COMPLETE_EXT)
+            int status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+            if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
                 throw std::runtime_error("Something went wrong when creating framebuffer: " + status.ToString());
 
             Bind(nullptr);
@@ -142,13 +142,13 @@ namespace SimpleEngine
 
         void attach(RenderBuffer b, int attachmentPoint)
         {
-            Gl.glFramebufferRenderbufferEXT(Gl.GL_FRAMEBUFFER_EXT, attachmentPoint, Gl.GL_RENDERBUFFER_EXT, b.Buffer);
+            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, attachmentPoint, GL_RENDERBUFFER_EXT, b.Buffer);
         }
 
         void attach(Image img, int attachmentPoint)
         {
             const int mipmaplevel = 0;
-            Gl.glFramebufferTexture2DEXT(Gl.GL_FRAMEBUFFER_EXT, attachmentPoint, Gl.GL_TEXTURE_2D, img.Id, mipmaplevel);
+            glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, attachmentPoint, GL_TEXTURE_2D, img.Id, mipmaplevel);
         }
 
         static Fbo bound = nullptr;
@@ -159,18 +159,18 @@ namespace SimpleEngine
                 throw std::runtime_error("Already bound a fbo");
             bound = a;
             int fbo = a != nullptr ? a.fbo : 0;
-            Gl.glBindFramebufferEXT(Gl.GL_FRAMEBUFFER_EXT, fbo);
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
         }
 
         void updateTexture(Action renderer)
         {
             Bind(this);
-            Gl.glPushAttrib(Gl.GL_VIEWPORT_BIT);
-            Gl.glViewport(0, 0, width, height);
+            glPushAttrib(GL_VIEWPORT_BIT);
+            glViewport(0, 0, width, height);
 
             renderer();
 
-            Gl.glPopAttrib();
+            glPopAttrib();
             Bind(nullptr);
         }
 
