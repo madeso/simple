@@ -1,62 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include <memory>
+#include <stdexcept>
+
+#include "engine/meshdef.h"
 
 namespace SimpleEngine
 {
+    struct CompiledPose;
+    struct MediaLoader;
+
     struct Poseable
     {
-        CompiledPose CurrentPose
-        {
-            get;
-        }
-    } struct CompiledMesh : Poseable
-    {
-        std::vector<MeshPart> parts = std::vector<MeshPart>();
+        virtual ~Poseable() = default;
+        virtual std::shared_ptr<CompiledPose> CurrentPose() = 0;
+    };
 
-        CompiledMesh(MediaLoader ml, MeshDef def)
+    struct CompiledMesh : public Poseable
+    {
+        std::vector<std::shared_ptr<MeshPart>> parts;
+        std::shared_ptr<CompiledPose> pose;
+
+        CompiledMesh(MediaLoader* ml, MeshDef* def)
         {
-            std::vector<Exception> errors = std::vector<Exception>();
-            for (MeshDef.MaterialDef m : def.Materials)
+            std::vector<std::string> errors;
+            for (auto& m : def->Materials())
             {
-                if (def.hasTrianglesFor(m))
+                if (def->hasTrianglesFor(*m))
                 {
                     try
                     {
-                        parts.Add(MeshPart(ml, m, def, this));
+                        parts.emplace_back(new MeshPart(ml, m, def, this));
                     }
-                    catch (Exception e)
+                    catch (const std::runtime_error& e)
                     {
-                        errors.Add(e);
+                        errors.emplace_back(e.what());
                     }
                 }
             }
 
-            if (errors.Count != 0)
+            if (errors.empty() == false)
             {
-                throw Exception("Several errors occured");
+                throw std::runtime_error("Several errors occured");
             }
         }
 
-        void sendToRenderer(RenderList r, vec3 pos, quat rot)
+        void sendToRenderer(RenderList* r, const vec3& pos, const quat& rot)
         {
-            for (MeshPart part : parts)
+            for (auto& part : parts)
             {
-                r.add(part, pos, rot);
+                r->add(part, pos, rot);
             }
         }
 
-        CompiledPose pose = nullptr;
-
-        void setPose(CompiledPose pose)
+        void setPose(std::shared_ptr<CompiledPose> new_pose)
         {
-            this.pose = pose;
+            pose = new_pose;
         }
 
-        override CompiledPose CurrentPose
+        std::shared_ptr<CompiledPose> CurrentPose() override
         {
-            get { return pose; }
+            return pose;
         }
     }
 }
