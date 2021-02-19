@@ -77,7 +77,6 @@ namespace SimpleEngine
             img.bind(location);
         }
 
-    protected
         override void unload()
         {
             img.Dispose();

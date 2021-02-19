@@ -16,7 +16,6 @@ namespace SimpleEngine
             this.mesh = mesh.Compiled;
         }
 
-    protected
         override void unload()
         {
             mesh = nullptr;

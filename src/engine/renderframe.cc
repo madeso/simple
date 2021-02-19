@@ -54,7 +54,6 @@ namespace SimpleEngine
             }
         }
 
-    protected
         override void Dispose(bool disposing)
         {
             if (disposing)
@@ -65,7 +64,7 @@ namespace SimpleEngine
         }
 
         // prevent stupid flickering
-    protected
+
         override void OnPaintBackground(PaintEventArgs e)
         {
         }

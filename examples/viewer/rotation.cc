@@ -13,13 +13,11 @@ namespace ModelView
         void sendMouse(vec2 mouse, vec2 oldmouse);
         void rotateGl();
 
-    protected
         const float sens = 0.25f;
     }
 
     struct QuatRot : Rotation
     {
-    protected
         quat rotation = quat::Identity();
 
         override void rotateGl()

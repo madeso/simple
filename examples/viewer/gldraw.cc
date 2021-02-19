@@ -98,7 +98,6 @@ namespace ModelView
             dgl.DestroyContexts();
         }
 
-    protected
         override void OnPaintBackground(PaintEventArgs e)
         {
             //if (paint == nullptr || DesignMode) base.OnPaintBackground(e);

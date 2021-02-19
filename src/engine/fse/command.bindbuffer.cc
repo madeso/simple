@@ -30,14 +30,12 @@ namespace SimpleEngine.fse.Commands
             buffer.bindTexture(location);
         }
 
-    protected
         override void doLink(Linker user)
         {
             buffer = createBuffer(name);
             targ = user.getTarget(name);
         }
 
-    protected
         override void doBind(Binder bd)
         {
             bd.reference(buffer);

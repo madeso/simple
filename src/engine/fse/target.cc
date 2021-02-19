@@ -40,7 +40,6 @@ namespace SimpleEngine.fse
             return Id;
         }
 
-    protected
         BufferReference createBuffer(std::string name)
         {
             BufferReference r = BufferReference(name);
@@ -48,7 +47,6 @@ namespace SimpleEngine.fse
             return r;
         }
 
-    protected
         BufferReference createBuffer(std::string name, int width, int height)
         {
             associate(name, width, height);

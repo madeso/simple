@@ -9,7 +9,7 @@ namespace SimpleEngine
     struct Media
     {
         void load(MediaLoader ml, FileSystem fs, std::string path);
-    protected
+
         void unload();
         void increaseUsage()
         {

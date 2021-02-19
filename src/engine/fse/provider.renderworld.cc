@@ -22,7 +22,6 @@ namespace SimpleEngine.fse.Providers
             return base.ToString() + " renders world with " + CSharp.Nullstring(shadername, "no shader") + ((shader != nullptr) ? "(loaded)" : "");
         }
 
-    protected
         override void doProvide(RenderArgs ra)
         {
             if (shader != nullptr)
@@ -34,12 +33,10 @@ namespace SimpleEngine.fse.Providers
                 Shader.Unbind();
         }
 
-    protected
         override void doLink(Linker user)
         {
         }
 
-    protected
         override void doBind(Binder bd)
         {
             if (false == std::string.IsNullOrEmpty(shadername))

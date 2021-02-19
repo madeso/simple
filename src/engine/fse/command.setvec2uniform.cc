@@ -37,12 +37,10 @@ namespace SimpleEngine.fse.Commands
             get { return CSharp.Enumerate<Provider>(); }
         }
 
-    protected
         override void doLink(Linker user)
         {
         }
 
-    protected
         override void doBind(Binder bd)
         {
             shader = bd.getShader(shaderName);

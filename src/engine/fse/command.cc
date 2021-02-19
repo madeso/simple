@@ -22,7 +22,6 @@ namespace SimpleEngine.fse
             return id;
         }
 
-    protected
         BufferReference createBuffer(std::string name)
         {
             return prov.createBuffer(name);
@@ -44,9 +43,8 @@ namespace SimpleEngine.fse
             get;
         }
 
-    protected
         void doLink(Linker user);
-    protected
+
         void doBind(Binder bd);
     }
 }

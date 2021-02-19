@@ -22,7 +22,6 @@ namespace SimpleEngine.fse.Providers
             shadername = Xml.GetAttributeString(el, "shader");
         }
 
-    protected
         override void doProvide(RenderArgs ra)
         {
             if (sh != nullptr)
@@ -33,13 +32,11 @@ namespace SimpleEngine.fse.Providers
                 Shader.Unbind();
         }
 
-    protected
         override void doLink(Linker user)
         {
             denyAutocallOfCommands();  // call the commands outself
         }
 
-    protected
         override void doBind(Binder bd)
         {
             sh = bd.getShaderOrNull(shadername);

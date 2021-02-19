@@ -47,13 +47,11 @@ namespace SimpleEngine.fse
             });
         }
 
-    protected
         void denyAutocallOfCommands()
         {
             autocallCommands = false;
         }
 
-    protected
         void callCommands()
         {
             for (Command c : commands)
@@ -61,7 +59,7 @@ namespace SimpleEngine.fse
                 c.apply();
             }
         }
-    protected
+
         void doProvide(RenderArgs ra);
 
         Target Target
@@ -99,7 +97,6 @@ namespace SimpleEngine.fse
             return BufferReference(name);
         }
 
-    protected
         Provider(XmlElement el)
         {
             targetname = Xml.GetAttributeString(el, "target");
@@ -138,7 +135,6 @@ namespace SimpleEngine.fse
             doLink(linker);
         }
 
-    protected
         void doLink(Linker linker);
 
         void bind(Binder bd)
@@ -150,7 +146,7 @@ namespace SimpleEngine.fse
                 c.bind(bd);
             }
         }
-    protected
+
         void doBind(Binder bd);
 
         void postlink(Linker linker)
