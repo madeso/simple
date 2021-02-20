@@ -92,6 +92,7 @@ namespace ModelView
         {
             mesh->sendToRenderer(&list, vec3::Zero(), quat::Identity());
         }
+
         list.render();
     }
 
