@@ -1,8 +1,10 @@
-#include <string>
+#include <algorithm>
 
 namespace SimpleEngine
 {
-    std::string Lower(const std::string& s);
-
-    std::string Nullstring(const std::string& nullorvalue, const std::string& valid);
+    template <typename V, typename C>
+    void Erase(V& v, C&& callback)
+    {
+        v.erase(std::remove_if(v.begin(), v.end(), callback), v.end());
+    }
 }

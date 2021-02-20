@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "engine/cpp.h"
+#include "engine/strings.h"
 
 namespace SimpleEngine
 {
@@ -81,7 +81,7 @@ namespace SimpleEngine
 
     std::string FileSystem::MapFile(const std::map<std::string, std::string>& overrides, const std::string& path)
     {
-        std::string finalpath = Lower(path);
+        std::string finalpath = ToLower(path);
 
         auto found = overrides.find(finalpath);
         while (found != overrides.end())
