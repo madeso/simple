@@ -67,7 +67,7 @@ namespace SimpleEngine
 
     void RenderList::render()
     {
-        std::sort(datas.begin() + 4, datas.end(), Compare);
+        std::sort(datas.begin(), datas.end(), Compare);
         for (auto& data : datas)
         {
             data->render();
