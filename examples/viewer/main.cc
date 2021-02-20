@@ -36,11 +36,15 @@ namespace ModelView
                 }
                 if (ImGui::BeginMenu("View"))
                 {
-                    if (ImGui::MenuItem("Basic camera"))
+                    if (ImGui::MenuItem("Easy camera", "", &viewer.using_easy_camera))
+                    {
+                        viewer.SetEasyCamera();
+                    }
+                    if (ImGui::MenuItem("Basic camera", "", &viewer.using_basic_camera))
                     {
                         viewer.SetBasicCamera();
                     }
-                    if (ImGui::MenuItem("Arcball camera"))
+                    if (ImGui::MenuItem("Arcball camera", "", &viewer.using_arcball_camera))
                     {
                         viewer.SetArcballCamera();
                     }
@@ -53,18 +57,21 @@ namespace ModelView
 
         void OnEvent(const SDL_Event& e) override
         {
-            switch (e.type)
+            if (use_mouse)
             {
-            case SDL_MOUSEMOTION:
-                viewer.MouseMove(e.motion.x, e.motion.y);
-                break;
-            case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEBUTTONUP:
-                viewer.OnLMB(e.button.x, e.button.y, e.type == SDL_MOUSEBUTTONDOWN);
-                break;
-            case SDL_MOUSEWHEEL:
-                viewer.OnMouseWheel(e.wheel.y);
-                break;
+                switch (e.type)
+                {
+                case SDL_MOUSEMOTION:
+                    viewer.MouseMove(e.motion.x, e.motion.y);
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONUP:
+                    viewer.OnLMB(e.button.x, e.button.y, e.type == SDL_MOUSEBUTTONDOWN);
+                    break;
+                case SDL_MOUSEWHEEL:
+                    viewer.OnMouseWheel(e.wheel.y);
+                    break;
+                }
             }
         }
 

@@ -24,8 +24,8 @@ using namespace SimpleEngine;
 namespace ModelView
 {
     Viewer::Viewer()
-        : rotation(std::make_shared<EasyRotation>())
     {
+        SetEasyCamera();
     }
 
     Viewer::~Viewer()
@@ -145,13 +145,32 @@ namespace ModelView
     {
     }
 
+    void Viewer::ClearCamera()
+    {
+        using_easy_camera = false;
+        using_basic_camera = false;
+        using_arcball_camera = false;
+        rotation = nullptr;
+    }
+
+    void Viewer::SetEasyCamera()
+    {
+        ClearCamera();
+        using_easy_camera = true;
+        rotation = std::make_shared<EasyRotation>();
+    }
+
     void Viewer::SetBasicCamera()
     {
+        ClearCamera();
+        using_basic_camera = true;
         rotation = std::make_shared<BasicQuatRot>();
     }
 
     void Viewer::SetArcballCamera()
     {
+        ClearCamera();
+        using_arcball_camera = true;
         rotation = std::make_shared<ArcBallRotation>(this);
     }
 

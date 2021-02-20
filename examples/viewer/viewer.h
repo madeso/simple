@@ -35,6 +35,10 @@ namespace ModelView
         std::string animation_information;
         std::string current_animation;
 
+        bool using_easy_camera = false;
+        bool using_basic_camera = false;
+        bool using_arcball_camera = false;
+
         Viewer();
         ~Viewer();
 
@@ -50,6 +54,8 @@ namespace ModelView
 
         void forceRedraw();
 
+        void ClearCamera();
+        void SetEasyCamera();
         void SetBasicCamera();
         void SetArcballCamera();
 
