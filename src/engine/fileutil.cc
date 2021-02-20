@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
+﻿#include "engine/fileutil.h"
+
+#include <fstream>
 
 namespace SimpleEngine
 {
     namespace FileUtil
     {
-        static IEnumerable<std::string> LinesIn(Stream s)
+        std::vector<std::string> LinesIn(const std::string& path)
         {
-            StreamReader sr = StreamReader(s);
-            while (false == sr.EndOfStream)
+            std::ifstream infile(path.c_str());
+            std::string line;
+            std::vector<std::string> r;
+            while (std::getline(infile, line))
             {
-                yield return sr.ReadLine();
+                r.emplace_back(line);
             }
+            return r;
         }
     }
 }

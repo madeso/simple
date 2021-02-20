@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "engine/fileutil.h"
 #include "engine/strings.h"
 
 namespace SimpleEngine
@@ -57,15 +58,7 @@ namespace SimpleEngine
 
     std::vector<std::string> FileSystem::readLines(std::string path) const
     {
-        const auto p = open(path);
-        std::ifstream infile(p.c_str());
-        std::string line;
-        std::vector<std::string> r;
-        while (std::getline(infile, line))
-        {
-            r.emplace_back(line);
-        }
-        return r;
+        return FileUtil::LinesIn(open(path));
     }
 
     void FileSystem::setOverrides(const std::map<std::string, std::string>& new_overrides)
