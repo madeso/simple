@@ -19,6 +19,36 @@ namespace ModelView
         {
             ImGui::Begin("viewer");
             ImGui::End();
+
+            if (ImGui::BeginMainMenuBar())
+            {
+                if (ImGui::BeginMenu("File"))
+                {
+                    if (ImGui::MenuItem("Open"))
+                    {
+                        // todo
+                    }
+                    if (ImGui::MenuItem("Quit"))
+                    {
+                        run = false;
+                    }
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("View"))
+                {
+                    if (ImGui::MenuItem("Basic camera"))
+                    {
+                        viewer.SetBasicCamera();
+                    }
+                    if (ImGui::MenuItem("Arcball camera"))
+                    {
+                        viewer.SetArcballCamera();
+                    }
+                    // ImGui::Separator();
+                    ImGui::EndMenu();
+                }
+                ImGui::EndMainMenuBar();
+            }
         }
 
         void OnEvent(const SDL_Event& e) override

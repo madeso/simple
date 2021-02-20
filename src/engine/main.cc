@@ -53,9 +53,7 @@ namespace SimpleEngine
 
         auto app = make_app();
 
-        bool run = true;
-
-        while (run)
+        while (app->run)
         {
             SDL_Event event;
             while (SDL_PollEvent(&event))
@@ -67,7 +65,7 @@ namespace SimpleEngine
                 case SDL_KEYUP:
                     if (event.key.keysym.sym == SDLK_ESCAPE)
                     {
-                        run = false;
+                        app->run = false;
                     }
                     break;
                 }
@@ -83,9 +81,9 @@ namespace SimpleEngine
             glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
             glClear(GL_COLOR_BUFFER_BIT);
             //glUseProgram(0); // You may want this if using this code in an OpenGL 3+ context where shaders may be bound
-            ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
             app->OnRender((int)io.DisplaySize.x, (int)io.DisplaySize.y);
+            ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
             SDL_GL_SwapWindow(window);
         }

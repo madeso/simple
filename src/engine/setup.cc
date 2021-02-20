@@ -79,7 +79,7 @@ namespace SimpleEngine
             gluPerspective(45, Width / (double)Height, 0.1, 100);
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClear(GL_DEPTH_BUFFER_BIT);
         }
 
         void basicOpenGL()

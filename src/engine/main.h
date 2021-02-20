@@ -9,6 +9,7 @@ namespace SimpleEngine
 {
     struct App
     {
+        bool run = true;
         virtual ~App() = default;
 
         virtual void OnRender(int w, int h) = 0;
