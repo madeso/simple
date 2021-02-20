@@ -44,6 +44,7 @@ set(src
     engine/fileutil.cc engine/fileutil.h
     engine/meshfile.cc engine/meshfile.h
     engine/actorfile.cc engine/actorfile.h
+    engine/animationfile.cc engine/animationfile.h
 
     engine/main.cc engine/main.h
 )

@@ -1,57 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
+﻿#include "engine/animationfile.h"
+
+#include "engine/animation.h"
+#include "engine/filesystem.h"
+#include "engine/fileutil.h"
 
 namespace SimpleEngine
 {
     namespace AnimationFile
     {
-        static Animation Load(FileSystem fs, std::string path)
+        namespace Binary
         {
-            return Binary.Load(fs, path);
-        }
-        static void Write(Animation an, Stream s)
-        {
-            Binary.Write(an, s);
-        }
-
-        struct Binary
-        {
-            static void Write(Animation an, Stream s)
+            void Write(std::shared_ptr<Animation> an, const std::string& s)
             {
                 BinaryWriter bw = BinaryWriter(s);
-                bw.Write((int)0);
-                bw.Write(an.bones.Count);
-                for (AnimationForBone ab : an.bones)
+                bw.WriteInt32(0);
+                bw.WriteInt32(an->bones.size());
+                for (const auto& ab : an->bones)
                 {
-                    bw.Write(ab.fp.Count);
-                    for (FramePosition p : ab.fp)
+                    bw.WriteInt32(ab.fp.size());
+                    for (const auto& p : ab.fp)
                     {
-                        bw.Write(p.time);
-                        vec3.Write(p.location, bw);
+                        bw.WriteSingle(p.time);
+                        vec3::Write(p.location, bw);
                     }
-                    bw.Write(ab.fr.Count);
-                    for (FrameRotation r : ab.fr)
+                    bw.WriteInt32(ab.fr.size());
+                    for (const auto& r : ab.fr)
                     {
-                        bw.Write(r.time);
-                        quat.Write(r.rotation, bw);
+                        bw.WriteSingle(r.time);
+                        quat::Write(r.rotation, bw);
                     }
                 }
             }
-            static Animation Load(FileSystem fs, std::string path)
+
+            std::shared_ptr<Animation> Load(FileSystem* fs, const std::string& path)
             {
-                std::vector<AnimationForBone> afb = std::vector<AnimationForBone>();
-                using(Stream s = fs.open(path))
+                std::vector<AnimationForBone> afb;
+                auto s = fs->open(path);
                 {
                     BinaryReader br = BinaryReader(s);
                     int version = br.ReadInt32();
                     int bonecount = br.ReadInt32();
                     for (int boneid = 0; boneid < bonecount; ++boneid)
                     {
-                        AnimationForBone ab = AnimationForBone();
-                        afb.Add(ab);
+                        afb.emplace_back();
+                        AnimationForBone& ab = *afb.rbegin();
+
                         int poscount = br.ReadInt32();
                         for (int posid = 0; posid < poscount; ++posid)
                         {
@@ -63,13 +56,23 @@ namespace SimpleEngine
                         for (int rotid = 0; rotid < rotcount; ++rotid)
                         {
                             float time = br.ReadSingle();
-                            quat rot = quat.Read(br);
+                            quat rot = quat::Read(br);
                             ab.addRotation(time, rot);
                         }
                     }
                 }
-                return Animation(afb);
+                return std::make_shared<Animation>(afb);
             }
+        }
+
+        std::shared_ptr<Animation> Load(FileSystem* fs, const std::string& path)
+        {
+            return Binary::Load(fs, path);
+        }
+
+        void Write(std::shared_ptr<Animation> an, const std::string& s)
+        {
+            Binary::Write(an, s);
         }
     }
 }
