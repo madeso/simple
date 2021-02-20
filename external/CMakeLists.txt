@@ -32,7 +32,7 @@ add_library(imgui STATIC
     imgui-1.78/imgui.cpp
     imgui-1.78/imgui_draw.cpp
     imgui-1.78/examples/imgui_impl_sdl.cpp
-    imgui-1.78/examples/imgui_impl_opengl3.cpp
+    imgui-1.78/examples/imgui_impl_opengl2.cpp
 )
 target_include_directories(imgui
     PUBLIC
