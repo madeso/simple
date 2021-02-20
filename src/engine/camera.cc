@@ -1,38 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Tao.OpenGl;
+﻿#include "engine/camera.h"
+
+#include "engine/axisangle.h"
+#include "engine/opengl.h"
 
 namespace SimpleEngine
 {
-    struct Camera
+    void Camera::sendRotationAndPosition() const
     {
-        void sendRotationAndPosition()
-        {
-            sendRotation();
-            sendPosition();
-        }
+        sendRotation();
+        sendPosition();
+    }
 
-        void sendPosition()
-        {
-            // -position
-            glTranslatef(-location.x, -location.y, -location.z);
-        }
+    void Camera::sendPosition() const
+    {
+        // -position
+        glTranslatef(-location.x, -location.y, -location.z);
+    }
 
-        void sendRotation()
-        {
-            // -rotatation
-            AxisAngle aa = rotation.AxisAngle;
-            glRotatef(-aa.angle.inDegrees, aa.axis.x, aa.axis.y, aa.axis.z);
-        }
+    void Camera::sendRotation() const
+    {
+        // -rotatation
+        const auto aa = rotation.AxisAngle();
+        glRotatef(-aa.angle.inDegrees(), aa.axis.x, aa.axis.y, aa.axis.z);
+    }
 
-        void rotate(quat q)
-        {
-            rotation = quat::Combine(rotation, q);
-        }
-
-        vec3 location = vec3::Zero();
-        quat rotation = quat::Identity();
+    void Camera::rotate(const quat& q)
+    {
+        rotation = quat::Combine(rotation, q);
     }
 }

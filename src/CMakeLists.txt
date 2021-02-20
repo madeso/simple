@@ -32,6 +32,7 @@ set(src
     engine/rotation.cc engine/rotation.h
 
     engine/actor.cc engine/actor.h
+    engine/camera.cc engine/camera.h
 
     engine/main.cc engine/main.h
 )
