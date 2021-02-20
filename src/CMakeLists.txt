@@ -33,6 +33,7 @@ set(src
 
     engine/actor.cc engine/actor.h
     engine/camera.cc engine/camera.h
+    engine/rect.cc engine/rect.h
 
     engine/main.cc engine/main.h
 )

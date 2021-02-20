@@ -1,24 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/rect.h"
 
 namespace SimpleEngine
 {
-    struct Rect
+    Rect Rect::FromLTWH(int l, int t, int w, int h)
     {
-        static Rect FromLTWH(int l, int t, int w, int h)
-        {
-            Rect r = Rect();
-            r.Left = l;
-            r.Top = t;
-            r.Width = w;
-            r.Height = h;
-            return r;
-        }
-        int Left;
-        int Top;
-        int Width;
-        int Height;
+        Rect r;
+        r.Left = l;
+        r.Top = t;
+        r.Width = w;
+        r.Height = h;
+        return r;
     }
 }
