@@ -2,11 +2,61 @@
 
 #include <algorithm>
 #include <cctype>
+#include <locale>
 #include <sstream>
+
+// https://stackoverflow.com/a/217605
+namespace detail
+{
+    // trim from start (in place)
+    void ltrim(std::string& s)
+    {
+        s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+                    return !std::isspace(ch);
+                }));
+    }
+
+    // trim from end (in place)
+    void rtrim(std::string& s)
+    {
+        s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
+                    return !std::isspace(ch);
+                }).base(),
+                s.end());
+    }
+
+    // trim from both ends (in place)
+    void trim(std::string& s)
+    {
+        ltrim(s);
+        rtrim(s);
+    }
+
+    // trim from start (copying)
+    std::string ltrim_copy(std::string s)
+    {
+        ltrim(s);
+        return s;
+    }
+
+    // trim from end (copying)
+    std::string rtrim_copy(std::string s)
+    {
+        rtrim(s);
+        return s;
+    }
+
+    // trim from both ends (copying)
+    std::string trim_copy(std::string s)
+    {
+        trim(s);
+        return s;
+    }
+}
 
 namespace SimpleEngine
 {
-    std::string Lower(const std::string& s)
+    std::string ToLower(const std::string& s)
     {
         std::string data = s;
         std::transform(data.begin(), data.end(), data.begin(),
@@ -24,6 +74,11 @@ namespace SimpleEngine
         {
             return nullorvalue;
         }
+    }
+
+    std::string Trim(const std::string& str)
+    {
+        return detail::trim_copy(str);
     }
 
     bool EndsWith(const std::string& fullString, const std::string& ending)

@@ -77,5 +77,10 @@ namespace SimpleEngine
         {
             return fs::path{p}.extension();
         }
+
+        std::string GetFileNameWithoutExtension(const std::string& p)
+        {
+            return fs::path{p}.stem();
+        }
     }
 }
