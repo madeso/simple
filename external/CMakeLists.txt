@@ -14,6 +14,17 @@ target_include_directories(glad
 
 
 ###################################################################################################
+# glad
+add_library(tinyxml2 STATIC
+    tinyxml2/tinyxml2/tinyxml2.cpp
+    tinyxml2/tinyxml2/tinyxml2.h
+)
+target_include_directories(tinyxml2
+    PUBLIC tinyxml2
+)
+
+
+###################################################################################################
 # imgui
 add_library(imgui STATIC
     imgui-1.78/imgui_demo.cpp
