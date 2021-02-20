@@ -152,7 +152,7 @@ namespace SimpleEngine
         return r;
     }
 
-    std::vector<std::shared_ptr<MaterialDef>> MeshDef::Materials()
+    std::vector<std::shared_ptr<MaterialDef>> MeshDef::Materials() const
     {
         std::vector<std::shared_ptr<MaterialDef>> r;
         for (auto& k : materials)

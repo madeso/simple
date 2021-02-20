@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <sstream>
 
 namespace SimpleEngine
 {
@@ -23,6 +24,37 @@ namespace SimpleEngine
         {
             return nullorvalue;
         }
+    }
+
+    bool EndsWith(const std::string& fullString, const std::string& ending)
+    {
+        if (fullString.length() >= ending.length())
+        {
+            return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    std::vector<std::string> Split(const std::string& s, char delim)
+    {
+        std::vector<std::string> result;
+        std::stringstream ss(s);
+        std::string item;
+
+        while (std::getline(ss, item, delim))
+        {
+            result.push_back(item);
+        }
+
+        return result;
+    }
+
+    std::vector<std::string> Split(const std::string& s)
+    {
+        return Split(s, ' ');
     }
 
     std::string FirstChars(const std::string& s, int count, const std::string& extra)

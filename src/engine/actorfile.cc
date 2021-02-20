@@ -1,10 +1,14 @@
-﻿#include <stdexcept>
+﻿#include <map>
+#include <set>
+#include <stdexcept>
+#include <vector>
 
 #include "engine/actor.h"
 #include "engine/animation.h"
 #include "engine/cpp.h"
 #include "engine/filesystem.h"
 #include "engine/math1.h"
+#include "engine/strings.h"
 #include "engine/xml.h"
 
 namespace SimpleEngine
@@ -17,11 +21,10 @@ namespace SimpleEngine
             std::shared_ptr<Xml::Element> xactor = Xml::Open(full_path, "actor");
             std::shared_ptr<Xml::Element> xmesh = xactor->GetChild("mesh");
 
-            std::vector<AnimationInformation> animinfo = ParseAnimationInfo(xmesh);
-            std::vector<std::string> bonesToIgnore = ParseIgnoreBone(xmesh);
-
-            std::map<std::string, std::string> texmap = ParseSetTexture(xmesh);
-            std::map<std::string, std::string> overrides = ParseOverrides(xmesh);
+            const auto animinfo = ParseAnimationInfo(xmesh);
+            const auto bonesToIgnore = ParseIgnoreBone(xmesh);
+            const auto texmap = ParseSetTexture(xmesh);
+            const auto overrides = ParseOverrides(xmesh);
 
             fs->setOverrides(overrides);
 
@@ -56,6 +59,7 @@ namespace SimpleEngine
                     {
                         def.bones.erase(def.bones.begin() + i);
                         animation->bones.erase(animation->bones.begin() + i);
+                        // bug? reduce i by 1 since it was just removed?
                     }
                 }
             }
@@ -90,17 +94,17 @@ namespace SimpleEngine
                 }
             }
 
-            fs.clearOverrides(overrides);
+            fs->clearOverrides(overrides);
             return actor;
         }
 
         std::map<std::string, std::string> ParseOverrides(std::shared_ptr<Xml::Element> root)
         {
-            std::map<std::string, std::string> result = std::map<std::string, std::string>();
+            std::map<std::string, std::string> result;
             for (std::shared_ptr<Xml::Element> e : Xml::ElementsNamed(root, "overrride"))
             {
-                std::string f = Lower(Xml::GetAttributeString(e, "from"));
-                std::string t = Lower(Xml::GetAttributeString(e, "to"));
+                const auto f = ToLower(Xml::GetAttributeString(e, "from"));
+                const auto t = ToLower(Xml::GetAttributeString(e, "to"));
                 result.emplace(f, t);
             }
             return result;
@@ -108,12 +112,12 @@ namespace SimpleEngine
 
         std::vector<AnimationInformation> ParseAnimationInfo(std::shared_ptr<Xml::Element> root)
         {
-            std::vector<AnimationInformation> animinfo = std::vector<AnimationInformation>();
+            std::vector<AnimationInformation> animinfo;
             for (std::shared_ptr<Xml::Element> e : Xml::ElementsNamed(root, "animation"))
             {
-                std::string ss = Xml::GetTextOfSubElement(e, "start");
-                std::string se = Xml::GetTextOfSubElement(e, "end");
-                std::string name = Xml::GetTextOfSubElement(e, "name");
+                const auto ss = Xml::GetTextOfSubElement(e, "start");
+                const auto se = Xml::GetTextOfSubElement(e, "end");
+                const auto name = Xml::GetTextOfSubElement(e, "name");
                 int start = std::stoi(ss);
                 int end = std::stoi(se);
                 animinfo.push_back(AnimationInformation(start, end, name));
@@ -121,24 +125,24 @@ namespace SimpleEngine
             return animinfo;
         }
 
-        std::vector<std::string> ParseIgnoreBone(std::shared_ptr<Xml::Element> root)
+        std::set<std::string> ParseIgnoreBone(std::shared_ptr<Xml::Element> root)
         {
-            std::vector<std::string> bonestoignore = std::vector<std::string>();
+            std::set<std::string> bonestoignore;
             for (std::shared_ptr<Xml::Element> e : Xml::ElementsNamed(root, "ignorebone"))
             {
-                std::string ss = Xml::GetAttributeString(e, "name");
-                bonestoignore.push_back(ss);
+                const auto ss = Xml::GetAttributeString(e, "name");
+                bonestoignore.emplace(ss);
             }
             return bonestoignore;
         }
 
         std::map<std::string, std::string> ParseSetTexture(std::shared_ptr<Xml::Element> root)
         {
-            std::map<std::string, std::string> texmap = std::map<std::string, std::string>();
+            std::map<std::string, std::string> texmap;
             for (std::shared_ptr<Xml::Element> e : Xml::ElementsNamed(root, "settex"))
             {
-                std::string material = Xml::GetAttributeString(e, "material");
-                std::string texture = Xml::GetAttributeString(e, "texture");
+                const auto material = Xml::GetAttributeString(e, "material");
+                const auto texture = Xml::GetAttributeString(e, "texture");
                 texmap.emplace(material, texture);
             }
             return texmap;

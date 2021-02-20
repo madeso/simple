@@ -56,7 +56,7 @@ namespace SimpleEngine
                         for (int posid = 0; posid < poscount; ++posid)
                         {
                             float time = br.ReadSingle();
-                            vec3 pos = vec3.Read(br);
+                            vec3 pos = vec3::Read(br);
                             ab.addPositon(time, pos);
                         }
                         int rotcount = br.ReadInt32();

@@ -6,6 +6,7 @@ namespace SimpleEngine
 {
     struct angle;
     struct quat;
+    struct BinaryReader;
 
     struct vec3
     {
@@ -16,6 +17,8 @@ namespace SimpleEngine
         vec3(float ax = 0.0f, float ay = 0.0f, float az = 0.0f);
 
         vec3(const vec3& a);
+
+        static vec3 Read(BinaryReader& br);
 
         // override string ToString()
         // {

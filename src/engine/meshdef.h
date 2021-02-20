@@ -115,7 +115,7 @@ namespace SimpleEngine
 
         std::vector<Tri> TrianglesFor(const MaterialDef& material) const;
 
-        std::vector<std::shared_ptr<MaterialDef>> Materials();
+        std::vector<std::shared_ptr<MaterialDef>> Materials() const;
 
         std::vector<Vertex> lookup(const Tri& tri) const;
 
