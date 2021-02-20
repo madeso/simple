@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/userexception.h"
+
+#include <stdexcept>
+#include <string>
 
 namespace SimpleEngine
 {
-    struct UserException : std::runtime_error
-    {
-        UserException(std::string message)
-            : base(message)
-        {
-        }
-    }
+    UserException::UserException(const std::string& message)
+        : std::runtime_error(message){};
 }

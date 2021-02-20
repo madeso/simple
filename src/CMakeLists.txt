@@ -40,6 +40,7 @@ set(src
 
     engine/renderablegrid.cc engine/renderablegrid.h
     # engine/xml.cc engine/xml.h
+    engine/userexception.cc engine/userexception.h
 
     engine/main.cc engine/main.h
 )
