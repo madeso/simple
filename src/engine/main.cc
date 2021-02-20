@@ -61,6 +61,7 @@ namespace SimpleEngine
             while (SDL_PollEvent(&event))
             {
                 ImGui_ImplSDL2_ProcessEvent(&event);
+                app->OnEvent(event);
                 switch (event.type)
                 {
                 case SDL_KEYUP:

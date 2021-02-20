@@ -24,7 +24,7 @@ namespace SimpleEngine
         vec3 ydir = vec3::In();
         float halflength = 100;
         float spacing = 2;
-        vec3 c = vec3{0.9f, 0.9f, 0.9f};  // light gray
+        vec3 c = vec3{0.8f, 0.8f, 0.8f};  // light gray
 
         void sendToRenderer(RenderList* r) override;
 

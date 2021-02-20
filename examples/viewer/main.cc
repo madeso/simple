@@ -2,7 +2,7 @@
 
 #include "engine/setup.h"
 #include "imgui.h"
-#include "viewer/viewer.h"
+#include "viewer.h"
 
 namespace ModelView
 {
@@ -19,6 +19,23 @@ namespace ModelView
         {
             ImGui::Begin("viewer");
             ImGui::End();
+        }
+
+        void OnEvent(const SDL_Event& e) override
+        {
+            switch (e.type)
+            {
+            case SDL_MOUSEMOTION:
+                viewer.MouseMove(e.motion.x, e.motion.y);
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+                viewer.OnLMB(e.button.x, e.button.y, e.type == SDL_MOUSEBUTTONDOWN);
+                break;
+            case SDL_MOUSEWHEEL:
+                viewer.OnMouseWheel(e.wheel.y);
+                break;
+            }
         }
 
         void OnRender(int w, int h) override
