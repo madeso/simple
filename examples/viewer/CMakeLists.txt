@@ -6,7 +6,7 @@ set(src
 add_executable(viewer WIN32 MACOSX_BUNDLE ${src})
 target_link_libraries(
     viewer
-    PUBLIC engine
+    PUBLIC engine imgui_filebrowser
     PRIVATE project_options project_warnings
 )
 target_include_directories(viewer PRIVATE ${EXAMPLE_FOLDER})

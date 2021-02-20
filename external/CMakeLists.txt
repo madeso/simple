@@ -52,6 +52,23 @@ target_compile_definitions(imgui
 
 
 ###################################################################################################
+# imgui-filebrowser
+add_library(imgui_filebrowser STATIC
+    ImGui-Addons/FileBrowser/ImGuiFileBrowser.cpp
+    ImGui-Addons/FileBrowser/ImGuiFileBrowser.h
+    ImGui-Addons/FileBrowser/Dirent/dirent.h
+)
+target_include_directories(imgui_filebrowser
+    PUBLIC
+        ImGui-Addons/FileBrowser/
+)
+target_link_libraries(imgui_filebrowser
+    PUBLIC
+        imgui
+)
+
+
+###################################################################################################
 # imgui binary_to_compressed
 add_library(imgui_binary_to_compressed INTERFACE)
 target_include_directories(imgui_binary_to_compressed

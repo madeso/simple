@@ -1,14 +1,21 @@
 #include "engine/main.h"
 
+#include <iostream>
+
+#include "ImGuiFileBrowser.h"
 #include "engine/setup.h"
 #include "imgui.h"
 #include "viewer.h"
+
+#define LOAD_MODEL "load-model"
 
 namespace ModelView
 {
     struct App : public SimpleEngine::App
     {
         Viewer viewer;
+        imgui_addons::ImGuiFileBrowser file_dialog;
+        bool demo = false;
 
         App()
         {
@@ -20,13 +27,19 @@ namespace ModelView
             ImGui::Begin("viewer");
             ImGui::End();
 
+            bool load_model = false;
+
             if (ImGui::BeginMainMenuBar())
             {
                 if (ImGui::BeginMenu("File"))
                 {
-                    if (ImGui::MenuItem("Open"))
+                    if (ImGui::MenuItem("Open model"))
                     {
-                        // todo
+                        load_model = true;
+                    }
+                    if (ImGui::MenuItem("Demo"))
+                    {
+                        demo = true;
                     }
                     if (ImGui::MenuItem("Quit"))
                     {
@@ -52,6 +65,20 @@ namespace ModelView
                     ImGui::EndMenu();
                 }
                 ImGui::EndMainMenuBar();
+            }
+
+            if (load_model)
+            {
+                ImGui::OpenPopup(LOAD_MODEL);
+            }
+            if (file_dialog.showFileDialog(LOAD_MODEL, imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), ".act,.mdf,.obj,*.*"))
+            {
+                std::cout << file_dialog.selected_path << std::endl;  // The absolute path to the selected file
+            }
+
+            if (demo)
+            {
+                ImGui::ShowDemoWindow(&demo);
             }
         }
 
