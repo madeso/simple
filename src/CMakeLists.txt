@@ -39,7 +39,7 @@ set(src
     engine/stringcounter.cc engine/stringcounter.h
 
     engine/renderablegrid.cc engine/renderablegrid.h
-    # engine/xml.cc engine/xml.h
+    engine/xml.cc engine/xml.h
     engine/userexception.cc engine/userexception.h
     engine/fileutil.cc engine/fileutil.h
     engine/meshfile.cc engine/meshfile.h

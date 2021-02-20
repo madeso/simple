@@ -6,17 +6,28 @@
 #include <string>
 #include <vector>
 
+namespace tinyxml2
+{
+    class XMLDocument;
+    class XMLElement;
+}
+
 namespace SimpleEngine
 {
     namespace Xml
     {
         struct Element
         {
+            std::shared_ptr<tinyxml2::XMLDocument> document;
+            tinyxml2::XMLElement* element;
+
+            Element(std::shared_ptr<tinyxml2::XMLDocument> d, tinyxml2::XMLElement* e);
+            ~Element();
+
             std::shared_ptr<Element> GetChild(const std::string& name);
         };
 
-        std::shared_ptr<Element>
-        Open(const std::string& file, const std::string& root);
+        std::shared_ptr<Element> Open(const std::string& file, const std::string& root);
 
         std::optional<std::string> GetAttributeStringOrNull(std::shared_ptr<Element> el, const std::string& name);
         std::string GetAttributeString(std::shared_ptr<Element> el, const std::string& name);
