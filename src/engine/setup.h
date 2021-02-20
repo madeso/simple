@@ -6,6 +6,9 @@ namespace SimpleEngine
 
     namespace Setup
     {
+        void Setup();
+        void BeforeRender(int Width, int Height);
+
         void basicOpenGL();
         void view3d(int Width, int Height);
         void Viewport(const Rect& rect);

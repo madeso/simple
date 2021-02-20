@@ -58,6 +58,30 @@ namespace SimpleEngine
 {
     namespace Setup
     {
+        void Setup()
+        {
+            glClearColor(1, 1, 1, 1);
+            glShadeModel(GL_SMOOTH);
+            glEnable(GL_TEXTURE_2D);
+            glClearColor(1, 1, 1, 1.0f);
+            glClearDepth(1);
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LEQUAL);
+            glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+            glMatrixMode(GL_MODELVIEW);
+            glEnable(GL_CULL_FACE);
+        }
+
+        void BeforeRender(int Width, int Height)
+        {
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluPerspective(45, Width / (double)Height, 0.1, 100);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        }
+
         void basicOpenGL()
         {
             glShadeModel(GL_SMOOTH);

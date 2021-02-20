@@ -1,5 +1,6 @@
 #include "engine/main.h"
 
+#include "engine/setup.h"
 #include "imgui.h"
 #include "viewer/viewer.h"
 
@@ -9,14 +10,20 @@ namespace ModelView
     {
         Viewer viewer;
 
+        App()
+        {
+            SimpleEngine::Setup::Setup();
+        }
+
         void OnStep() override
         {
             ImGui::Begin("viewer");
             ImGui::End();
         }
 
-        void OnRender() override
+        void OnRender(int w, int h) override
         {
+            SimpleEngine::Setup::BeforeRender(w, h);
             viewer.Paint();
         }
     };

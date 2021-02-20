@@ -87,7 +87,7 @@ namespace SimpleEngine
             //glUseProgram(0); // You may want this if using this code in an OpenGL 3+ context where shaders may be bound
             ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
-            app->OnRender();
+            app->OnRender((int)io.DisplaySize.x, (int)io.DisplaySize.y);
 
             SDL_GL_SwapWindow(window);
         }

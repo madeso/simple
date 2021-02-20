@@ -9,7 +9,7 @@ namespace SimpleEngine
     {
         virtual ~App() = default;
 
-        virtual void OnRender() = 0;
+        virtual void OnRender(int w, int h) = 0;
         virtual void OnStep() = 0;
     };
 
