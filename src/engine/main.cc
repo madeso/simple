@@ -10,7 +10,7 @@
 
 namespace SimpleEngine
 {
-    void RunMain(std::function<void()>&& runner)
+    void RunMain(std::function<std::shared_ptr<App>()>&& make_app)
     {
         vec3 clear_color = vec3(0.45f, 0.55f, 0.60f);
 
@@ -53,6 +53,8 @@ namespace SimpleEngine
 
         ImGui::StyleColorsDark();
 
+        auto app = make_app();
+
         bool run = true;
 
         while (run)
@@ -76,8 +78,7 @@ namespace SimpleEngine
             ImGui_ImplSDL2_NewFrame(window);
             ImGui::NewFrame();
 
-            ImGui::Begin("Hello, world!");
-            ImGui::End();
+            app->OnStep();
 
             ImGui::Render();
             glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
@@ -86,7 +87,7 @@ namespace SimpleEngine
             //glUseProgram(0); // You may want this if using this code in an OpenGL 3+ context where shaders may be bound
             ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
-            runner();
+            app->OnRender();
 
             SDL_GL_SwapWindow(window);
         }
