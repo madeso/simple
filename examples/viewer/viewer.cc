@@ -1,4 +1,6 @@
-﻿#include <memory>
+﻿#include "viewer/viewer.h"
+
+#include <memory>
 #include <string>
 
 #include "engine/actorfile.h"
@@ -21,254 +23,234 @@ using namespace SimpleEngine;
 
 namespace ModelView
 {
-    struct Main : public Window
+    Viewer::Viewer()
+        : rotation(std::make_shared<EasyRotation>())
     {
-        std::string current_filename;
-        std::string model_information;
+    }
 
-        std::shared_ptr<MeshDef> def;
-        std::shared_ptr<CompiledMesh> mesh;
-        std::shared_ptr<Animation> anim;
-        std::shared_ptr<Rotation> rotation = std::make_shared<EasyRotation>();
+    Viewer::~Viewer()
+    {
+    }
 
-        vec2 oldmouse = vec2::Zero();
-        bool down = false;
-        int zoommem = 0;
-        const int kWheelStep = 120;
-        float distance = 15;
+    void Viewer::selectMesh(const std::string& fileName)
+    {
+        auto [basefile, filename] = FileUtil::Split(fileName);
 
-        float animation_position = 0;
-        bool playing_animation = false;
+        std::shared_ptr<FileSystem> fs = std::make_shared<FileSystem>();
+        fs->addRoot(basefile);
 
-        Main()
+        std::string extent = FileUtil::GetExtension(filename);
+        if (extent == ".act")
         {
+            anim = nullptr;
+
+            auto act = ActorFile::Load(fs.get(), filename);
+            def = act->mesh;
+            mesh = nullptr;
+
+            for (auto& an : act->animations)
+            {
+                addAnimation(an.first, an.second);
+            }
+        }
+        else
+        {
+            def = MeshFile::Load(fs.get(), filename);
+            anim = nullptr;
         }
 
-        void selectMesh(const std::string& fileName)
+        newMesh(fs);
+        updatePose();
+
+        current_filename = filename;
+        model_information = fmt::format("{0} points, {1} texcoords {2} tris, {3}/{4} bones",
+                                        def->points.size(), def->uvs.size(), def->TriCount(), def->bones.size(), def->RootBones().size());
+
+        forceRedraw();
+    }
+
+    void Viewer::newMesh(std::shared_ptr<FileSystem> fs)
+    {
+        auto ml = MediaLoader(fs);
+        def->compile(&ml);
+        mesh = def->Compiled();
+        forceRedraw();
+    }
+
+    void Viewer::Paint()
+    {
+        vec3 c = vec3::In() * distance;
+        glTranslatef(c.x, c.y, c.z);
+        rotation->rotateGl();
+
+        RenderList list;
+
+        RenderableGrid grid;
+        grid.sendToRenderer(&list);
+
+        if (mesh != nullptr)
         {
-            auto [basefile, filename] = FileUtil::Split(fileName);
+            mesh->sendToRenderer(&list, vec3::Zero(), quat::Identity());
+        }
+        list.render();
+    }
 
-            std::shared_ptr<FileSystem> fs = std::make_shared<FileSystem>();
-            fs->addRoot(basefile);
+    void Viewer::MouseMove(float mx, float my)
+    {
+        if (down)
+        {
+            vec2 current = vec2(mx, my);
+            rotation->sendMouse(current, oldmouse);
+            oldmouse = current;
+        }
+        forceRedraw();
+    }
 
-            std::string extent = FileUtil::GetExtension(filename);
-            if (extent == ".act")
-            {
-                anim = nullptr;
+    void Viewer::OnLMB(float mx, float my, bool state)
+    {
+        if (state && !down)
+        {
+            oldmouse = vec2(mx, my);
+        }
+        down = state;
+    }
 
-                auto act = ActorFile::Load(fs.get(), filename);
-                def = act->mesh;
-                mesh = nullptr;
+    void Viewer::OnMouseWheel(int delta)
+    {
+        zoommem += delta;
+        int zoommove = 0;
 
-                for (auto& an : act->animations)
-                {
-                    addAnimation(an.first, an.second);
-                }
-            }
-            else
-            {
-                def = MeshFile::Load(fs.get(), filename);
-                anim = nullptr;
-            }
+        while (zoommem >= kWheelStep)
+        {
+            zoommem -= kWheelStep;
+            ++zoommove;
+        }
+        while (zoommem <= -kWheelStep)
+        {
+            zoommem += kWheelStep;
+            --zoommove;
+        }
 
-            newMesh(fs);
-            updatePose();
-
-            current_filename = filename;
-            model_information = fmt::format("{0} points, {1} texcoords {2} tris, {3}/{4} bones",
-                                            def->points.size(), def->uvs.size(), def->TriCount(), def->bones.size(), def->RootBones().size());
-
+        if (zoommove != 0)
+        {
+            distance += zoommove * 0.25f;
+            if (distance < 0)
+                distance = 0;
             forceRedraw();
         }
+    }
 
-        void newMesh(std::shared_ptr<FileSystem> fs)
+    void Viewer::forceRedraw()
+    {
+    }
+
+    void Viewer::SetBasicCamera()
+    {
+        rotation = std::make_shared<BasicQuatRot>();
+    }
+
+    void Viewer::SetArcballCamera()
+    {
+        rotation = std::make_shared<ArcBallRotation>(this);
+    }
+
+    void Viewer::selectAnimation(const std::string& fileName)
+    {
+        auto [basefile, filename] = FileUtil::Split(fileName);
+
+        FileSystem fs = FileSystem();
+        fs.addRoot(basefile);
+        addAnimation(FileUtil::GetFileNameWithoutExtension(filename), AnimationFile::Load(&fs, filename));
+    }
+
+    void Viewer::addAnimation(const std::string& name, std::shared_ptr<Animation> anim)
+    {
+        animations.emplace(name, anim);
+        setAnimation(anim, name);
+    }
+
+    void Viewer::setAnimation(std::shared_ptr<Animation> anim, const std::string& name)
+    {
+        this->anim = anim;
+        animation_position = 0.0f;
+        current_animation = name;
+
+        animation_information = fmt::format("{0} bones, {1}s long", anim->bones.size(), anim->Length);
+
+        updatePose();
+    }
+
+    float Viewer::SafeAnimationPosition()
+    {
+        if (animation_position < 0.0f)
         {
-            auto ml = MediaLoader(fs);
-            def->compile(&ml);
-            mesh = def->Compiled();
-            forceRedraw();
+            return 0.0f;
         }
 
-        void Paint()
+        if (anim == nullptr)
         {
-            vec3 c = vec3::In() * distance;
-            glTranslatef(c.x, c.y, c.z);
-            rotation->rotateGl();
-
-            RenderList list;
-
-            RenderableGrid grid;
-            grid.sendToRenderer(&list);
-
-            if (mesh != nullptr)
-            {
-                mesh->sendToRenderer(&list, vec3::Zero(), quat::Identity());
-            }
-            list.render();
+            return animation_position;
         }
 
-        void MouseMove(float mx, float my)
+        if (animation_position > anim->Length)
         {
-            if (down)
-            {
-                vec2 current = vec2(mx, my);
-                rotation->sendMouse(current, oldmouse);
-                oldmouse = current;
-            }
-            forceRedraw();
+            return anim->Length;
         }
-
-        void OnLMB(float mx, float my, bool state)
+        else
         {
-            if (state && !down)
-            {
-                oldmouse = vec2(mx, my);
-            }
-            down = state;
+            return animation_position;
         }
+    }
 
-        void OnMouseWheel(int delta)
-        {
-            zoommem += delta;
-            int zoommove = 0;
-
-            while (zoommem >= kWheelStep)
-            {
-                zoommem -= kWheelStep;
-                ++zoommove;
-            }
-            while (zoommem <= -kWheelStep)
-            {
-                zoommem += kWheelStep;
-                --zoommove;
-            }
-
-            if (zoommove != 0)
-            {
-                distance += zoommove * 0.25f;
-                if (distance < 0)
-                    distance = 0;
-                forceRedraw();
-            }
-        }
-
-        void forceRedraw()
-        {
-        }
-
-        void SetBasicCamera()
-        {
-            rotation = std::make_shared<BasicQuatRot>();
-        }
-
-        void SetArcballCamera()
-        {
-            rotation = std::make_shared<ArcBallRotation>(this);
-        }
-
-        void selectAnimation(const std::string& fileName)
-        {
-            auto [basefile, filename] = FileUtil::Split(fileName);
-
-            FileSystem fs = FileSystem();
-            fs.addRoot(basefile);
-            addAnimation(FileUtil::GetFileNameWithoutExtension(filename), AnimationFile::Load(&fs, filename));
-        }
-
-        std::map<std::string, std::shared_ptr<Animation>> animations;
-
-        void addAnimation(const std::string& name, std::shared_ptr<Animation> anim)
-        {
-            animations.emplace(name, anim);
-            setAnimation(anim, name);
-        }
-
-        std::string animation_information;
-        std::string current_animation;
-
-        void setAnimation(std::shared_ptr<Animation> anim, const std::string& name)
-        {
-            this->anim = anim;
-            animation_position = 0.0f;
-            current_animation = name;
-
-            animation_information = fmt::format("{0} bones, {1}s long", anim->bones.size(), anim->Length);
-
-            updatePose();
-        }
-
-        float SafeAnimationPosition()
-        {
-            if (animation_position < 0.0f)
-            {
-                return 0.0f;
-            }
-
-            if (anim == nullptr)
-            {
-                return animation_position;
-            }
-
-            if (animation_position > anim->Length)
-            {
-                return anim->Length;
-            }
-            else
-            {
-                return animation_position;
-            }
-        }
-
-        void updatePose()
-        {
-            if (anim == nullptr)
-                return;
-            if (def == nullptr)
-                return;
-            if (mesh == nullptr)
-                return;
-            float val = SafeAnimationPosition();
-            auto pose = anim->getPose(val);
-            mesh->setPose(std::make_shared<CompiledPose>(CompiledPose::Compile(pose, *def)));
-            forceRedraw();
-        }
+    void Viewer::updatePose()
+    {
+        if (anim == nullptr)
+            return;
+        if (def == nullptr)
+            return;
+        if (mesh == nullptr)
+            return;
+        float val = SafeAnimationPosition();
+        auto pose = anim->getPose(val);
+        mesh->setPose(std::make_shared<CompiledPose>(CompiledPose::Compile(pose, *def)));
+        forceRedraw();
+    }
 
 #ifdef NOTYET
-        void selectMaterialToolStripMenuItem_Click()
+    void Viewer::selectMaterialToolStripMenuItem_Click()
+    {
+        ChangeMaterial mat = ChangeMaterial(def);
+        if (mat.ShowDialog() == DialogResult.OK)
         {
-            ChangeMaterial mat = ChangeMaterial(def);
-            if (mat.ShowDialog() == DialogResult.OK)
-            {
-                def.getMaterialNamed(mat.MaterialName).texture = Path.GetFileName(mat.Texture);
-                FileSystem fs = FileSystem();
-                fs.addRoot(Path.GetDirectoryName(mat.Texture));
-                newMesh(fs);
-            }
+            def.getMaterialNamed(mat.MaterialName).texture = Path.GetFileName(mat.Texture);
+            FileSystem fs = FileSystem();
+            fs.addRoot(Path.GetDirectoryName(mat.Texture));
+            newMesh(fs);
         }
+    }
 #endif
 
-        void step(float dt)
+    void Viewer::step(float dt)
+    {
+        if (anim == nullptr)
+            return;
+        if (def == nullptr)
+            return;
+        if (mesh == nullptr)
+            return;
+
+        if (playing_animation == false)
         {
-            if (anim == nullptr)
-                return;
-            if (def == nullptr)
-                return;
-            if (mesh == nullptr)
-                return;
-
-            if (playing_animation == false)
-            {
-                return;
-            }
-
-            animation_position += dt;
-
-            while (animation_position > anim->Length)
-            {
-                animation_position -= anim->Length;
-            }
-            updatePose();
-            forceRedraw();
+            return;
         }
-    };
+
+        animation_position += dt;
+
+        while (animation_position > anim->Length)
+        {
+            animation_position -= anim->Length;
+        }
+        updatePose();
+        forceRedraw();
+    }
 }
