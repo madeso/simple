@@ -12,8 +12,6 @@ namespace SimpleEngine
 {
     void RunMain(std::function<std::shared_ptr<App>()>&& make_app)
     {
-        vec3 clear_color = vec3(0.45f, 0.55f, 0.60f);
-
         SDL_Init(SDL_INIT_VIDEO);
         SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -82,7 +80,6 @@ namespace SimpleEngine
 
             ImGui::Render();
             glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-            glClearColor(clear_color.x, clear_color.y, clear_color.z, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             //glUseProgram(0); // You may want this if using this code in an OpenGL 3+ context where shaders may be bound
             ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
