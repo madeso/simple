@@ -38,6 +38,8 @@ set(src
 
     engine/stringcounter.cc engine/stringcounter.h
 
+    engine/renderablegrid.cc engine/renderablegrid.h
+
     engine/main.cc engine/main.h
 )
 

@@ -7,6 +7,7 @@
 #include "engine/medialoader.h"
 #include "engine/meshdef.h"
 #include "engine/opengl.h"
+#include "engine/renderablegrid.h"
 #include "engine/renderlist.h"
 #include "engine/rotation.h"
 #include "engine/window.h"
@@ -92,7 +93,7 @@ namespace ModelView
 
             RenderList list;
 
-            RenderableGrid grid = RenderableGrid();
+            RenderableGrid grid;
             grid.sendToRenderer(&list);
 
             if (mesh != nullptr)

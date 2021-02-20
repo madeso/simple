@@ -24,7 +24,7 @@ namespace SimpleEngine
 
         void add(std::shared_ptr<MeshPart> part, const vec3& pos, const quat& rot);
 
-        void add(std::shared_ptr<Renderable> r, int id);
+        void add(Renderable* r, int id);
 
         void render();
     };

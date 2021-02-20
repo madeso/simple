@@ -30,7 +30,7 @@ namespace SimpleEngine
     struct RenderRenderable : public RenderDta
     {
         int id;
-        std::shared_ptr<Renderable> r;
+        Renderable* r;
 
         int Id() override
         {
@@ -57,7 +57,7 @@ namespace SimpleEngine
         datas.emplace_back(d);
     }
 
-    void RenderList::add(std::shared_ptr<Renderable> r, int id)
+    void RenderList::add(Renderable* r, int id)
     {
         auto rr = std::make_shared<RenderRenderable>();
         rr->id = id;
