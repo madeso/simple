@@ -1,32 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include <memory>
+
+#include "engine/compiledmesh.h"
+#include "engine/media.h"
 
 namespace SimpleEngine
 {
-    struct Mesh : Media
+    struct Mesh : public Media
     {
-        CompiledMesh mesh = nullptr;
+        std::shared_ptr<CompiledMesh> mesh;
 
-        override void load(MediaLoader ml, FileSystem fs, std::string path)
+        void load(MediaLoader* ml, FileSystem* fs, const std::string& path) override
         {
-            MeshDef mesh = MeshFile.Load(fs, path);
+            auto mesh = MeshFile.Load(fs, path);
             mesh.compile(ml);
-            this.mesh = mesh.Compiled;
+            this->mesh = mesh.Compiled();
         }
 
-        override void unload()
+        std::shared_ptr<CompiledMesh> Compiled()
         {
-            mesh = nullptr;
-        }
-
-        CompiledMesh Compiled
-        {
-            get
-            {
-                return mesh;
-            }
+            return mesh;
         }
     }
 }
