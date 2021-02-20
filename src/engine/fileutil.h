@@ -26,5 +26,8 @@ namespace SimpleEngine
     namespace FileUtil
     {
         std::vector<std::string> LinesIn(const std::string& path);
+
+        std::pair<std::string, std::string> Split(const std::string& path);
+        std::string GetExtension(const std::string& p);
     }
 }

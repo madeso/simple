@@ -4,8 +4,10 @@
 #include "engine/animation.h"
 #include "engine/compiledmesh.h"
 #include "engine/filesystem.h"
+#include "engine/fileutil.h"
 #include "engine/medialoader.h"
 #include "engine/meshdef.h"
+#include "engine/meshfile.h"
 #include "engine/opengl.h"
 #include "engine/renderablegrid.h"
 #include "engine/renderlist.h"
@@ -42,13 +44,12 @@ namespace ModelView
 
         void selectMesh(const std::string& fileName)
         {
-            std::string basefile = Path.GetDirectoryName(dImportDialog.FileName);
-            std::string filename = Path.GetFileName(dImportDialog.FileName);
+            auto [basefile, filename] = FileUtil::Split(fileName);
 
             std::shared_ptr<FileSystem> fs = std::make_shared<FileSystem>();
             fs->addRoot(basefile);
 
-            std::string extent = Path.GetExtension(filename);
+            std::string extent = FileUtil::GetExtension(filename);
             if (extent == ".act")
             {
                 anim = nullptr;
@@ -64,7 +65,7 @@ namespace ModelView
             }
             else
             {
-                def = MeshFile.Load(fs, filename);
+                def = MeshFile::Load(fs.get(), filename);
                 anim = nullptr;
             }
 
@@ -80,7 +81,7 @@ namespace ModelView
         void newMesh(std::shared_ptr<FileSystem> fs)
         {
             auto ml = MediaLoader(fs);
-            def->compile(ml);
+            def->compile(&ml);
             mesh = def->Compiled();
             forceRedraw();
         }
