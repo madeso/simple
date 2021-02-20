@@ -1,6 +1,7 @@
 ﻿#include <memory>
 #include <string>
 
+#include "engine/actorfile.h"
 #include "engine/animation.h"
 #include "engine/compiledmesh.h"
 #include "engine/filesystem.h"
@@ -54,13 +55,13 @@ namespace ModelView
             {
                 anim = nullptr;
 
-                Actor act = ActorFile.Load(fs, filename);
-                def = act.Mesh;
+                auto act = ActorFile::Load(fs.get(), filename);
+                def = act->mesh;
                 mesh = nullptr;
 
-                for (auto& an : act.Animations)
+                for (auto& an : act->animations)
                 {
-                    addAnimation(an.Key, an.Value);
+                    addAnimation(an.first, an.second);
                 }
             }
             else
@@ -73,7 +74,8 @@ namespace ModelView
             updatePose();
 
             current_filename = filename;
-            model_information = fmt::format("{0} points, {1} texcoords {2} tris, {3}/{4} bones", def.points.Count, def.uvs.Count, def.TriCount, def.bones.Count, std::vector<Bone>(def.RootBones).Count);
+            model_information = fmt::format("{0} points, {1} texcoords {2} tris, {3}/{4} bones",
+                                            def->points.size(), def->uvs.size(), def->TriCount(), def->bones.size(), def->RootBones().size());
 
             forceRedraw();
         }
@@ -165,11 +167,11 @@ namespace ModelView
 
         void selectAnimation(const std::string& fileName)
         {
-            std::string basefile = Path.GetDirectoryName(dSelectAnimation.FileName);
-            std::string filename = Path.GetFileName(dSelectAnimation.FileName);
+            auto [basefile, filename] = FileUtil::Split(fileName);
+
             FileSystem fs = FileSystem();
             fs.addRoot(basefile);
-            addAnimation(Path.GetFileNameWithoutExtension(filename), AnimationFile.Load(fs, filename));
+            addAnimation(FileUtil::GetFileNameWithoutExtension(filename), AnimationFile::Load(fs, filename));
         }
 
         void addAnimation(const std::string& name, std::shared_ptr<Animation> anim)
@@ -229,7 +231,7 @@ namespace ModelView
             forceRedraw();
         }
 
-        void selectMaterialToolStripMenuItem_Click(object sender, EventArgs e)
+        void selectMaterialToolStripMenuItem_Click()
         {
             ChangeMaterial mat = ChangeMaterial(def);
             if (mat.ShowDialog() == DialogResult.OK)
