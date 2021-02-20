@@ -286,7 +286,7 @@ namespace SimpleEngine
 
     namespace MeshFile
     {
-        std::shared_ptr<MeshDef> Load(FileSystem* fs, std::string path)
+        std::shared_ptr<MeshDef> Load(FileSystem* fs, const std::string& path)
         {
             if (EndsWith(path, ".obj"))
                 return WavefrontObj::Load(fs, path);
@@ -296,8 +296,10 @@ namespace SimpleEngine
                 loaded->mapBones();
                 return loaded;
             }
-            // else if (EndsWith(path, ".3ds"))
-            //     return load::Loader_3ds::Load(fs, path);
+#ifdef NOTYET
+            else if (EndsWith(path, ".3ds"))
+                return load::Loader_3ds::Load(fs, path);
+#endif
             else
                 throw UserException(path + " does not use a known fileformat");
         }

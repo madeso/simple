@@ -7,7 +7,9 @@
 #include "engine/animation.h"
 #include "engine/cpp.h"
 #include "engine/filesystem.h"
+#include "engine/fileutil.h"
 #include "engine/math1.h"
+#include "engine/meshfile.h"
 #include "engine/strings.h"
 #include "engine/xml.h"
 
@@ -15,89 +17,6 @@ namespace SimpleEngine
 {
     namespace ActorFile
     {
-        Actor Load(FileSystem* fs, const std::string& p)
-        {
-            const auto full_path = fs->open(p);
-            std::shared_ptr<Xml::Element> xactor = Xml::Open(full_path, "actor");
-            std::shared_ptr<Xml::Element> xmesh = xactor->GetChild("mesh");
-
-            const auto animinfo = ParseAnimationInfo(xmesh);
-            const auto bonesToIgnore = ParseIgnoreBone(xmesh);
-            const auto texmap = ParseSetTexture(xmesh);
-            const auto overrides = ParseOverrides(xmesh);
-
-            fs->setOverrides(overrides);
-
-            std::string meshpath = Xml::GetAttributeString(xmesh, "file");
-            float scale = Xml::GetAttribute<float>(xmesh, "scale", math1::ParseFloat, 1.0f);
-
-            MeshDef def;
-            std::shared_ptr<Animation> animation;
-
-            std::string ext = Path.GetExtension(meshpath);
-            if (ext == ".txt")
-            {
-                SimpleEngine::load::MilkshapeAscii.Load(fs, meshpath, &def, &animation, 1);
-            }
-            else if (ext == ".ms3d")
-            {
-                SimpleEngine::load::MilkshapeBinary.Load(fs, meshpath, &def, &animation);
-            }
-            else if (animinfo.empty())
-            {
-                animation = nullptr;
-                def = MeshFile::Load(fs, meshpath);
-            }
-            else
-                throw std::runtime_error("Unhandled format " + ext + " for " + meshpath);
-
-            for (std::string ignoreThisBone : bonesToIgnore)
-            {
-                for (int i = 0; i < def.bones.size(); ++i)
-                {
-                    if (ignoreThisBone == def.bones[i]->name)
-                    {
-                        def.bones.erase(def.bones.begin() + i);
-                        animation->bones.erase(animation->bones.begin() + i);
-                        // bug? reduce i by 1 since it was just removed?
-                    }
-                }
-            }
-
-            for (MaterialDef mat : def.Materials)
-            {
-                std::string matname = mat.name.ToLower();
-                if (texmap.ContainsKey(matname))
-                {
-                    mat.texture = texmap[matname];
-                    texmap.Remove(matname);
-                }
-            }
-
-            if (texmap.empty() == false)
-                throw std::runtime_error("Some materials was not mapped");
-
-            def.scale(scale);
-            if (animation != nullptr)
-                animation.scale(scale);
-
-            def.translateFiles(overrides);
-
-            Actor actor = Actor(def.mapBones());
-
-            if (animation != nullptr)
-            {
-                for (AnimationInformation ai : animinfo)
-                {
-                    Animation an = animation.subanim(ai);
-                    actor.add(ai.name, an);
-                }
-            }
-
-            fs->clearOverrides(overrides);
-            return actor;
-        }
-
         std::map<std::string, std::string> ParseOverrides(std::shared_ptr<Xml::Element> root)
         {
             std::map<std::string, std::string> result;
@@ -146,6 +65,93 @@ namespace SimpleEngine
                 texmap.emplace(material, texture);
             }
             return texmap;
+        }
+
+        std::shared_ptr<Actor> Load(FileSystem* fs, const std::string& p)
+        {
+            const auto full_path = fs->open(p);
+            std::shared_ptr<Xml::Element> xactor = Xml::Open(full_path, "actor");
+            std::shared_ptr<Xml::Element> xmesh = xactor->GetChild("mesh");
+
+            const auto animinfo = ParseAnimationInfo(xmesh);
+            const auto bonesToIgnore = ParseIgnoreBone(xmesh);
+            auto texmap = ParseSetTexture(xmesh);
+            const auto overrides = ParseOverrides(xmesh);
+
+            fs->setOverrides(overrides);
+
+            const auto meshpath = Xml::GetAttributeString(xmesh, "file");
+            float scale = Xml::GetAttribute<float>(xmesh, "scale", math1::ParseFloat, 1.0f);
+
+            std::shared_ptr<MeshDef> def;
+            std::shared_ptr<Animation> animation;
+
+            std::string ext = FileUtil::GetExtension(meshpath);
+#ifdef NOTYET
+            if (ext == ".txt")
+            {
+                SimpleEngine::load::MilkshapeAscii.Load(fs, meshpath, &def, &animation, 1);
+            }
+            else if (ext == ".ms3d")
+            {
+                SimpleEngine::load::MilkshapeBinary.Load(fs, meshpath, &def, &animation);
+            }
+            else
+#endif
+                if (animinfo.empty())
+            {
+                animation = nullptr;
+                def = MeshFile::Load(fs, meshpath);
+            }
+            else
+                throw std::runtime_error("Unhandled format " + ext + " for " + meshpath);
+
+            for (std::string ignoreThisBone : bonesToIgnore)
+            {
+                for (int i = 0; i < def->bones.size(); ++i)
+                {
+                    if (ignoreThisBone == def->bones[i]->name)
+                    {
+                        def->bones.erase(def->bones.begin() + i);
+                        animation->bones.erase(animation->bones.begin() + i);
+                        // bug? reduce i by 1 since it was just removed?
+                    }
+                }
+            }
+
+            for (auto mat : def->Materials())
+            {
+                std::string matname = ToLower(mat->name);
+                if (auto found = texmap.find(matname); found != texmap.end())
+                {
+                    mat->texture = found->second;
+                    texmap.erase(found);
+                }
+            }
+
+            if (texmap.empty() == false)
+                throw std::runtime_error("Some materials was not mapped");
+
+            def->scale(scale);
+            if (animation != nullptr)
+                animation->scale(scale);
+
+            def->translateFiles(overrides);
+
+            def->mapBones();
+            std::shared_ptr<Actor> actor = std::make_shared<Actor>(def);
+
+            if (animation != nullptr)
+            {
+                for (AnimationInformation ai : animinfo)
+                {
+                    auto an = animation->subanim(ai);
+                    actor->add(ai.name, std::make_shared<Animation>(an));
+                }
+            }
+
+            fs->clearOverrides(overrides);
+            return actor;
         }
     }
 }

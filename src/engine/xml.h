@@ -13,7 +13,7 @@ namespace SimpleEngine
         struct Element
         {
             std::shared_ptr<Element> GetChild(const std::string& name);
-        }
+        };
 
         std::shared_ptr<Element>
         Open(const std::string& file, const std::string& root);

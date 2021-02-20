@@ -8,7 +8,7 @@ namespace SimpleEngine
 
     namespace MeshFile
     {
-        std::shared_ptr<MeshDef> Load(FileSystem* fs, std::string& path);
+        std::shared_ptr<MeshDef> Load(FileSystem* fs, const std::string& path);
 
         void Save(const std::string& s, std::shared_ptr<MeshDef> def);
 

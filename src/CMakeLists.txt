@@ -43,6 +43,7 @@ set(src
     engine/userexception.cc engine/userexception.h
     engine/fileutil.cc engine/fileutil.h
     engine/meshfile.cc engine/meshfile.h
+    engine/actorfile.cc engine/actorfile.h
 
     engine/main.cc engine/main.h
 )
