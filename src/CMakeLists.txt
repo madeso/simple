@@ -36,6 +36,8 @@ set(src
     engine/rect.cc engine/rect.h
     engine/strings.cc engine/strings.h
 
+    engine/stringcounter.cc engine/stringcounter.h
+
     engine/main.cc engine/main.h
 )
 

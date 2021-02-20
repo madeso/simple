@@ -1,37 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/stringcounter.h"
 
 namespace SimpleEngine
 {
-    struct StringCounter
+    void StringCounter::add(const std::string& s)
     {
-        std::map<std::string, int> counts = std::map<std::string, int>();
+        const int c = countsOf(s);
+        counts[s] = c + 1;
+    }
 
-        void add(std::string s)
+    int StringCounter::countsOf(const std::string& s) const
+    {
+        auto found = counts.find(s);
+        if (found == counts.end())
         {
-            int c = countsOf(s);
-
-            if (c > 0)
-            {
-                counts.Remove(s);
-            }
-
-            int nc = c + 1;
-            counts.Add(s, nc);
+            return 0;
         }
-
-        int countsOf(std::string s)
+        else
         {
-            if (counts.ContainsKey(s))
-            {
-                return counts[s];
-            }
-            else
-            {
-                return 0;
-            }
+            return found->second;
         }
     }
 }
