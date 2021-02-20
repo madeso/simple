@@ -11,10 +11,10 @@ namespace SimpleEngine.fse.Providers
         Shader shader = nullptr;
         std::string shadername;
 
-        RenderWorldProvider(XmlElement e)
+        RenderWorldProvider(std::shared_ptr<Xml::Element> e)
             : base(e)
         {
-            shadername = Xml.GetAttributeString(e, "shader");
+            shadername = Xml::GetAttributeString(e, "shader");
         }
 
         std::string ToString() const

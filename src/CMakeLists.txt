@@ -39,6 +39,7 @@ set(src
     engine/stringcounter.cc engine/stringcounter.h
 
     engine/renderablegrid.cc engine/renderablegrid.h
+    # engine/xml.cc engine/xml.h
 
     engine/main.cc engine/main.h
 )
@@ -48,7 +49,7 @@ find_package(Filesystem REQUIRED)
 add_library(engine STATIC ${src})
 target_link_libraries(engine
     PUBLIC sdl2 opengl imgui fmt::fmt stb glm glad
-    PRIVATE project_options project_warnings std::filesystem
+    PRIVATE project_options project_warnings std::filesystem tinyxml2
 )
 target_include_directories(engine
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}

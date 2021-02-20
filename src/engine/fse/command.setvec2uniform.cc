@@ -16,13 +16,13 @@ namespace SimpleEngine.fse.Commands
 
         vec2 vec;
 
-        SetVec2Uniform(XmlElement el, Provider p)
+        SetVec2Uniform(std::shared_ptr<Xml::Element> el, Provider p)
             : base(el, p)
         {
-            shaderName = Xml.GetAttributeString(el, "shader");
-            uniformName = Xml.GetAttributeString(el, "uniform");
-            float x = Xml.GetAttribute<float>(el, "x", float.Parse, 0);
-            float y = Xml.GetAttribute<float>(el, "y", float.Parse, 0);
+            shaderName = Xml::GetAttributeString(el, "shader");
+            uniformName = Xml::GetAttributeString(el, "uniform");
+            float x = Xml::GetAttribute<float>(el, "x", float.Parse, 0);
+            float y = Xml::GetAttribute<float>(el, "y", float.Parse, 0);
 
             vec = vec2(x, y);
         }

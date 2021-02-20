@@ -60,18 +60,18 @@ namespace SimpleEngine.fse
 
         std::string read(std::string path, MediaLoader ml, int width, int height)
         {
-            XmlElement root = Xml.Open(Xml.FromStream(ml.FS.open(path)), "pipeline");
-            std::string t = Xml.GetAttributeString(root, "target");
-            for (XmlElement targetElement : Xml.Elements(root["targets"]))
+            std::shared_ptr<Xml::Element> root = Xml::Open(Xml::FromStream(ml.FS.open(path)), "pipeline");
+            std::string t = Xml::GetAttributeString(root, "target");
+            for (std::shared_ptr<Xml::Element> targetElement : Xml::Elements(root["targets"]))
             {
                 Target target = Targets.Targets.Create(targetElement, width, height);
-                target.Id = Xml.GetAttributeString(targetElement, "id");
+                target.Id = Xml::GetAttributeString(targetElement, "id");
                 addTarget(target);
             }
-            for (XmlElement providerElement : Xml.Elements(root["providers"]))
+            for (std::shared_ptr<Xml::Element> providerElement : Xml::Elements(root["providers"]))
             {
                 Provider provider = Providers.Providers.Create(providerElement);
-                provider.Id = Xml.GetAttributeString(providerElement, "id");
+                provider.Id = Xml::GetAttributeString(providerElement, "id");
                 addProvider(provider);
             }
 

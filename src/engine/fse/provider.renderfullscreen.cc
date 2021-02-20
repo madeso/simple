@@ -16,10 +16,10 @@ namespace SimpleEngine.fse.Providers
             return base.ToString() + " renders fullscreen with " + CSharp.Nullstring(shadername, "no shader") + ((sh != nullptr) ? "loaded" : "");
         }
 
-        RenderFullscreenProvider(XmlElement el)
+        RenderFullscreenProvider(std::shared_ptr<Xml::Element> el)
             : base(el)
         {
-            shadername = Xml.GetAttributeString(el, "shader");
+            shadername = Xml::GetAttributeString(el, "shader");
         }
 
         override void doProvide(RenderArgs ra)

@@ -21,15 +21,15 @@ namespace SimpleEngine
             return name;
         }
 
-        static Entity Create(MediaLoader loader, std::string name, System.Xml.XmlElement root, vec3 pos, quat rot)
+        static Entity Create(MediaLoader loader, std::string name, System.Xml::std::shared_ptr<Xml::Element> root, vec3 pos, quat rot)
         {
             Entity ent = Entity(name);
 
-            XmlElement visual = root["visual"];
+            std::shared_ptr<Xml::Element> visual = root["visual"];
 
-            for (XmlElement meshel : Xml.ElementsNamed(visual, "mesh"))
+            for (std::shared_ptr<Xml::Element> meshel : Xml::ElementsNamed(visual, "mesh"))
             {
-                std::string meshpath = Xml.GetAttributeString(meshel, "file");
+                std::string meshpath = Xml::GetAttributeString(meshel, "file");
                 MeshInstance mesh = MeshInstance(loader.fetch<Mesh>(meshpath));
                 mesh.pos = pos;
                 mesh.rot = rot;

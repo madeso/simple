@@ -72,7 +72,7 @@ namespace ModelView
             updatePose();
 
             current_filename = filename;
-            model_information = fmt::format("{0} points, {1} texcoords {2} tris, {3}/{4} bones", def.points.Count, def.uvs.Count, def.TriCount, def.bones.Count, std::vector<MeshDef.Bone>(def.RootBones).Count);
+            model_information = fmt::format("{0} points, {1} texcoords {2} tris, {3}/{4} bones", def.points.Count, def.uvs.Count, def.TriCount, def.bones.Count, std::vector<Bone>(def.RootBones).Count);
 
             forceRedraw();
         }

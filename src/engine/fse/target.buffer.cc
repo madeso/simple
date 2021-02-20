@@ -25,11 +25,11 @@ namespace SimpleEngine.fse.Targets
         int width;
         int height;
 
-        BufferTarget(XmlElement el)
+        BufferTarget(std::shared_ptr<Xml::Element> el)
         {
-            //name = Xml.GetAttributeString(el, "name");
-            width = Xml.GetAttribute<int>(el, "width", int.Parse, 512);
-            height = Xml.GetAttribute<int>(el, "height", int.Parse, 512);
+            //name = Xml::GetAttributeString(el, "name");
+            width = Xml::GetAttribute<int>(el, "width", std::stoi, 512);
+            height = Xml::GetAttribute<int>(el, "height", std::stoi, 512);
         }
 
         override void apply(Action a)

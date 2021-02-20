@@ -8,7 +8,7 @@ namespace SimpleEngine.fse.Commands
 {
     namespace Commands
     {
-        static Command Create(XmlElement el, Provider pro)
+        static Command Create(std::shared_ptr<Xml::Element> el, Provider pro)
         {
             std::string name = el.Name;
             if (name == "bindbuffer")

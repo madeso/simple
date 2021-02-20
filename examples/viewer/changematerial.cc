@@ -26,7 +26,7 @@ namespace ModelView
         {
             get
             {
-                MeshDef.MaterialDef mat = (MeshDef.MaterialDef)dMaterials.SelectedItem;
+                MaterialDef mat = (MaterialDef)dMaterials.SelectedItem;
                 return mat.name;
             }
         }
@@ -35,7 +35,7 @@ namespace ModelView
         {
             InitializeComponent();
 
-            for (MeshDef.MaterialDef m : def.Materials)
+            for (MaterialDef m : def.Materials)
             {
                 dMaterials.Items.Add(m);
             }

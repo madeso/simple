@@ -35,7 +35,7 @@ namespace SimpleEngine
                     int materials = br.ReadInt32();
                     for (int materialid = 0; materialid < materials; ++materialid)
                     {
-                        MeshDef.MaterialDef m = def.addMaterial("m" + materialid.ToString());
+                        MaterialDef m = def.addMaterial("m" + materialid.ToString());
                         m.texture = br.ReadString();
                         m.ambient = vec3.Read(br);
                         m.diffuse = vec3.Read(br);
@@ -47,7 +47,7 @@ namespace SimpleEngine
                     int bonecount = br.ReadInt32();
                     for (int boneid = 0; boneid < bonecount; ++boneid)
                     {
-                        MeshDef.Bone bone = def.newBone();
+                        Bone bone = def.newBone();
                         bone.name = br.ReadString();
                         bone.parent = br.ReadInt32();
                         bone.pos = vec3.Read(br);
@@ -80,14 +80,14 @@ namespace SimpleEngine
                         int tricount = br.ReadInt32();
                         for (int triid = 0; triid < tricount; ++triid)
                         {
-                            MeshDef.VertexData[] data = MeshDef.VertexData[3];
+                            VertexData[] data = VertexData[3];
                             for (int i = 0; i < 3; ++i)
                             {
                                 data[i].vertex = br.ReadInt32();
                                 data[i].uv = br.ReadInt32();
                                 data[i].normal = br.ReadInt32();
                             }
-                            def.addTri(MeshDef.Tri(data));
+                            def.addTri(Tri(data));
                         }
                     }
                 }
@@ -99,9 +99,9 @@ namespace SimpleEngine
                 BinaryWriter bw = BinaryWriter(s);
 
                 bw.Write((int)0);
-                std::vector<MeshDef.MaterialDef> materials = std::vector<MeshDef.MaterialDef>(def.Materials);
+                std::vector<MaterialDef> materials = std::vector<MaterialDef>(def.Materials);
                 bw.Write(materials.Count);
-                for (MeshDef.MaterialDef mat : materials)
+                for (MaterialDef mat : materials)
                 {
                     bw.Write(mat.texture);
                     WriteColor(bw, mat.ambient);
@@ -112,7 +112,7 @@ namespace SimpleEngine
                     bw.Write(mat.shininess);
                 }
                 bw.Write(def.bones.Count);
-                for (MeshDef.Bone bone : def.bones)
+                for (Bone bone : def.bones)
                 {
                     bw.Write(bone.name);
                     bw.Write(bone.parent);
@@ -125,7 +125,7 @@ namespace SimpleEngine
                     bw.Write(bone.rot.w);
                 }
                 bw.Write(def.points.Count);
-                for (MeshDef.PointData v : def.points)
+                for (PointData v : def.points)
                 {
                     bw.Write(v.boneid);
                     bw.Write(v.location.x);
@@ -145,11 +145,11 @@ namespace SimpleEngine
                     bw.Write(n.y);
                     bw.Write(n.z);
                 }
-                for (MeshDef.MaterialDef mat : materials)
+                for (MaterialDef mat : materials)
                 {
-                    std::vector<MeshDef.Tri> tris = std::vector<MeshDef.Tri>(def.TrianglesFor(mat));
+                    std::vector<Tri> tris = std::vector<Tri>(def.TrianglesFor(mat));
                     bw.Write(tris.Count);
-                    for (MeshDef.Tri tri : tris)
+                    for (Tri tri : tris)
                     {
                         for (int i = 0; i < 3; ++i)
                         {
@@ -199,25 +199,25 @@ namespace SimpleEngine
                             }
                             else if (data[0] == "f")
                             {
-                                std::vector<MeshDef.VertexData> vd = std::vector<MeshDef.VertexData>();
+                                std::vector<VertexData> vd = std::vector<VertexData>();
                                 for (int i = 1; i < data.Length; ++i)
                                 {
                                     std::string[] ind = data[i].Split("/".ToCharArray());
-                                    MeshDef.VertexData v = MeshDef.VertexData();
-                                    v.vertex = int.Parse(ind[0]) - 1;
-                                    v.uv = int.Parse(ind[1]) - 1;
-                                    v.normal = int.Parse(ind[2]) - 1;
+                                    VertexData v = VertexData();
+                                    v.vertex = std::stoi(ind[0]) - 1;
+                                    v.uv = std::stoi(ind[1]) - 1;
+                                    v.normal = std::stoi(ind[2]) - 1;
                                     vd.Add(v);
                                 }
                                 if (vd.Count < 3)
                                     throw std::runtime_error("Face data incomplete");
                                 for (int i = 2; i < vd.Count; ++i)
                                 {
-                                    std::vector<MeshDef.VertexData> arr = std::vector<MeshDef.VertexData>();
+                                    std::vector<VertexData> arr = std::vector<VertexData>();
                                     arr.Add(vd[0]);
                                     arr.Add(vd[1]);
                                     arr.Add(vd[i]);
-                                    mesh.addTri(MeshDef.Tri(arr.ToArray()));
+                                    mesh.addTri(Tri(arr.ToArray()));
                                 }
                             }
                             else if (data[0] == "usemtl")
@@ -236,7 +236,7 @@ namespace SimpleEngine
 
             static void LoadMaterialLibrary(MeshDef mesh, FileSystem fs, std::string path)
             {
-                MeshDef.MaterialDef mat = nullptr;
+                MaterialDef mat = nullptr;
                 using(var file = fs.open(path))
                 {
                     for (std::string l : FileUtil.LinesIn(file))

@@ -8,7 +8,7 @@ namespace SimpleEngine.fse.Targets
 {
     namespace Targets
     {
-        static Target Create(XmlElement x, int width, int height)
+        static Target Create(std::shared_ptr<Xml::Element> x, int width, int height)
         {
             std::string name = x.Name;
 

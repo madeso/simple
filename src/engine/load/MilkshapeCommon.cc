@@ -293,14 +293,14 @@ namespace SimpleEngine.load
             int id = 0;
             for (Material mat : model.materials)
             {
-                MeshDef.MaterialDef smat = def.addMaterial("m" + id.ToString());
+                MaterialDef smat = def.addMaterial("m" + id.ToString());
                 smat.texture = SmartTexture(mat.diffuseTexture);
                 ++id;
             }
 
             for (Bone b : model.bones)
             {
-                MeshDef.Bone bn = def.newBone();
+                Bone bn = def.newBone();
                 bn.pos = vec3(b.x, b.y, b.z);
                 bn.rot = makeQuat(vec3(b.rx, b.ry, b.rz));
                 bn.parent = b.parentId;
@@ -334,14 +334,14 @@ namespace SimpleEngine.load
 
                 for (Tri tr : me.tris)
                 {
-                    MeshDef.VertexData[] data = MeshDef.VertexData[3];
+                    VertexData[] data = VertexData[3];
                     data[0].uv = data[0].vertex = vbase + tr.v1;
                     data[1].uv = data[1].vertex = vbase + tr.v2;
                     data[2].uv = data[2].vertex = vbase + tr.v3;
                     data[0].normal = nbase + tr.n1;
                     data[1].normal = nbase + tr.n2;
                     data[2].normal = nbase + tr.n3;
-                    def.addTri(MeshDef.Tri(data));
+                    def.addTri(Tri(data));
                 }
             }
 

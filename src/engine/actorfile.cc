@@ -1,18 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
-using System.IO;
+﻿#include <stdexcept>
+
+#include "engine/actor.h"
+#include "engine/animation.h"
+#include "engine/cpp.h"
+#include "engine/filesystem.h"
+#include "engine/math1.h"
+#include "engine/xml.h"
 
 namespace SimpleEngine
 {
     namespace ActorFile
     {
-        static Actor Load(FileSystem fs, std::string p)
+        Actor Load(FileSystem* fs, const std::string& p)
         {
-            XmlElement xactor = Xml.Open(Xml.FromStream(fs.open(p)), "actor");
-            XmlElement xmesh = xactor["mesh"];
+            const auto full_path = fs->open(p);
+            std::shared_ptr<Xml::Element> xactor = Xml::Open(full_path, "actor");
+            std::shared_ptr<Xml::Element> xmesh = xactor->GetChild("mesh");
 
             std::vector<AnimationInformation> animinfo = ParseAnimationInfo(xmesh);
             std::vector<std::string> bonesToIgnore = ParseIgnoreBone(xmesh);
@@ -20,44 +23,44 @@ namespace SimpleEngine
             std::map<std::string, std::string> texmap = ParseSetTexture(xmesh);
             std::map<std::string, std::string> overrides = ParseOverrides(xmesh);
 
-            fs.setOverrides(overrides);
+            fs->setOverrides(overrides);
 
-            std::string meshpath = Xml.GetAttributeString(xmesh, "file");
-            float scale = Xml.GetAttribute<float>(xmesh, "scale", math1::ParseFloat, 1.0f);
+            std::string meshpath = Xml::GetAttributeString(xmesh, "file");
+            float scale = Xml::GetAttribute<float>(xmesh, "scale", math1::ParseFloat, 1.0f);
 
             MeshDef def;
-            Animation animation;
+            std::shared_ptr<Animation> animation;
 
             std::string ext = Path.GetExtension(meshpath);
             if (ext == ".txt")
             {
-                SimpleEngine.load.MilkshapeAscii.Load(fs, meshpath, out def, out animation, 1);
+                SimpleEngine::load::MilkshapeAscii.Load(fs, meshpath, &def, &animation, 1);
             }
             else if (ext == ".ms3d")
             {
-                SimpleEngine.load.MilkshapeBinary.Load(fs, meshpath, out def, out animation);
+                SimpleEngine::load::MilkshapeBinary.Load(fs, meshpath, &def, &animation);
             }
-            else if (animinfo.Count == 0)
+            else if (animinfo.empty())
             {
                 animation = nullptr;
-                def = MeshFile.Load(fs, meshpath);
+                def = MeshFile::Load(fs, meshpath);
             }
             else
                 throw std::runtime_error("Unhandled format " + ext + " for " + meshpath);
 
             for (std::string ignoreThisBone : bonesToIgnore)
             {
-                for (int i = 0; i < def.bones.Count; ++i)
+                for (int i = 0; i < def.bones.size(); ++i)
                 {
-                    if (ignoreThisBone == def.bones[i].name)
+                    if (ignoreThisBone == def.bones[i]->name)
                     {
-                        def.bones.RemoveAt(i);
-                        animation.bones.RemoveAt(i);
+                        def.bones.erase(def.bones.begin() + i);
+                        animation->bones.erase(animation->bones.begin() + i);
                     }
                 }
             }
 
-            for (MeshDef.MaterialDef mat : def.Materials)
+            for (MaterialDef mat : def.Materials)
             {
                 std::string matname = mat.name.ToLower();
                 if (texmap.ContainsKey(matname))
@@ -67,7 +70,7 @@ namespace SimpleEngine
                 }
             }
 
-            if (texmap.Count != 0)
+            if (texmap.empty() == false)
                 throw std::runtime_error("Some materials was not mapped");
 
             def.scale(scale);
@@ -91,52 +94,52 @@ namespace SimpleEngine
             return actor;
         }
 
-        static std::map<std::string, std::string> ParseOverrides(XmlElement root)
+        std::map<std::string, std::string> ParseOverrides(std::shared_ptr<Xml::Element> root)
         {
             std::map<std::string, std::string> result = std::map<std::string, std::string>();
-            for (XmlElement e : Xml.ElementsNamed(root, "overrride"))
+            for (std::shared_ptr<Xml::Element> e : Xml::ElementsNamed(root, "overrride"))
             {
-                std::string f = Xml.GetAttributeString(e, "from").ToLower();
-                std::string t = Xml.GetAttributeString(e, "to").ToLower();
-                result.Add(f, t);
+                std::string f = Lower(Xml::GetAttributeString(e, "from"));
+                std::string t = Lower(Xml::GetAttributeString(e, "to"));
+                result.emplace(f, t);
             }
             return result;
         }
 
-        static std::vector<AnimationInformation> ParseAnimationInfo(XmlElement root)
+        std::vector<AnimationInformation> ParseAnimationInfo(std::shared_ptr<Xml::Element> root)
         {
             std::vector<AnimationInformation> animinfo = std::vector<AnimationInformation>();
-            for (XmlElement e : Xml.ElementsNamed(root, "animation"))
+            for (std::shared_ptr<Xml::Element> e : Xml::ElementsNamed(root, "animation"))
             {
-                std::string ss = Xml.GetTextOfSubElement(e, "start");
-                std::string se = Xml.GetTextOfSubElement(e, "end");
-                std::string name = Xml.GetTextOfSubElement(e, "name");
-                int start = int.Parse(ss);
-                int end = int.Parse(se);
-                animinfo.Add(AnimationInformation(start, end, name));
+                std::string ss = Xml::GetTextOfSubElement(e, "start");
+                std::string se = Xml::GetTextOfSubElement(e, "end");
+                std::string name = Xml::GetTextOfSubElement(e, "name");
+                int start = std::stoi(ss);
+                int end = std::stoi(se);
+                animinfo.push_back(AnimationInformation(start, end, name));
             }
             return animinfo;
         }
 
-        static std::vector<std::string> ParseIgnoreBone(XmlElement root)
+        std::vector<std::string> ParseIgnoreBone(std::shared_ptr<Xml::Element> root)
         {
             std::vector<std::string> bonestoignore = std::vector<std::string>();
-            for (XmlElement e : Xml.ElementsNamed(root, "ignorebone"))
+            for (std::shared_ptr<Xml::Element> e : Xml::ElementsNamed(root, "ignorebone"))
             {
-                std::string ss = Xml.GetAttributeString(e, "name");
-                bonestoignore.Add(ss);
+                std::string ss = Xml::GetAttributeString(e, "name");
+                bonestoignore.push_back(ss);
             }
             return bonestoignore;
         }
 
-        static std::map<std::string, std::string> ParseSetTexture(XmlElement root)
+        std::map<std::string, std::string> ParseSetTexture(std::shared_ptr<Xml::Element> root)
         {
             std::map<std::string, std::string> texmap = std::map<std::string, std::string>();
-            for (XmlElement e : Xml.ElementsNamed(root, "settex"))
+            for (std::shared_ptr<Xml::Element> e : Xml::ElementsNamed(root, "settex"))
             {
-                std::string material = Xml.GetAttributeString(e, "material");
-                std::string texture = Xml.GetAttributeString(e, "texture");
-                texmap.Add(material, texture);
+                std::string material = Xml::GetAttributeString(e, "material");
+                std::string texture = Xml::GetAttributeString(e, "texture");
+                texmap.emplace(material, texture);
             }
             return texmap;
         }

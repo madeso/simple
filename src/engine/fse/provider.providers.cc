@@ -8,7 +8,7 @@ namespace SimpleEngine.fse.Providers
 {
     namespace Providers
     {
-        static Provider Create(XmlElement x)
+        static Provider Create(std::shared_ptr<Xml::Element> x)
         {
             std::string name = x.Name;
             if (name == "fullscreen")

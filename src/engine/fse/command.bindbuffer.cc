@@ -18,11 +18,11 @@ namespace SimpleEngine.fse.Commands
             return base.ToString() + " binds buffer " + name + " to " + location.ToString();
         }
 
-        BindBufferCommand(XmlElement el, Provider prov)
+        BindBufferCommand(std::shared_ptr<Xml::Element> el, Provider prov)
             : base(el, prov)
         {
-            name = Xml.GetAttributeString(el, "buffer");
-            location = Xml.GetAttribute<int>(el, "location", int.Parse, -1);
+            name = Xml::GetAttributeString(el, "buffer");
+            location = Xml::GetAttribute<int>(el, "location", std::stoi, -1);
         }
 
         override void apply()

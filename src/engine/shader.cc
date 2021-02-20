@@ -101,10 +101,10 @@ namespace SimpleEngine
             int location;
             Uniform var;
 
-            StaticUniformSamplerBind(XmlElement root, Shader shader)
+            StaticUniformSamplerBind(std::shared_ptr<Xml::Element> root, Shader shader)
             {
-                std::string varname = Xml.GetAttributeString(root, "id");
-                location = Xml.GetAttribute<int>(root, "location", int.Parse, -1);
+                std::string varname = Xml::GetAttributeString(root, "id");
+                location = Xml::GetAttribute<int>(root, "location", std::stoi, -1);
                 var = shader.getUniform(varname);
             }
 
@@ -119,21 +119,21 @@ namespace SimpleEngine
             if (false == IsShadersSupported)
                 throw std::runtime_error("shaders not supported on your card, sorry");
 
-            XmlElement shader = Xml.Open(Xml.FromStream(sys.open(path)), "shader");
+            std::shared_ptr<Xml::Element> shader = Xml::Open(Xml::FromStream(sys.open(path)), "shader");
             LoadFrom(path, shader);
         }
 
-        Shader(std::string path, XmlElement shader)
+        Shader(std::string path, std::shared_ptr<Xml::Element> shader)
         {
             if (false == IsShadersSupported)
                 throw std::runtime_error("shaders not supported on your card, sorry");
             LoadFrom(path, shader);
         }
 
-        void LoadFrom(std::string path, XmlElement shader)
+        void LoadFrom(std::string path, std::shared_ptr<Xml::Element> shader)
         {
-            std::string vertexsource = Xml.GetTextOfSubElement(shader, "vertex");
-            std::string fragmentsource = Xml.GetTextOfSubElement(shader, "fragment");
+            std::string vertexsource = Xml::GetTextOfSubElement(shader, "vertex");
+            std::string fragmentsource = Xml::GetTextOfSubElement(shader, "fragment");
 
             mProgram = glCreateProgram();
 
@@ -149,7 +149,7 @@ namespace SimpleEngine
                 throw std::runtime_error("Link error for " + path + ": " + getInfoLog());
             }
 
-            for (XmlElement b : Xml.Elements(shader["bind"]))
+            for (std::shared_ptr<Xml::Element> b : Xml::Elements(shader["bind"]))
             {
                 binds.Add(StaticUniformSamplerBind(b, this));
             }

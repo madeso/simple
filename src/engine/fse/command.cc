@@ -11,9 +11,9 @@ namespace SimpleEngine.fse
         Provider prov;
         std::string id;
 
-        Command(XmlElement el, Provider prov)
+        Command(std::shared_ptr<Xml::Element> el, Provider prov)
         {
-            id = Xml.GetAttributeString(el, "id");
+            id = Xml::GetAttributeString(el, "id");
             this.prov = prov;
         }
 

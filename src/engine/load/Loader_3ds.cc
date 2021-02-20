@@ -30,7 +30,7 @@ namespace SimpleEngine.load
 
             for (MaterialChunk chunk : main.editor.materials)
             {
-                MeshDef.MaterialDef mat = def.addMaterial(chunk.name.Value);
+                MaterialDef mat = def.addMaterial(chunk.name.Value);
                 mat.texture = chunk.texture.Value;
                 //mat.specular = chunk.specular.Color;
                 //mat.ambient = chunk.ambient.Color;
@@ -50,7 +50,7 @@ namespace SimpleEngine.load
                     def.selectMaterial(fmc.name);
                     for (int faceindex : fmc.faces)
                     {
-                        MeshDef.VertexData[] vd = MeshDef.VertexData[3];
+                        VertexData[] vd = VertexData[3];
 
                         TriMeshChunk.Poly p = chunk.trimesh.faces[faceindex];
 
@@ -63,7 +63,7 @@ namespace SimpleEngine.load
                         vd[2].normal = -1;
                         vd[2].vertex = vd[2].uv = ibase + p.c;
 
-                        def.addTri(MeshDef.Tri(vd));
+                        def.addTri(Tri(vd));
                     }
                 }
             }

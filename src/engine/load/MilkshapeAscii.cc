@@ -66,7 +66,7 @@ namespace SimpleEngine.load
 
             void readBones(std::string[] cmd)
             {
-                int bonecount = int.Parse(cmd[1]);
+                int bonecount = std::stoi(cmd[1]);
                 for (int boneId = 0; boneId < bonecount; ++boneId)
                 {
                     Bone bone = model.newBone();
@@ -74,7 +74,7 @@ namespace SimpleEngine.load
                     bone.parentName = Cleanup(readLine());
 
                     std::string[] data = readLine().Split(" ".ToCharArray());
-                    bone.flags = int.Parse(data[0]);
+                    bone.flags = std::stoi(data[0]);
                     bone.x = math1::ParseFloat(data[1]) * scale;
                     bone.y = math1::ParseFloat(data[2]) * scale;
                     bone.z = math1::ParseFloat(data[3]) * scale;
@@ -90,7 +90,7 @@ namespace SimpleEngine.load
             void readRotationFrame(Bone bone)
             {
                 std::string textcount = readLine();
-                int count = int.Parse(textcount);
+                int count = std::stoi(textcount);
                 for (int frameId = 0; frameId < count; ++frameId)
                 {
                     std::string[] data = readLine().Split(" ".ToCharArray());
@@ -105,7 +105,7 @@ namespace SimpleEngine.load
             void readPositionFrames(Bone bone)
             {
                 std::string textcount = readLine();
-                int count = int.Parse(textcount);
+                int count = std::stoi(textcount);
                 for (int frameId = 0; frameId < count; ++frameId)
                 {
                     std::string[] data = readLine().Split(" ".ToCharArray());
@@ -119,7 +119,7 @@ namespace SimpleEngine.load
 
             void readMaterials(std::string[] cmd)
             {
-                int materialcount = int.Parse(cmd[1]);
+                int materialcount = std::stoi(cmd[1]);
                 for (int matId = 0; matId < materialcount; ++matId)
                 {
                     readSingleMaterial();
@@ -143,7 +143,7 @@ namespace SimpleEngine.load
             void readMeshes(std::string[] cmd)
             {
                 // number of meshes
-                int meshcount = int.Parse(cmd[1]);
+                int meshcount = std::stoi(cmd[1]);
                 for (int meshId = 0; meshId < meshcount; ++meshId)
                 {
                     readSingleMesh();
@@ -156,25 +156,25 @@ namespace SimpleEngine.load
                 std::string[] meshdata = meshline.Split(" ".ToCharArray());
                 Mesh mesh = model.newMesh();
                 mesh.name = Cleanup(meshdata[0]);
-                mesh.flags = int.Parse(meshdata[1]);
-                mesh.materialId = int.Parse(meshdata[2]);
+                mesh.flags = std::stoi(meshdata[1]);
+                mesh.materialId = std::stoi(meshdata[2]);
 
                 std::string vertexline = readLine();
-                int vertexcount = int.Parse(vertexline);
+                int vertexcount = std::stoi(vertexline);
                 for (int vertex = 0; vertex < vertexcount; ++vertex)
                 {
                     readSingleVertex(mesh);
                 }
 
                 std::string normalline = readLine();
-                int normalcount = int.Parse(vertexline);
+                int normalcount = std::stoi(vertexline);
                 for (int normal = 0; normal < normalcount; ++normal)
                 {
                     readSingleNormal(mesh);
                 }
 
                 std::string triline = readLine();
-                int tricount = int.Parse(triline);
+                int tricount = std::stoi(triline);
                 for (int tri = 0; tri < tricount; ++tri)
                 {
                     readSingleTriangle(mesh);
@@ -186,14 +186,14 @@ namespace SimpleEngine.load
                 std::string triline = readLine();
                 std::string[] tricmd = triline.Split(" ".ToCharArray());
                 Tri tri = mesh.newTri();
-                tri.flags = int.Parse(tricmd[0]);
-                tri.v1 = int.Parse(tricmd[1]);
-                tri.v2 = int.Parse(tricmd[2]);
-                tri.v3 = int.Parse(tricmd[3]);
-                tri.n1 = int.Parse(tricmd[4]);
-                tri.n2 = int.Parse(tricmd[5]);
-                tri.n3 = int.Parse(tricmd[6]);
-                tri.smoothingGroup = int.Parse(tricmd[7]);
+                tri.flags = std::stoi(tricmd[0]);
+                tri.v1 = std::stoi(tricmd[1]);
+                tri.v2 = std::stoi(tricmd[2]);
+                tri.v3 = std::stoi(tricmd[3]);
+                tri.n1 = std::stoi(tricmd[4]);
+                tri.n2 = std::stoi(tricmd[5]);
+                tri.n3 = std::stoi(tricmd[6]);
+                tri.smoothingGroup = std::stoi(tricmd[7]);
                 tri.buildNormal(mesh);
             }
 
@@ -213,13 +213,13 @@ namespace SimpleEngine.load
                 std::string vertexline = readLine();
                 std::string[] vertexcmd = vertexline.Split(" ".ToCharArray());
                 Vertex v = mesh.newVertex();
-                v.flags = int.Parse(vertexcmd[0]);
+                v.flags = std::stoi(vertexcmd[0]);
                 v.x = math1::ParseFloat(vertexcmd[1]) * scale;
                 v.y = math1::ParseFloat(vertexcmd[2]) * scale;
                 v.z = math1::ParseFloat(vertexcmd[3]) * scale;
                 v.u = math1::ParseFloat(vertexcmd[4]);
                 v.v = math1::ParseFloat(vertexcmd[5]);
-                v.bone = int.Parse(vertexcmd[6]);
+                v.bone = std::stoi(vertexcmd[6]);
             }
 
             std::string readLine()
@@ -231,12 +231,12 @@ namespace SimpleEngine.load
 
             void readCurrentFrame(std::string[] cmd)
             {
-                model.currentFrame = int.Parse(cmd[1]);
+                model.currentFrame = std::stoi(cmd[1]);
             }
 
             void readFrameCount(std::string[] cmd)
             {
-                model.framecount = int.Parse(cmd[1]);
+                model.framecount = std::stoi(cmd[1]);
             }
         }
     }

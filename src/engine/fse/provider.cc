@@ -97,11 +97,11 @@ namespace SimpleEngine.fse
             return BufferReference(name);
         }
 
-        Provider(XmlElement el)
+        Provider(std::shared_ptr<Xml::Element> el)
         {
-            targetname = Xml.GetAttributeString(el, "target");
+            targetname = Xml::GetAttributeString(el, "target");
 
-            for (XmlElement e : Xml.Elements(el))
+            for (std::shared_ptr<Xml::Element> e : Xml::Elements(el))
             {
                 commands.Add(Commands.Commands.Create(e, this));
             }

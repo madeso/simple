@@ -20,38 +20,38 @@ namespace SimpleEngine
         {
             using(var s = loader.FS.open(file))
             {
-                XmlElement level = Xml.Open(Xml.FromStream(s), "level");
+                std::shared_ptr<Xml::Element> level = Xml::Open(Xml::FromStream(s), "level");
                 addMeshes(loader, level["world"], add);
                 addMeshes(loader, level["camera"], addCamera);
                 addEntities(loader, level["entity"]);
             }
         }
 
-        void addEntities(MediaLoader loader, XmlElement level)
+        void addEntities(MediaLoader loader, std::shared_ptr<Xml::Element> level)
         {
-            for (XmlElement entity : Xml.ElementsNamed(level, "entity"))
+            for (std::shared_ptr<Xml::Element> entity : Xml::ElementsNamed(level, "entity"))
             {
-                std::string t = Xml.GetAttributeString(entity, "type");
+                std::string t = Xml::GetAttributeString(entity, "type");
                 if (t[0] == '_')
                     continue;  // ignore for now
-                std::string name = Xml.GetAttributeString(entity, "name");
+                std::string name = Xml::GetAttributeString(entity, "name");
                 std::string meshpath = t + ".gob";
                 vec3 pos = GetPosition(entity["position"]);
                 quat rot = GetRotation(entity["rotation"]);
 
                 using(var gobstream = loader.FS.open(meshpath))
                 {
-                    addEntity(Entity.Create(loader, name, Xml.Open(Xml.FromStream(gobstream), "object"), pos, rot));
+                    addEntity(Entity.Create(loader, name, Xml::Open(Xml::FromStream(gobstream), "object"), pos, rot));
                 }
             }
         }
 
-        void addMeshes(MediaLoader loader, XmlElement level, RenderableAddTarget target)
+        void addMeshes(MediaLoader loader, std::shared_ptr<Xml::Element> level, RenderableAddTarget target)
         {
-            for (XmlElement entity : Xml.ElementsNamed(level, "entity"))
+            for (std::shared_ptr<Xml::Element> entity : Xml::ElementsNamed(level, "entity"))
             {
-                std::string t = Xml.GetAttributeString(entity, "type");
-                std::string name = Xml.GetAttributeString(entity, "name");
+                std::string t = Xml::GetAttributeString(entity, "type");
+                std::string name = Xml::GetAttributeString(entity, "name");
                 std::string meshpath = t + ".mdf";
                 MeshInstance mesh = MeshInstance(loader.fetch<Mesh>(meshpath));
                 mesh.pos = GetPosition(entity["position"]);
@@ -60,18 +60,18 @@ namespace SimpleEngine
             }
         }
 
-        static vec3 GetPosition(XmlElement e)
+        static vec3 GetPosition(std::shared_ptr<Xml::Element> e)
         {
             return vec3(dp(e, "x"), dp(e, "y"), dp(e, "z"));
         }
 
-        static float dp(XmlElement e, std::string p)
+        static float dp(std::shared_ptr<Xml::Element> e, std::string p)
         {
-            std::string val = Xml.GetAttributeString(e, p);
+            std::string val = Xml::GetAttributeString(e, p);
             return float.Parse(val.Replace('.', ','));
         }
 
-        static quat GetRotation(XmlElement e)
+        static quat GetRotation(std::shared_ptr<Xml::Element> e)
         {
             return quat(dp(e, "w"), vec3(dp(e, "x"), dp(e, "y"), dp(e, "z")));
         }

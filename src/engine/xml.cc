@@ -1,19 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
+#include "tinyxml2/tinyxml2.h"
 
 namespace SimpleEngine
 {
     namespace Xml
     {
-        static bool HasAttribute(XmlElement element, std::string search)
+        bool HasAttribute(std::shared_ptr<Xml::Element> element, std::string search)
         {
             XmlAttribute attribute = element.Attributes[search];
             return attribute != nullptr;
         }
 
-        static std::string GetAttributeString(XmlElement element, std::string name)
+        std::string GetAttributeString(std::shared_ptr<Xml::Element> element, std::string name)
         {
             XmlAttribute attribute = element.Attributes[name];
             if (attribute == nullptr)
@@ -23,7 +20,7 @@ namespace SimpleEngine
         }
 
         delegate T Parser<T>(std::string value);
-        static T GetAttribute<T>(XmlElement element, std::string name, Parser<T> parser, T def)
+        T GetAttribute<T>(std::shared_ptr<Xml::Element> element, std::string name, Parser<T> parser, T def)
         {
             if (HasAttribute(element, name))
             {
@@ -36,11 +33,11 @@ namespace SimpleEngine
             }
         }
 
-        static IEnumerable<XmlElement> ElementsNamed(XmlNode root, std::string childName)
+        IEnumerable<std::shared_ptr<Xml::Element>> ElementsNamed(XmlNode root, std::string childName)
         {
             for (XmlNode node : root.ChildNodes)
             {
-                XmlElement el = node as XmlElement;
+                std::shared_ptr<Xml::Element> el = node as std::shared_ptr<Xml::Element>;
                 if (el == nullptr)
                     continue;
                 if (el.Name != childName)
@@ -49,11 +46,11 @@ namespace SimpleEngine
             }
         }
 
-        static IEnumerable<XmlElement> Elements(XmlNode root)
+        IEnumerable<std::shared_ptr<Xml::Element>> Elements(XmlNode root)
         {
             for (XmlNode node : root.ChildNodes)
             {
-                XmlElement el = node as XmlElement;
+                std::shared_ptr<Xml::Element> el = node as std::shared_ptr<Xml::Element>;
                 if (el == nullptr)
                     continue;
                 yield return el;
@@ -62,11 +59,11 @@ namespace SimpleEngine
 
         const std::string kValueType = "id";
 
-        static IEnumerable<XmlElement> ElementsNamed(XmlNode root, std::string childName, std::string valueName)
+        IEnumerable<std::shared_ptr<Xml::Element>> ElementsNamed(XmlNode root, std::string childName, std::string valueName)
         {
             for (XmlNode node : root.ChildNodes)
             {
-                XmlElement el = node as XmlElement;
+                std::shared_ptr<Xml::Element> el = node as std::shared_ptr<Xml::Element>;
                 if (el == nullptr)
                     continue;
                 if (el.Name != childName)
@@ -80,12 +77,12 @@ namespace SimpleEngine
             }
         }
 
-        static XmlElement Open(std::string path, std::string p)
+        std::shared_ptr<Xml::Element> Open(std::string path, std::string p)
         {
             return Open(FromFile(path), p);
         }
 
-        static IEnumerable<XmlElement> Enumerate(XmlNode root, std::string path)
+        IEnumerable<std::shared_ptr<Xml::Element>> Enumerate(XmlNode root, std::string path)
         {
             std::string[] elements = path.Split("/".ToCharArray());
 
@@ -96,7 +93,7 @@ namespace SimpleEngine
             {
                 for (XmlNode a : active)
                 {
-                    for (XmlElement e : Elements(a))
+                    for (std::shared_ptr<Xml::Element> e : Elements(a))
                     {
                         future.Add(e);
                     }
@@ -107,28 +104,28 @@ namespace SimpleEngine
 
             for (XmlNode node : active)
             {
-                yield return (XmlElement)node;
+                yield return (std::shared_ptr<Xml::Element>)node;
             }
         }
-        static XmlElement FirstOrNull(IEnumerable<XmlElement> elements)
+        std::shared_ptr<Xml::Element> FirstOrNull(IEnumerable<std::shared_ptr<Xml::Element>> elements)
         {
-            for (XmlElement e : elements)
+            for (std::shared_ptr<Xml::Element> e : elements)
             {
                 return e;
             }
             return nullptr;
         }
-        static XmlElement FirstOrNull(XmlNode root, std::string path)
+        std::shared_ptr<Xml::Element> FirstOrNull(XmlNode root, std::string path)
         {
             return FirstOrNull(Enumerate(root, path));
         }
 
-        static XmlElement Open(Loader path, std::string p)
+        std::shared_ptr<Xml::Element> Open(Loader path, std::string p)
         {
             try
             {
                 XmlDocument doc = Open(path);
-                XmlElement el = FirstOrNull(doc, p);
+                std::shared_ptr<Xml::Element> el = FirstOrNull(doc, p);
                 if (el == nullptr)
                     throw std::runtime_error(p + " not found: " + path);
                 else
@@ -145,15 +142,15 @@ namespace SimpleEngine
             void load(XmlDocument doc);
         }
 
-        static Loader FromFile(std::string path)
+        Loader FromFile(std::string path)
         {
             return FileLoader(path);
         }
-        static Loader FromSource(std::string source)
+        Loader FromSource(std::string source)
         {
             return SourceLoader(source);
         }
-        static Loader FromStream(System.IO.Stream stream)
+        Loader FromStream(System.IO.Stream stream)
         {
             return StreamLoader(stream);
         }
@@ -207,7 +204,7 @@ namespace SimpleEngine
             }
         }
 
-        static XmlDocument
+        XmlDocument
         Open(Loader loader)
         {
             try
@@ -222,16 +219,16 @@ namespace SimpleEngine
             }
         }
 
-        static XmlElement FirstElement(XmlElement e)
+        std::shared_ptr<Xml::Element> FirstElement(std::shared_ptr<Xml::Element> e)
         {
-            for (XmlElement el : Elements(e))
+            for (std::shared_ptr<Xml::Element> el : Elements(e))
             {
                 return el;
             }
             throw std::runtime_error(e.Name + " does not have any elements");
         }
 
-        static IEnumerable<KeyValuePair<std::string, std::string>> Attributes(XmlElement el)
+        IEnumerable<KeyValuePair<std::string, std::string>> Attributes(std::shared_ptr<Xml::Element> el)
         {
             for (XmlAttribute a : el.Attributes)
             {
@@ -239,7 +236,7 @@ namespace SimpleEngine
             }
         }
 
-        static std::string NameOf(XmlElement element)
+        std::string NameOf(std::shared_ptr<Xml::Element> element)
         {
             std::string attribute = "";
             if (HasAttribute(element, "id"))
@@ -250,9 +247,9 @@ namespace SimpleEngine
             ;
         }
 
-        static std::string PathOf(XmlElement element)
+        std::string PathOf(std::shared_ptr<Xml::Element> element)
         {
-            XmlElement c = element;
+            std::shared_ptr<Xml::Element> c = element;
             std::string result = "";
             while (c != nullptr)
             {
@@ -261,20 +258,20 @@ namespace SimpleEngine
             return result;
         }
 
-        static std::map<std::string, XmlElement> MapElements(XmlElement root, std::string type, std::string key)
+        std::map<std::string, std::shared_ptr<Xml::Element>> MapElements(std::shared_ptr<Xml::Element> root, std::string type, std::string key)
         {
             if (root == nullptr)
-                return std::map<std::string, XmlElement>();
-            std::map<std::string, XmlElement> map = std::map<std::string, XmlElement>();
-            for (XmlElement module : Xml.ElementsNamed(root, type))
+                return std::map<std::string, std::shared_ptr<Xml::Element>>();
+            std::map<std::string, std::shared_ptr<Xml::Element>> map = std::map<std::string, std::shared_ptr<Xml::Element>>();
+            for (std::shared_ptr<Xml::Element> module : Xml::ElementsNamed(root, type))
             {
-                std::string name = Xml.GetAttributeString(module, key);
+                std::string name = Xml::GetAttributeString(module, key);
                 map.Add(name, module);
             }
             return map;
         }
 
-        static std::string GetAttributeString(XmlElement element, std::string name, std::string def)
+        std::string GetAttributeString(std::shared_ptr<Xml::Element> element, std::string name, std::string def)
         {
             if (def == nullptr || HasAttribute(element, name))
                 return GetAttributeString(element, name);
@@ -282,20 +279,20 @@ namespace SimpleEngine
                 return def;
         }
 
-        static XmlElement AppendElement(XmlDocument doc, XmlNode cont, std::string name)
+        std::shared_ptr<Xml::Element> AppendElement(XmlDocument doc, XmlNode cont, std::string name)
         {
-            XmlElement el = doc.CreateElement(name);
+            std::shared_ptr<Xml::Element> el = doc.CreateElement(name);
             cont.AppendChild(el);
             return el;
         }
-        static void AddAttribute(XmlDocument doc, XmlNode elem, std::string name, std::string value)
+        void AddAttribute(XmlDocument doc, XmlNode elem, std::string name, std::string value)
         {
             XmlAttribute a = doc.CreateAttribute(name);
             a.InnerText = value;
             elem.Attributes.Append(a);
         }
 
-        static std::string GetTextOfSubElement(XmlNode node, std::string p)
+        std::string GetTextOfSubElement(XmlNode node, std::string p)
         {
             std::string res = GetTextOfSubElementOrNull(node, p);
             if (res == nullptr)
@@ -304,7 +301,7 @@ namespace SimpleEngine
                 return res;
         }
 
-        static std::string GetSmartText(XmlNode el)
+        std::string GetSmartText(XmlNode el)
         {
             if (el is XmlText)
             {
@@ -320,9 +317,9 @@ namespace SimpleEngine
                 throw std::runtime_error("Failed to get smart text of node");
         }
 
-        static std::string GetTextOfSubElementOrNull(XmlNode node, std::string p)
+        std::string GetTextOfSubElementOrNull(XmlNode node, std::string p)
         {
-            XmlElement el = node[p];
+            std::shared_ptr<Xml::Element> el = node[p];
             if (el == nullptr)
                 return nullptr;
             else
