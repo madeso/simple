@@ -73,7 +73,7 @@ namespace ModelView
             }
             if (file_dialog.showFileDialog(LOAD_MODEL, imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), ".act,.mdf,.obj,*.*"))
             {
-                std::cout << file_dialog.selected_path << std::endl;  // The absolute path to the selected file
+                viewer.selectMesh(file_dialog.selected_path);
             }
 
             if (demo)
