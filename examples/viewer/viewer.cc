@@ -3,6 +3,7 @@
 
 #include "engine/actorfile.h"
 #include "engine/animation.h"
+#include "engine/animationfile.h"
 #include "engine/compiledmesh.h"
 #include "engine/filesystem.h"
 #include "engine/fileutil.h"
@@ -171,27 +172,27 @@ namespace ModelView
 
             FileSystem fs = FileSystem();
             fs.addRoot(basefile);
-            addAnimation(FileUtil::GetFileNameWithoutExtension(filename), AnimationFile::Load(fs, filename));
+            addAnimation(FileUtil::GetFileNameWithoutExtension(filename), AnimationFile::Load(&fs, filename));
         }
+
+        std::map<std::string, std::shared_ptr<Animation>> animations;
 
         void addAnimation(const std::string& name, std::shared_ptr<Animation> anim)
         {
-            ToolStripButton selectanim = ToolStripButton(name);
-            selectanim.Tag = anim;
-            selectanim.Click += EventHandler(selectAnimationClicked);
-            dAnimations.DropDownItems.Add(selectanim);
+            animations.emplace(name, anim);
             setAnimation(anim, name);
         }
 
         std::string animation_information;
+        std::string current_animation;
 
         void setAnimation(std::shared_ptr<Animation> anim, const std::string& name)
         {
             this->anim = anim;
-            dAnimation.Value = 0;
-            dAnimations.Text = name;
+            animation_position = 0.0f;
+            current_animation = name;
 
-            animation_information = fmt::format("{0} bones, {1}s long", anim->bones.size(), anim->Length());
+            animation_information = fmt::format("{0} bones, {1}s long", anim->bones.size(), anim->Length);
 
             updatePose();
         }
@@ -205,16 +206,17 @@ namespace ModelView
 
             if (anim == nullptr)
             {
-                return;
+                return animation_position;
             }
 
-            const auto l = anim->Length();
-            if (animation_position > l)
+            if (animation_position > anim->Length)
             {
-                return l;
+                return anim->Length;
             }
             else
+            {
                 return animation_position;
+            }
         }
 
         void updatePose()
@@ -227,10 +229,11 @@ namespace ModelView
                 return;
             float val = SafeAnimationPosition();
             auto pose = anim->getPose(val);
-            mesh->setPose(CompiledPose::Compile(pose, def));
+            mesh->setPose(std::make_shared<CompiledPose>(CompiledPose::Compile(pose, *def)));
             forceRedraw();
         }
 
+#ifdef NOTYET
         void selectMaterialToolStripMenuItem_Click()
         {
             ChangeMaterial mat = ChangeMaterial(def);
@@ -242,6 +245,7 @@ namespace ModelView
                 newMesh(fs);
             }
         }
+#endif
 
         void step(float dt)
         {
@@ -259,12 +263,12 @@ namespace ModelView
 
             animation_position += dt;
 
-            while (animation_position > anim->Length())
+            while (animation_position > anim->Length)
             {
-                animation_position -= anim->Length();
+                animation_position -= anim->Length;
             }
             updatePose();
             forceRedraw();
         }
-    }
+    };
 }
