@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "engine/angle.h"
+#include "engine/fileutil.h"
 #include "engine/math1.h"
 #include "engine/quat.h"
 #include "fmt/core.h"
@@ -27,6 +28,21 @@ namespace SimpleEngine
         , y(a.y)
         , z(a.z)
     {
+    }
+
+    vec3 vec3::Read(BinaryReader& br)
+    {
+        auto x = br.ReadSingle();
+        auto y = br.ReadSingle();
+        auto z = br.ReadSingle();
+        return vec3{x, y, z};
+    }
+
+    void vec3::Write(const vec3& v, BinaryWriter& br)
+    {
+        br.WriteSingle(v.x);
+        br.WriteSingle(v.y);
+        br.WriteSingle(v.z);
     }
 
     vec3 vec3::Zero()

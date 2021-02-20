@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "engine/axisangle.h"
+#include "engine/fileutil.h"
 #include "engine/mat33.h"
 #include "engine/math1.h"
 #include "engine/vec3.h"
@@ -46,6 +47,24 @@ namespace SimpleEngine
         , z(other.z)
         , w(other.w)
     {
+    }
+
+    quat quat::Read(BinaryReader& br)
+    {
+        const auto x = br.ReadSingle();
+        const auto y = br.ReadSingle();
+        const auto z = br.ReadSingle();
+        const auto w = br.ReadSingle();
+
+        return quat{vec3{x, y, z}, w};
+    }
+
+    void quat::Write(const quat& q, BinaryWriter& br)
+    {
+        br.WriteSingle(q.x);
+        br.WriteSingle(q.y);
+        br.WriteSingle(q.z);
+        br.WriteSingle(q.w);
     }
 
     vec3 quat::vec() const

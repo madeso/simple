@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -7,6 +8,8 @@ namespace SimpleEngine
 {
     struct BinaryReader
     {
+        std::ifstream handle;
+
         BinaryReader(const std::string& p);
 
         int ReadInt32();
@@ -16,6 +19,7 @@ namespace SimpleEngine
 
     struct BinaryWriter
     {
+        std::ofstream handle;
         BinaryWriter(const std::string& p);
 
         void WriteInt32(int i);
