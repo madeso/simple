@@ -30,17 +30,26 @@ namespace SimpleEngine
         static const int width = 800;
         static const int height = 600;
 
-        auto flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN;
+        auto flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN;
 
         SDL_Window* window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
         SDL_GLContext context = SDL_GL_CreateContext(window);
         SDL_GL_MakeCurrent(window, context);
         SDL_GL_SetSwapInterval(1);
 
+        if (gladLoadGL() == 0)
+        {
+            SDL_LogCritical(SDL_LOG_CATEGORY_ERROR, "Failed to init opengl\n");
+            return;
+        }
+
         // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
+
+        ImGui_ImplOpenGL2_Init();
+        ImGui_ImplSDL2_InitForOpenGL(window, context);
 
         ImGui::StyleColorsDark();
 
