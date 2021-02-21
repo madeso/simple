@@ -45,6 +45,7 @@ namespace SimpleEngine
         int w = 0;
         int h = 0;
         int comp = 0;
+        stbi_set_flip_vertically_on_load(1);
         unsigned char* image = stbi_load(filename.c_str(), &w, &h, &comp, 3);
 
         if (image != nullptr)
