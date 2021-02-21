@@ -49,6 +49,8 @@ namespace SimpleEngine
         ImGui_ImplOpenGL2_Init();
         ImGui_ImplSDL2_InitForOpenGL(window, context);
 
+        // todo(Gustav): filebrowser doesn't support light colors...
+        // ImGui::StyleColorsLight();
         ImGui::StyleColorsDark();
 
         auto app = make_app();
