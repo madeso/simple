@@ -1,0 +1,8 @@
+newmtl mesh
+Ns 149
+d 1
+illum 2
+Kd 0.954757 0.820066 0.788785
+Ka 0 0 0
+Ks 1 1 1
+map_Ka spot_texture.png
