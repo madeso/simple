@@ -216,6 +216,7 @@ namespace SimpleEngine
 
     void MeshDef::addTri(const Tri& t)
     {
+        assert(currentd);
         currentd->tris.emplace_back(t);
     }
 

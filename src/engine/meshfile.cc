@@ -259,7 +259,7 @@ namespace SimpleEngine
                                 VertexData v;
                                 v.vertex = std::stoi(ind[0]) - 1;
                                 v.uv = std::stoi(ind[1]) - 1;
-                                v.normal = std::stoi(ind[2]) - 1;
+                                v.normal = ind.size() > 2 ? std::stoi(ind[2]) - 1 : -1;
                                 vd.emplace_back(v);
                             }
                             if (vd.size() < 3)
