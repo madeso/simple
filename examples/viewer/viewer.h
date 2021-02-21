@@ -27,7 +27,7 @@ namespace ModelView
         SimpleEngine::vec2 oldmouse;
         bool down = false;
         int zoommem = 0;
-        const int kWheelStep = 120;
+        const int kWheelStep = 1;
         float distance = 15;
         float animation_position = 0;
         bool playing_animation = false;
