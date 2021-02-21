@@ -107,6 +107,8 @@ namespace ModelView
 
         void OnRender(int w, int h) override
         {
+            viewer.Width = w;
+            viewer.Height = h;
             SimpleEngine::Setup::BeforeRender(w, h);
             viewer.Paint();
         }
