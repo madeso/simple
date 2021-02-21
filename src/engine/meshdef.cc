@@ -3,6 +3,8 @@
 #include <cassert>
 #include <stdexcept>
 
+#include "engine/compiledmesh.h"
+#include "engine/filesystem.h"
 #include "engine/mat44.h"
 #include "engine/matrixhelper.h"
 #include "engine/quat.h"
@@ -233,9 +235,7 @@ namespace SimpleEngine
 
     void MeshDef::compile(MediaLoader* ml)
     {
-#ifdef NOTYET
-        compiledMesh = new CompiledMesh(ml, this);
-#endif
+        compiledMesh = std::make_shared<CompiledMesh>(ml, this);
     }
 
     std::shared_ptr<Bone> MeshDef::newBone()
@@ -271,11 +271,9 @@ namespace SimpleEngine
 
     void MeshDef::translateFiles(const std::map<std::string, std::string>& overrides)
     {
-#ifdef NOTYET
         for (auto d : Materials())
         {
-            d.texture = FileSystem::MapFile(overrides, d.TextureOrName());
+            d->texture = FileSystem::MapFile(overrides, d->TextureOrName());
         }
-#endif
     }
 }
