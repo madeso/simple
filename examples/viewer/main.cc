@@ -35,7 +35,6 @@ namespace ModelView
 
                 ImGui::Text("%s", viewer.current_filename.c_str());
                 ImGui::Text("%s", viewer.model_information.c_str());
-                ImGui::Text("%s", viewer.current_animation.c_str());
 
                 if (viewer.animations.empty() == false)
                 {

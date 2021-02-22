@@ -113,8 +113,6 @@ namespace SimpleEngine
             mpd.pd.emplace_back(pd);
         }
 
-        std::cout << "bpd: " << bdp.size() << "\n";
-
         for (auto& k : bdp)
         {
             auto bone = bones[k.first];

@@ -11,7 +11,7 @@
 
 namespace SimpleEngine::load::MilkshapeBinary
 {
-    using byte = char;
+    using byte = unsigned char;
 
     namespace packed
     {
@@ -49,10 +49,10 @@ namespace SimpleEngine::load::MilkshapeBinary
         packed struct MS3DMaterial
         {
             char name[32];
-            float ambient[32];
-            float diffuse[32];
-            float specular[32];
-            float emissive[32];
+            float ambient[4];
+            float diffuse[4];
+            float specular[4];
+            float emissive[4];
             float shininess;     // 0.0f - 128.0f
             float transparency;  // 0.0f - 1.0f
             char mode;           // 0, 1, 2 is unused now
@@ -116,6 +116,16 @@ namespace SimpleEngine::load::MilkshapeBinary
     struct Runner
     {
         std::ifstream fs;
+
+        // result
+        int framecount;
+        float current;
+        float animfps;
+        std::vector<MS3DVertex> vertices;
+        std::vector<MS3DTriangle> triangles;
+        std::vector<MS3DMaterial> materials;
+        std::vector<MeshGroup> groups;
+        std::vector<Joint> joints;
 
         template <typename T>
         T Read()
@@ -231,16 +241,6 @@ namespace SimpleEngine::load::MilkshapeBinary
                 vertices.emplace_back(vt);
             }
         }
-
-        // result
-        int framecount;
-        float current;
-        float animfps;
-        std::vector<MS3DVertex> vertices;
-        std::vector<MS3DTriangle> triangles;
-        std::vector<MS3DMaterial> materials;
-        std::vector<MeshGroup> groups;
-        std::vector<Joint> joints;
     };
 
     void copyToColor(Color color, float* p)
@@ -351,8 +351,8 @@ namespace SimpleEngine::load::MilkshapeBinary
         const auto s = fs->open(meshpath);
         Runner run = Runner(s);
         run.run();
-        auto model = ExtractModel(run);
 
+        auto model = ExtractModel(run);
         *def = MilkshapeCommon::ExtractMeshDefinition(model);
         *animation = MilkshapeCommon::ExtractAnimation(model);
     }

@@ -1,5 +1,5 @@
 <actor>
-  <mesh file="turtle1.txt" scale="0.1">
+  <mesh file="turtle1.ms3d" scale="0.1">
     <animation>
       <name>Walk</name>
       <start>1</start>
