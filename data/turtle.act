@@ -1,5 +1,5 @@
 <actor>
-  <mesh file="C:\Users\Gustav\dev\media\finished\3d\psionic3d\toonturtle\turtle1.ms3d">
+  <mesh file="turtle1.txt" scale="0.1">
     <animation>
       <name>Walk</name>
       <start>1</start>
