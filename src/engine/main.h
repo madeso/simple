@@ -15,7 +15,7 @@ namespace SimpleEngine
         virtual ~App() = default;
 
         virtual void OnRender(int w, int h) = 0;
-        virtual void OnStep() = 0;
+        virtual void OnStep(float dt) = 0;
         virtual void OnEvent(const SDL_Event& e) = 0;
     };
 

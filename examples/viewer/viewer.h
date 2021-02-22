@@ -64,6 +64,7 @@ namespace ModelView
         void setAnimation(std::shared_ptr<SimpleEngine::Animation> anim, const std::string& name);
         float SafeAnimationPosition();
         void updatePose();
+        float getMaxAnimation();
 
 #ifdef NOTYET
         void selectMaterialToolStripMenuItem_Click();

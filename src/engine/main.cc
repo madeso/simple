@@ -55,8 +55,15 @@ namespace SimpleEngine
 
         auto app = make_app();
 
+        Uint64 now = SDL_GetPerformanceCounter();
+        Uint64 last = now;
+
         while (app->run)
         {
+            last = now;
+            now = SDL_GetPerformanceCounter();
+            const auto dt = static_cast<float>((now - last)) / static_cast<float>(SDL_GetPerformanceFrequency());
+
             SDL_Event event;
             while (SDL_PollEvent(&event))
             {
@@ -79,7 +86,7 @@ namespace SimpleEngine
             ImGui_ImplSDL2_NewFrame(window);
             ImGui::NewFrame();
 
-            app->OnStep();
+            app->OnStep(dt);
 
             ImGui::Render();
             glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);

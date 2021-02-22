@@ -22,12 +22,42 @@ namespace ModelView
             SimpleEngine::Setup::Setup();
         }
 
-        void OnStep() override
+        void OnStep(float dt) override
         {
-            ImGui::Begin("viewer");
-            ImGui::Text("%s", viewer.current_filename.c_str());
-            ImGui::Text("%s", viewer.model_information.c_str());
-            ImGui::Text("%s", viewer.current_animation.c_str());
+            viewer.step(dt);
+
+            if (ImGui::Begin("viewer"))
+            {
+                if (dt > 0.0f)
+                {
+                    ImGui::Text("fps %f", 1 / dt);
+                }
+
+                ImGui::Text("%s", viewer.current_filename.c_str());
+                ImGui::Text("%s", viewer.model_information.c_str());
+                ImGui::Text("%s", viewer.current_animation.c_str());
+
+                if (viewer.animations.empty() == false)
+                {
+                    ImGui::Checkbox("Play", &viewer.playing_animation);
+                    if (ImGui::SliderFloat("Time", &viewer.animation_position, 0.0f, viewer.getMaxAnimation()))
+                    {
+                        viewer.updatePose();
+                    }
+                    if (ImGui::BeginCombo("Animation", viewer.current_animation.empty() ? "<select animation>" : viewer.current_animation.c_str()))
+                    {
+                        for (auto a : viewer.animations)
+                        {
+                            bool selected = false;
+                            if (ImGui::Selectable(a.first.c_str(), &selected))
+                            {
+                                viewer.setAnimation(a.second, a.first);
+                            }
+                        }
+                        ImGui::EndCombo();
+                    }
+                }
+            }
             ImGui::End();
 
             bool load_model = false;

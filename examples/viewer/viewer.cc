@@ -222,6 +222,16 @@ namespace ModelView
         }
     }
 
+    float Viewer::getMaxAnimation()
+    {
+        if (anim == nullptr)
+        {
+            return 0.0f;
+        }
+
+        return anim->Length;
+    }
+
     void Viewer::updatePose()
     {
         if (anim == nullptr)
