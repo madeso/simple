@@ -10,6 +10,7 @@ namespace SimpleEngine
 
     std::string Trim(const std::string& str);
     bool EndsWith(const std::string& str, const std::string& s);
+    bool StartsWith(const std::string& str, const std::string& s);
 
     std::vector<std::string> Split(const std::string& str, char delim);
     std::vector<std::string> Split(const std::string& str);

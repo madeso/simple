@@ -34,5 +34,6 @@ namespace SimpleEngine
         std::pair<std::string, std::string> Split(const std::string& path);
         std::string GetExtension(const std::string& p);
         std::string GetFileNameWithoutExtension(const std::string& p);
+        std::string GetFileName(const std::string& p);
     }
 }

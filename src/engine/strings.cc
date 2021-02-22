@@ -81,6 +81,11 @@ namespace SimpleEngine
         return detail::trim_copy(str);
     }
 
+    bool StartsWith(const std::string& fullString, const std::string& start)
+    {
+        return fullString.rfind(start, 0) == 0;
+    }
+
     bool EndsWith(const std::string& fullString, const std::string& ending)
     {
         if (fullString.length() >= ending.length())

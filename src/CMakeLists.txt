@@ -46,6 +46,10 @@ set(src
     engine/actorfile.cc engine/actorfile.h
     engine/animationfile.cc engine/animationfile.h
 
+    engine/load/milkshape.common.cc engine/load/milkshape.common.h
+    engine/load/milkshape.ascii.cc engine/load/milkshape.ascii.h
+    engine/load/milkshape.binary.cc engine/load/milkshape.binary.h
+
     engine/setup.cc engine/setup.h
     engine/main.cc engine/main.h
 )

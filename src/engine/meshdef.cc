@@ -1,6 +1,7 @@
 ﻿#include "engine/meshdef.h"
 
 #include <cassert>
+#include <iostream>
 #include <stdexcept>
 
 #include "engine/compiledmesh.h"
@@ -97,20 +98,28 @@ namespace SimpleEngine
             bdp.emplace(i, Mpd{m});
         }
 
+        std::cout << "points: " << points.size() << "\n";
+
         for (auto& pd : points)
         {
             if (pd.boneid == -1)
                 continue;
-            const auto& bone = bones[pd.boneid];
+            if (pd.boneid >= bones.size())
+            {
+                throw std::runtime_error(fmt::format("bone id {} greater than bones {}", pd.boneid, bones.size()));
+            }
+            const auto bone = bones[pd.boneid];
             Mpd& mpd = bdp[pd.boneid];
             mpd.pd.emplace_back(pd);
         }
 
+        std::cout << "bpd: " << bdp.size() << "\n";
+
         for (auto& k : bdp)
         {
-            auto& bone = bones[k.first];
+            auto bone = bones[k.first];
             mat44 m = mat44::Identity();
-            for (auto& b = bone; b != nullptr; b = b->parentBone)
+            for (auto b = bone; b != nullptr; b = b->parentBone)
             {
                 m = m * bdp[b->index].m;
             }

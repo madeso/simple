@@ -13,13 +13,13 @@
 
 namespace SimpleEngine
 {
+    std::string MaterialNameFromId(int materialid)
+    {
+        return fmt::format("m{}", materialid);
+    }
+
     namespace MeshDefFile
     {
-        std::string MaterialNameFromId(int materialid)
-        {
-            return fmt::format("m{}", materialid);
-        }
-
         void WriteColor(BinaryWriter& bw, const vec3& mat)
         {
             bw.WriteSingle(mat.x);

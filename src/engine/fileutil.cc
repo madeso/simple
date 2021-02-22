@@ -1,6 +1,9 @@
 ﻿#include "engine/fileutil.h"
 
 #include <filesystem>
+#include <stdexcept>
+
+#include "fmt/core.h"
 
 namespace fs = std::filesystem;
 
@@ -58,6 +61,10 @@ namespace SimpleEngine
         std::vector<std::string> LinesIn(const std::string& path)
         {
             std::ifstream infile(path.c_str());
+            if (infile.good() == false)
+            {
+                throw std::runtime_error(fmt::format("Text file not found: '{}'", path));
+            }
             std::string line;
             std::vector<std::string> r;
             while (std::getline(infile, line))
@@ -81,6 +88,11 @@ namespace SimpleEngine
         std::string GetFileNameWithoutExtension(const std::string& p)
         {
             return fs::path{p}.stem();
+        }
+
+        std::string GetFileName(const std::string& p)
+        {
+            return fs::path{p}.filename();
         }
     }
 }

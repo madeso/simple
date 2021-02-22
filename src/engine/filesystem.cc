@@ -10,6 +10,7 @@
 
 #include "engine/fileutil.h"
 #include "engine/strings.h"
+#include "fmt/core.h"
 
 namespace SimpleEngine
 {
@@ -48,7 +49,7 @@ namespace SimpleEngine
                 return fp.string();
             }
         }
-        throw std::runtime_error("Failed to open file " + path);
+        throw std::runtime_error(fmt::format("File not found in VFS: '{}'", path));
     }
 
     std::string FileSystem::open(const std::string& path) const

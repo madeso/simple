@@ -8,10 +8,13 @@
 #include "engine/cpp.h"
 #include "engine/filesystem.h"
 #include "engine/fileutil.h"
+#include "engine/load/milkshape.ascii.h"
+#include "engine/load/milkshape.binary.h"
 #include "engine/math1.h"
 #include "engine/meshfile.h"
 #include "engine/strings.h"
 #include "engine/xml.h"
+#include "fmt/core.h"
 
 namespace SimpleEngine
 {
@@ -87,24 +90,23 @@ namespace SimpleEngine
             std::shared_ptr<Animation> animation;
 
             std::string ext = FileUtil::GetExtension(meshpath);
-#ifdef NOTYET
             if (ext == ".txt")
             {
-                SimpleEngine::load::MilkshapeAscii.Load(fs, meshpath, &def, &animation, 1);
+                SimpleEngine::load::MilkshapeAscii::Load(fs, meshpath, &def, &animation, 1);
             }
             else if (ext == ".ms3d")
             {
-                SimpleEngine::load::MilkshapeBinary.Load(fs, meshpath, &def, &animation);
+                SimpleEngine::load::MilkshapeBinary::Load(fs, meshpath, &def, &animation);
             }
-            else
-#endif
-                if (animinfo.empty())
+            else if (animinfo.empty())
             {
                 animation = nullptr;
                 def = MeshFile::Load(fs, meshpath);
             }
             else
-                throw std::runtime_error("Unhandled format " + ext + " for " + meshpath);
+            {
+                throw std::runtime_error(fmt::format("Unhandled format {} for {}", ext, meshpath));
+            }
 
             for (std::string ignoreThisBone : bonesToIgnore)
             {

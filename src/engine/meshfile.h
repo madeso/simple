@@ -6,6 +6,8 @@ namespace SimpleEngine
     struct MeshDef;
     struct FileSystem;
 
+    std::string MaterialNameFromId(int materialid);
+
     namespace MeshFile
     {
         std::shared_ptr<MeshDef> Load(FileSystem* fs, const std::string& path);
