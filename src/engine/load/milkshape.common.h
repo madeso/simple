@@ -31,13 +31,9 @@ namespace SimpleEngine::load
         std::vector<std::shared_ptr<Bone>> bones;
 
         std::shared_ptr<Mesh> newMesh();
-
         std::shared_ptr<Material> newMaterial();
-
         std::shared_ptr<Bone> newBone();
-
         int boneId(const std::string& bone);
-
         void mapBonesToId();
     };
 
@@ -59,6 +55,9 @@ namespace SimpleEngine::load
     struct Vertex
     {
         int flags = 0;
+        vec2 uv = vec2(0, 0);
+        vec3 pos = vec3(0, 0, 0);
+        int bone = 0;
 
         void x(float value);
         float x() const;
@@ -76,14 +75,12 @@ namespace SimpleEngine::load
         float v() const;
 
         std::string ToString() const;
-
-        vec2 uv = vec2(0, 0);
-        vec3 pos = vec3(0, 0, 0);
-        int bone = 0;
     };
 
     struct Normal
     {
+        vec3 norm = vec3(0, 0, 0);
+
         void x(float value);
         float x() const;
 
@@ -92,8 +89,6 @@ namespace SimpleEngine::load
 
         void z(float value);
         float z() const;
-
-        vec3 norm = vec3(0, 0, 0);
 
         void normalize();
     };
@@ -137,18 +132,18 @@ namespace SimpleEngine::load
 
     struct PositionKey
     {
-        float time;
-        float x;
-        float y;
-        float z;
+        float time = 0.0f;
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
     };
 
     struct RotatonKey
     {
-        float time;
-        float x;
-        float y;
-        float z;
+        float time = 0.0f;
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
 
         std::string ToString() const;
     };
@@ -158,40 +153,31 @@ namespace SimpleEngine::load
         std::string name;
         std::string parentName;
         int parentId = -1;
-        int flags;
-        float x;
-        float y;
-        float z;
-        float rx;
-        float ry;
-        float rz;
+        int flags = 0;
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
+        float rx = 0.0f;
+        float ry = 0.0f;
+        float rz = 0.0f;
 
         std::string ToString() const;
 
         std::vector<std::shared_ptr<PositionKey>> positions;
         std::vector<std::shared_ptr<RotatonKey>> rotations;
-
         std::vector<std::shared_ptr<PositionKey>>& PositionKeys();
-
         std::vector<std::shared_ptr<RotatonKey>>& RotationKeys();
-
         std::shared_ptr<RotatonKey> newRotationKey();
-
         std::shared_ptr<PositionKey> newPositionKey();
     };
 
     namespace MilkshapeCommon
     {
         std::shared_ptr<Animation> ExtractAnimation(std::shared_ptr<Model> model);
-
         std::shared_ptr<MeshDef> ExtractMeshDefinition(std::shared_ptr<Model> model);
-
         float sin(float s);
-
         float cos(float s);
-
         quat makeQuat(const vec3& angles);
-
         std::string SmartTexture(std::string p);
     }
 }

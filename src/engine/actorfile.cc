@@ -1,4 +1,5 @@
-﻿#include <map>
+﻿#include <iostream>
+#include <map>
 #include <set>
 #include <stdexcept>
 #include <vector>
@@ -116,7 +117,7 @@ namespace SimpleEngine
                     {
                         def->bones.erase(def->bones.begin() + i);
                         animation->bones.erase(animation->bones.begin() + i);
-                        // bug? reduce i by 1 since it was just removed?
+                        std::cout << "bug? reduce i by 1 since it was just removed?\n";
                     }
                 }
             }

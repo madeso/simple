@@ -82,7 +82,7 @@ namespace SimpleEngine::load::MilkshapeBinary
     struct MeshGroup
     {
         std::string name;
-        int material;
+        int material = 0;
         std::vector<int> tri;
     };
 

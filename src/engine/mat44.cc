@@ -48,6 +48,11 @@ namespace SimpleEngine
     }
 
     mat44::mat44()
+        : dataColumnMajor(FA{
+              1, 0, 0, 0,
+              0, 1, 0, 0,
+              0, 0, 1, 0,
+              0, 0, 0, 1})
     {
     }
 

@@ -98,8 +98,6 @@ namespace SimpleEngine
             bdp.emplace(i, Mpd{m});
         }
 
-        std::cout << "points: " << points.size() << "\n";
-
         for (auto& pd : points)
         {
             if (pd.boneid == -1)
