@@ -100,14 +100,14 @@ namespace SimpleEngine
 
         for (auto& pd : points)
         {
-            if (pd.boneid == -1)
+            if (pd->boneid == -1)
                 continue;
-            if (pd.boneid >= bones.size())
+            if (pd->boneid >= bones.size())
             {
-                throw std::runtime_error(fmt::format("bone id {} greater than bones {}", pd.boneid, bones.size()));
+                throw std::runtime_error(fmt::format("bone id {} greater than bones {}", pd->boneid, bones.size()));
             }
-            const auto bone = bones[pd.boneid];
-            Mpd& mpd = bdp[pd.boneid];
+            const auto bone = bones[pd->boneid];
+            Mpd& mpd = bdp[pd->boneid];
             mpd.pd.emplace_back(pd);
         }
 
@@ -120,9 +120,9 @@ namespace SimpleEngine
                 m = m * bdp[b->index].m;
             }
 
-            for (PointData& pd : k.second.pd)
+            for (auto pd : k.second.pd)
             {
-                pd.location = m * pd.location;
+                pd->location = m * pd->location;
             }
         }
 
@@ -175,8 +175,8 @@ namespace SimpleEngine
         for (int i = 0; i < 3; ++i)
         {
             Vertex c;
-            c.vertex = points[tri[i].vertex].location;
-            c.bone = points[tri[i].vertex].boneid;
+            c.vertex = points[tri[i].vertex]->location;
+            c.bone = points[tri[i].vertex]->boneid;
 
             if (tri[i].normal != -1)
             {
@@ -191,7 +191,7 @@ namespace SimpleEngine
 
     void MeshDef::addPoint(const vec3& p, int bone)
     {
-        points.emplace_back(PointData(bone, p));
+        points.emplace_back(std::make_shared<PointData>(bone, p));
     }
 
     void MeshDef::AddUv(const vec2& u)
@@ -261,7 +261,7 @@ namespace SimpleEngine
     {
         for (auto& pd : points)
         {
-            pd.location = pd.location * scale;
+            pd->location = pd->location * scale;
         }
 
         for (auto b : bones)

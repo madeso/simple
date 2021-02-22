@@ -90,12 +90,12 @@ namespace SimpleEngine
         Mpd(const mat44& mm);
 
         mat44 m;
-        std::vector<PointData> pd;
+        std::vector<std::shared_ptr<PointData>> pd;
     };
 
     struct MeshDef
     {
-        std::vector<PointData> points;
+        std::vector<std::shared_ptr<PointData>> points;
         std::vector<vec2> uvs;
         std::vector<vec3> normals;
         std::vector<std::shared_ptr<Bone>> bones;

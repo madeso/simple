@@ -127,12 +127,12 @@ namespace SimpleEngine
                 bw.WriteSingle(bone->rot.w);
             }
             bw.WriteInt32(def->points.size());
-            for (PointData v : def->points)
+            for (auto v : def->points)
             {
-                bw.WriteInt32(v.boneid);
-                bw.WriteSingle(v.location.x);
-                bw.WriteSingle(v.location.y);
-                bw.WriteSingle(v.location.z);
+                bw.WriteInt32(v->boneid);
+                bw.WriteSingle(v->location.x);
+                bw.WriteSingle(v->location.y);
+                bw.WriteSingle(v->location.z);
             }
             bw.WriteInt32(def->uvs.size());
             for (vec2 u : def->uvs)
