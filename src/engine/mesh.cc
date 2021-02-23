@@ -1,24 +1,22 @@
-﻿#include <memory>
+﻿#include "engine/mesh.h"
+
+#include <memory>
 
 #include "engine/compiledmesh.h"
 #include "engine/media.h"
+#include "engine/meshfile.h"
 
 namespace SimpleEngine
 {
-    struct Mesh : public Media
+    void Mesh::load(MediaLoader* ml, FileSystem* fs, const std::string& path)
     {
-        std::shared_ptr<CompiledMesh> mesh;
+        auto mesh = MeshFile::Load(fs, path);
+        mesh->compile(ml);
+        this->mesh = mesh->Compiled();
+    }
 
-        void load(MediaLoader* ml, FileSystem* fs, const std::string& path) override
-        {
-            auto mesh = MeshFile.Load(fs, path);
-            mesh.compile(ml);
-            this->mesh = mesh.Compiled();
-        }
-
-        std::shared_ptr<CompiledMesh> Compiled()
-        {
-            return mesh;
-        }
+    std::shared_ptr<CompiledMesh> Mesh::Compiled()
+    {
+        return mesh;
     }
 }

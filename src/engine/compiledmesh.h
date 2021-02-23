@@ -1,4 +1,6 @@
-﻿#include <memory>
+﻿#pragma once
+
+#include <memory>
 
 #include "engine/animation.h"
 #include "engine/meshpart.h"

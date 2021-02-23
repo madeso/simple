@@ -50,6 +50,16 @@ set(src
     engine/load/milkshape.ascii.cc engine/load/milkshape.ascii.h
     engine/load/milkshape.binary.cc engine/load/milkshape.binary.h
 
+    engine/ckey.cc engine/ckey.h
+
+    engine/world.cc engine/world.h
+    engine/simpleworld.cc engine/simpleworld.h
+
+    engine/entity.cc engine/entity.h
+
+    engine/meshinstance.cc engine/meshinstance.h
+    engine/mesh.cc engine/mesh.h
+
     engine/setup.cc engine/setup.h
     engine/main.cc engine/main.h
 )

@@ -1,47 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
+﻿#include "engine/entity.h"
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "engine/medialoader.h"
+#include "engine/mesh.h"
+#include "engine/meshinstance.h"
+#include "engine/quat.h"
+#include "engine/vec3.h"
 
 namespace SimpleEngine
 {
-    struct Entity
+    Entity::Entity(const std::string& n)
+        : name(n)
     {
-        std::vector<Renderable> visual = std::vector<Renderable>();
-        std::string name;
+    }
 
-        Entity(std::string name)
+    std::string Entity::ToString() const
+    {
+        return name;
+    }
+
+    std::shared_ptr<Entity> Entity::Create(MediaLoader* loader, const std::string& name, std::shared_ptr<Xml::Element> root, const vec3& pos, const quat& rot)
+    {
+        auto ent = std::make_shared<Entity>(name);
+
+        auto visual = root->GetChild("visual");
+
+        for (auto meshel : Xml::ElementsNamed(visual, "mesh"))
         {
-            this.name = name;
+            std::string meshpath = Xml::GetAttributeString(meshel, "file");
+            auto mesh = std::make_shared<MeshInstance>(loader->fetch<Mesh>(meshpath));
+            mesh->pos = pos;
+            mesh->rot = rot;
+            ent->add(mesh);
         }
 
-        std::string ToString() const
-        {
-            return name;
-        }
+        return ent;
+    }
 
-        static Entity Create(MediaLoader loader, std::string name, System.Xml::std::shared_ptr<Xml::Element> root, vec3 pos, quat rot)
-        {
-            Entity ent = Entity(name);
-
-            std::shared_ptr<Xml::Element> visual = root["visual"];
-
-            for (std::shared_ptr<Xml::Element> meshel : Xml::ElementsNamed(visual, "mesh"))
-            {
-                std::string meshpath = Xml::GetAttributeString(meshel, "file");
-                MeshInstance mesh = MeshInstance(loader.fetch<Mesh>(meshpath));
-                mesh.pos = pos;
-                mesh.rot = rot;
-                ent.add(mesh);
-            }
-
-            return ent;
-        }
-
-        void add(Renderable r)
-        {
-            visual.Add(r);
-        }
+    void Entity::add(std::shared_ptr<Renderable> r)
+    {
+        visual.emplace_back(r);
     }
 }

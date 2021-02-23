@@ -1,28 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/meshinstance.h"
+
+#include "engine/compiledmesh.h"
 
 namespace SimpleEngine
 {
-    struct MeshInstance : Renderable
+    MeshInstance::MeshInstance(std::shared_ptr<Mesh> def)
+        : mesh(def)
     {
-        Handle<Mesh> mesh;
-        vec3 pos = vec3::Zero();
-        quat rot = quat::Identity();
+    }
 
-        MeshInstance(Mesh def)
-        {
-            this.mesh = Handle<Mesh>(def);
-        }
+    void MeshInstance::sendToRenderer(RenderList* r)
+    {
+        mesh->Compiled()->sendToRenderer(r, pos, rot);
+    }
 
-        void sendToRenderer(RenderList r)
-        {
-            mesh.Ref.Compiled.sendToRenderer(r, pos, rot);
-        }
-
-        void render()
-        {
-        }
+    void MeshInstance::render()
+    {
     }
 }

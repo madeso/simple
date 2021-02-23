@@ -1,41 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Tao.OpenGl;
+﻿#include "engine/world.h"
+
+#include "engine/camera.h"
+#include "engine/opengl.h"
+#include "engine/pushedmatrix.h"
+#include "engine/renderlist.h"
+#include "engine/setup.h"
+#include "engine/simpleworld.h"
 
 namespace SimpleEngine
 {
-    struct World
+    std::shared_ptr<World> World::Load(MediaLoader* loader, const std::string& file)
     {
-        void add(Renderable r);
-        void addCamera(Renderable r);
-        void remove(Renderable r);
-        void worldSendTo(RenderList list);
-        void cameraSendTo(RenderList list);
-        void addEntity(Entity ent);
-        static World Load(MediaLoader loader, std::string file)
+        return std::make_shared<SimpleWorld>(loader, file);
+    }
+
+    void World::render(int width, int height, const Camera& c)
+    {
+        Setup::view3d(width, height);
         {
-            return SimpleWorld(loader, file);
+            PushedMatrix fm;
+            c.sendRotation();
+            RenderList list;
+            cameraSendTo(&list);
+            list.render();
         }
-        void render(int width, int height, Camera c)
+
+        glClear(GL_DEPTH_BUFFER_BIT);
         {
-            Setup.view3d(width, height);
-            using(PushedMatrix fm = PushedMatrix())
-            {
-                c.sendRotation();
-                RenderList list = RenderList();
-                cameraSendTo(list);
-                list.render();
-            }
-            glClear(GL_DEPTH_BUFFER_BIT);
-            using(PushedMatrix fm = PushedMatrix())
-            {
-                c.sendRotationAndPosition();
-                RenderList list = RenderList();
-                worldSendTo(list);
-                list.render();
-            }
+            PushedMatrix fm;
+            c.sendRotationAndPosition();
+            RenderList list;
+            worldSendTo(&list);
+            list.render();
         }
     }
 }

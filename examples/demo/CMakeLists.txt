@@ -1,5 +1,6 @@
 set(src
     main.cc
+    # demo.cc
 )
 
 add_executable(demo WIN32 MACOSX_BUNDLE ${src})
