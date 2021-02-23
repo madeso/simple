@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 
-namespace SimpleEngine.fse.Commands
+namespace SimpleEngine::fse.Commands
 {
     namespace Commands
     {

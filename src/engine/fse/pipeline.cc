@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SimpleEngine.fse
+namespace SimpleEngine::fse
 {
     struct Pipeline
     {

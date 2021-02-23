@@ -1,131 +1,127 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/fse/binder.h"
 
-namespace SimpleEngine.fse
+#include <algorithm>
+
+#include "engine/stringcounter.h"
+
+namespace SimpleEngine::fse
 {
-    struct Binder
+    FboCreator::FboCreator(int width, int height)
+        : pool([width, height]() { return std::make_shared<Fbo>(width, height, false); })
+        , map([this](const std::string& n) { return pool.get(); })
     {
-        Map<Shader> shaders;
+    }
 
-        Binder(FileSystem sys)
+    std::shared_ptr<Fbo> FboCreator::create(const std::string& name)
+    {
+        return map.get(name);
+    }
+
+    void FboCreator::release(std::shared_ptr<Fbo> fbo)
+    {
+        pool.release(fbo);
+    }
+
+    std::string Binder::ToString() const
+    {
+        return "<unknown binder>";
+    }
+
+    Binder::Binder(std::shared_ptr<FileSystem> sys)
+        : shaders([sys](const std::string& name) { return std::make_shared<Shader>(sys.get(), name); })
+    {
+    }
+
+    std::shared_ptr<Shader> Binder::getShader(const std::string& shadername)
+    {
+        return shaders.get(shadername);
+    }
+
+    std::shared_ptr<Shader> Binder::getShaderOrNull(const std::string& shadername)
+    {
+        if (shadername.empty())
         {
-            shaders = Map<Shader>(delegate(std::string name) { return Shader(sys, name); });
+            return nullptr;
         }
+        return shaders.get(shadername);
+    }
 
-        Shader getShader(std::string shadername)
+    void Binder::reference(std::shared_ptr<BufferReference> br)
+    {
+        if (std::find(references.begin(), references.end(), br) != references.end())
         {
-            return shaders.get(shadername);
+            throw std::runtime_error(fmt::format("{} already addd to {}", br->Name(), ToString()));
         }
+        references.emplace_back(br);
+    }
 
-        Shader getShaderOrNull(std::string shadername)
+    std::shared_ptr<Fbo> Binder::allocate(const std::string& name)
+    {
+        return getCreator(name)->create(name);
+    }
+
+    std::shared_ptr<FboCreator> Binder::getCreator(const std::string& name)
+    {
+        Size size = sizeOf(name);
+        auto found = creators.find(size);
+        if (found == creators.end())
         {
-            if (std::string.IsNullOrEmpty(shadername))
-                return nullptr;
-            return shaders.get(shadername);
-        }
-
-        std::vector<BufferReference> references = std::vector<BufferReference>();
-
-        void reference(BufferReference br)
-        {
-            if (references.Contains(br))
-            {
-                throw std::runtime_error(br.Name + " already addd to " + this.ToString());
-            }
-            references.Add(br);
-        }
-
-        struct FboCreator
-        {
-            Pool<Fbo> pool;
-            Map<Fbo> map;
-
-            FboCreator(int width, int height)
-            {
-                pool = Pool<Fbo>(delegate() { return Fbo(width, height, false); });
-                map = Map<Fbo>(delegate(std::string n) { return pool.get(); });
-            }
-
-            Fbo create(std::string name)
-            {
-                return map.get(name);
-            }
-
-            void release(Fbo fbo)
-            {
-                pool.release(fbo);
-            }
-        }
-
-        std::map<Size, FboCreator>
-            creators = std::map<Size, FboCreator>(Size.Comperator());
-
-        //Pool<Fbo> cbs = Pool<Fbo>(delegate() { return Fbo(512, 512, false); });
-        //Map<Fbo> buffers = Map<Fbo>(delegate(std::string n) { return allocate(n); });
-
-        Fbo allocate(std::string name)
-        {
-            return getCreator(name).create(name);
-        }
-
-        FboCreator getCreator(std::string name)
-        {
-            FboCreator c;
-            Size size = sizeOf(name);
-            if (false == creators.ContainsKey(size))
-            {
-                c = FboCreator(size.Width, size.Height);
-                creators.Add(size, c);
-            }
-            else
-            {
-                c = creators[size];
-            }
+            auto c = std::make_shared<FboCreator>(size.Width, size.Height);
+            creators.emplace(size, c);
             return c;
         }
-
-        void release(Fbo buff)
+        else
         {
-            creators[Size{Width = buff.Width, Height = buff.Height}].release(buff);
+            return found->second;
+        }
+    }
+
+    void Binder::release(std::shared_ptr<Fbo> buff)
+    {
+        const auto size = Size{buff->Width(), buff->Height()};
+        auto found = creators.find(size);
+        if (found != creators.end())
+        {
+            found->second->release(buff);
+        }
+    }
+
+    Size Binder::sizeOf(const std::string& name)
+    {
+        auto found = associations.find(name);
+        if (found == associations.end())
+        {
+            throw std::runtime_error(fmt::format("{} is missing a defined size", name));
+        }
+        else
+        {
+            return found->second;
+        }
+    }
+
+    void Binder::createBuffers()
+    {
+        StringCounter sc;
+        for (auto b : references)
+        {
+            sc.add(b->Name());
         }
 
-        Size sizeOf(std::string name)
+        StringCounter usages = StringCounter();
+        for (auto b : references)
         {
-            if (false == associations.ContainsKey(name))
+            auto buff = allocate(b->Name());
+            b->setBuffer(buff);
+            usages.add(b->Name());
+            if (usages.countsOf(b->Name()) == sc.countsOf(b->Name()))
             {
-                throw std::runtime_error(name + " is missing a defined size");
-            }
-            else
-                return associations[name];
-        }
-
-        void createBuffers()
-        {
-            StringCounter sc = StringCounter();
-            for (BufferReference b : references)
-            {
-                sc.add(b.Name);
-            }
-
-            StringCounter usages = StringCounter();
-            for (BufferReference b : references)
-            {
-                Fbo buff = allocate(b.Name);
-                b.setBuffer(buff);
-                usages.add(b.Name);
-                if (usages.countsOf(b.Name) == sc.countsOf(b.Name))
-                {
-                    release(buff);
-                }
+                release(buff);
             }
         }
+    }
 
-        std::map<std::string, Size> associations = std::map<std::string, Size>();
-        void associate(std::string p, Size size)
-        {
-            associations.Add(p, size);
-        }
+    void Binder::associate(std::string p, Size size)
+    {
+        associations.emplace(p, size);
     }
 }

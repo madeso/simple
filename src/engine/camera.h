@@ -1,4 +1,6 @@
-﻿#include "engine/quat.h"
+﻿#pragma once
+
+#include "engine/quat.h"
 #include "engine/vec3.h"
 
 namespace SimpleEngine

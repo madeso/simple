@@ -1,60 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/fse/renderargs.h"
 
-namespace SimpleEngine.fse
+#include <memory>
+
+#include "engine/camera.h"
+#include "engine/world.h"
+
+namespace SimpleEngine::fse
 {
-    struct RenderArgs
+    RenderArgs::RenderArgs(std::shared_ptr<SimpleEngine::World> ww, const Camera& c, int w, int h)
+        : World(ww)
+        , Cam(c)
+        , Width(w)
+        , Height(h)
     {
-        RenderArgs(World world, Camera cam, int width, int height)
-        {
-            this.world = world;
-            this.cam = cam;
-            this.width = width;
-            this.height = height;
-        }
+    }
 
-        World world;
-        Camera cam;
-        int width;
-        int height;
-
-        World World
-        {
-            get
-            {
-                return world;
-            }
-        }
-
-        Camera Camera
-        {
-            get
-            {
-                return cam;
-            }
-        }
-
-        int Width
-        {
-            get
-            {
-                return width;
-            }
-        }
-
-        int Height
-        {
-            get
-            {
-                return height;
-            }
-        }
-
-        void render()
-        {
-            World.render(Width, Height, Camera);
-        }
+    void RenderArgs::render()
+    {
+        World->render(Width, Height, Cam);
     }
 }

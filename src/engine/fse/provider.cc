@@ -1,39 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
+﻿#include <memory>
+#include <stdexcept>
+#include <string>
 
-namespace SimpleEngine.fse
+#include "engine/stringseperator.h"
+#include "fmt/core.h"
+
+namespace SimpleEngine::fse
 {
+    struct Target;
+
     struct Provider
     {
-        Target target;
+        std::shared_ptr<Target> target;
         std::string targetname;
 
-        std::string id = String.Empty;
+        std::string id;
 
-        std::string Id
+        bool autocallCommands = true;
+        std::vector<std::shared_ptr<Command>> commands;
+        std::vector<std::shared_ptr<Provider>> providers;
+
+        const std::string& Id() const
         {
-            get
+            return id;
+        }
+
+        void Id(const std::string& value)
+        {
+            if (id.empty())
             {
-                return id;
+                id = value;
             }
-            set
+            else
             {
-                if (std::string.IsNullOrEmpty(id))
-                    id = value;
-                else
-                    throw std::runtime_error("Unable to change id from " + id + " to " + value);
+                throw std::runtime_error(fmt::format("Unable to change id from {} to {}", id, value));
             }
         }
 
         std::string ToString() const
         {
-            return Id + "(" + targetname + "): <" + StringSeperator(",", " and ", "").Append(commands.ToArray()).ToString() + ">";
+            return Id() + "(" + targetname + "): <" + StringSeperator(",", " and ", "").ToString(commands) + ">";
         }
-
-        bool autocallCommands = true;
 
         void provide(RenderArgs ra)
         {
@@ -42,7 +49,7 @@ namespace SimpleEngine.fse
                 callCommands();
             }
 
-            target.apply(delegate {
+            target->apply([this, ra]() {
                 doProvide(ra);
             });
         }
@@ -54,9 +61,9 @@ namespace SimpleEngine.fse
 
         void callCommands()
         {
-            for (Command c : commands)
+            for (auto c : commands)
             {
-                c.apply();
+                c->apply();
             }
         }
 
@@ -107,18 +114,6 @@ namespace SimpleEngine.fse
             }
         }
 
-        std::vector<Command> commands = std::vector<Command>();
-
-        std::vector<Provider> providers = std::vector<Provider>();
-
-        IEnumerable<Provider> Providers
-        {
-            get
-            {
-                return providers;
-            }
-        }
-
         void link(Linker linker)
         {
             if (false == std::string.IsNullOrEmpty(targetname))
@@ -127,9 +122,9 @@ namespace SimpleEngine.fse
                 target.Provider = this;
             }
 
-            for (Command c : commands)
+            for (auto c : commands)
             {
-                c.link(linker);
+                c->link(linker);
             }
 
             doLink(linker);
@@ -141,9 +136,9 @@ namespace SimpleEngine.fse
         {
             doBind(bd);
 
-            for (Command c : commands)
+            for (auto c : commands)
             {
-                c.bind(bd);
+                c->bind(bd);
             }
         }
 
@@ -151,15 +146,17 @@ namespace SimpleEngine.fse
 
         void postlink(Linker linker)
         {
-            for (Command c : commands)
+            for (auto c : commands)
             {
-                c.link(linker);
+                c->link(linker);
 
-                for (Provider p : c.Dependencies)
+                for (auto p : c.Dependencies)
                 {
                     if (p == nullptr)
-                        throw NullReferenceException();
-                    this.providers.Add(p);
+                    {
+                        throw std::runtime_error("null pointer exception");
+                    }
+                    providers.emplace_back(p);
                 }
             }
         }

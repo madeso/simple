@@ -31,6 +31,7 @@ namespace SimpleEngine
 
         std::optional<std::string> GetAttributeStringOrNull(std::shared_ptr<Element> el, const std::string& name);
         std::string GetAttributeString(std::shared_ptr<Element> el, const std::string& name);
+        std::vector<std::shared_ptr<Element>> Elements(std::shared_ptr<Element> el);
         std::vector<std::shared_ptr<Element>> ElementsNamed(std::shared_ptr<Element> el, const std::string& name);
         std::string GetTextOfSubElement(std::shared_ptr<Element> el, const std::string& name);
 

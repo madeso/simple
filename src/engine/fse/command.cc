@@ -1,20 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
+﻿#include <memory>
+#include <string>
 
-namespace SimpleEngine.fse
+#include "engine/xml.h"
+
+namespace SimpleEngine::fse
 {
+    struct Provider;
+    struct Linker;
+    struct BufferReference;
+    struct Binder;
+
     struct Command
     {
-        Provider prov;
+        std::shared_ptr<Provider> prov;
         std::string id;
 
-        Command(std::shared_ptr<Xml::Element> el, Provider prov)
+        Command(std::shared_ptr<Xml::Element> el, std::shared_ptr<Provider> p)
+            : prov(prov)
+            , id(Xml::GetAttributeString(el, "id"))
         {
-            id = Xml::GetAttributeString(el, "id");
-            this.prov = prov;
         }
 
         std::string ToString() const
@@ -22,29 +26,28 @@ namespace SimpleEngine.fse
             return id;
         }
 
-        BufferReference createBuffer(std::string name)
+        std::shared_ptr<BufferReference> createBuffer(std::string name)
         {
-            return prov.createBuffer(name);
+            return prov->createBuffer(name);
         }
 
-        void apply();
+        virtual void apply() = 0;
         // should be called by our provider
-        void link(Linker linker)
+
+        void link(Linker* linker)
         {
             doLink(linker);
         }
-        void bind(Binder b)
+
+        void bind(Binder* b)
         {
             doBind(b);
         }
 
-        IEnumerable<Provider> Dependencies
-        {
-            get;
-        }
+        virtual std::vector<std::shared_ptr<Provider>> Dependencies() = 0;
 
-        void doLink(Linker user);
+        virtual void doLink(Linker* user) = 0;
 
-        void doBind(Binder bd);
-    }
+        virtual void doBind(Binder* bd) = 0;
+    };
 }

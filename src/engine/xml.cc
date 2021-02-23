@@ -116,6 +116,16 @@ namespace SimpleEngine::Xml
         return *str;
     }
 
+    std::vector<std::shared_ptr<Element>> Elements(std::shared_ptr<Element> root)
+    {
+        std::vector<std::shared_ptr<Element>> r;
+        for (tinyxml2::XMLElement* el = root->element->FirstChildElement(); el; el = el->NextSiblingElement())
+        {
+            r.emplace_back(std::make_shared<Element>(root->document, el));
+        }
+        return r;
+    }
+
     std::vector<std::shared_ptr<Element>> ElementsNamed(std::shared_ptr<Element> root, const std::string& name)
     {
         std::vector<std::shared_ptr<Element>> r;

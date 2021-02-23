@@ -1,86 +1,46 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+#include "engine/stringseperator.h"
 
 namespace SimpleEngine
 {
-    struct StringSeperator
+    StringSeperator::StringSeperator(const std::string& aSeperator, const std::string& aFinalSeperator, const std::string& empty)
+        : mSeperator(aSeperator)
+        , mFinalSeperator(aFinalSeperator)
+        , mEmpty(empty)
     {
-        StringSeperator(std::string aSeperator, std::string aFinalSeperator, std::string empty)
-        {
-            mSeperator = aSeperator;
-            mFinalSeperator = aFinalSeperator;
-            mEmpty = empty;
-        }
-        StringSeperator(std::string aSeperator, std::string aFinalSeperator)
-        {
-            mSeperator = aSeperator;
-            mFinalSeperator = aFinalSeperator;
-            mEmpty = "";
-        }
-        StringSeperator(std::string aSeperator)
-        {
-            mSeperator = aSeperator;
-            mFinalSeperator = aSeperator;
-        }
+    }
 
-        StringSeperator Append(std::string astring)
-        {
-            mstrings.Add(astring);
-            return this;
-        }
+    StringSeperator::StringSeperator(const std::string& aSeperator, const std::string& aFinalSeperator)
+        : mSeperator(aSeperator)
+        , mFinalSeperator(aFinalSeperator)
+        , mEmpty("")
+    {
+    }
 
-        StringSeperator Append(IEnumerable<std::string> astrings)
-        {
-            mstrings.AddRange(astrings);
-            return this;
-        }
-        StringSeperator Append(object[] d)
-        {
-            for (object o : d)
-                mstrings.Add(o.ToString());
-            return this;
-        }
+    StringSeperator::StringSeperator(const std::string& aSeperator)
+        : mSeperator(aSeperator)
+        , mFinalSeperator(aSeperator)
+    {
+    }
 
-        StringSeperator AppendFormat(std::string aFormat, params Object[] aValues)
-        {
-            StringBuilder builder = StringBuilder();
-            builder.AppendFormat(aFormat, aValues);
-            Append(builder.ToString());
-            return this;
-        }
+    std::string StringSeperator::ToString(const std::vector<std::string>& mstrings) const
+    {
+        if (mstrings.empty())
+            return mEmpty;
 
-        void Clear()
+        std::ostringstream builder;
+        for (int index = 0; index < mstrings.size(); ++index)
         {
-            mstrings.Clear();
-        }
+            const std::string& value = mstrings[index];
+            builder << value;
 
-        std::string ToString() const
-        {
-            if (mstrings.Count == 0)
-                return mEmpty;
-            StringBuilder builder = StringBuilder();
-            for (int index = 0; index < mstrings.Count; ++index)
+            if (mstrings.size() != index + 1)  // if this item isnt the last one: the list
             {
-                std::string value = mstrings[index];
-                builder.Append(value);
-
-                if (mstrings.Count != index + 1)  // if this item isnt the last one: the list
-                {
-                    std::string seperator = mSeperator;
-                    if (mstrings.Count == index + 2)
-                    {
-                        seperator = mFinalSeperator;
-                    }
-                    builder.Append(seperator);
-                }
+                const std::string seperator =
+                    (mstrings.size() == index + 2) ? mFinalSeperator
+                                                   : mSeperator;
+                builder << seperator;
             }
-            return builder.ToString();
         }
-
-        std::vector<std::string> mstrings = std::vector<std::string>();
-        std::string mSeperator;
-        std::string mFinalSeperator;
-        std::string mEmpty;
+        return builder.str();
     }
 }

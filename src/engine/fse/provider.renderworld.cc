@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 
-namespace SimpleEngine.fse.Providers
+namespace SimpleEngine::fse.Providers
 {
     struct RenderWorldProvider : Provider
     {

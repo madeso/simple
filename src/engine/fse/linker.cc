@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 
-namespace SimpleEngine.fse
+namespace SimpleEngine::fse
 {
     struct Linker
     {
         Map<Provider> providers = Map<Provider>(delegate(std::string name) { throw std::runtime_error(name + " is not a defined provider"); });
         Map<Target> targets = Map<Target>(delegate(std::string name) { throw std::runtime_error(name + " is not a defined target"); });
 
-        Provider getProvider(std::string name)
+        Provider getProvider(const std::string& name)
         {
             return providers.get(name);
         }
@@ -77,5 +77,5 @@ namespace SimpleEngine.fse
 
             return t;
         }
-    }
+    };
 }

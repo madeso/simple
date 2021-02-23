@@ -1,60 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/fse/bufferreference.h"
 
-namespace SimpleEngine.fse
+#include <stdexcept>
+
+namespace SimpleEngine::fse
 {
-    struct BufferReference
+    BufferReference::BufferReference(const std::string& name)
+        : name(name)
     {
-        Fbo buffer = nullptr;
-        std::string name;
+    }
 
-        BufferReference(std::string name)
-        {
-            this.name = name;
-        }
+    std::string BufferReference::Name() const
+    {
+        return name;
+    }
 
-        std::string Name
+    void BufferReference::setBuffer(std::shared_ptr<Fbo> fbo)
+    {
+        if (buffer == nullptr)
         {
-            get
-            {
-                return name;
-            }
+            buffer = fbo;
         }
+        else
+        {
+            throw std::runtime_error("Error, buffer already initialized!");
+        }
+    }
 
-        void setBuffer(Fbo fbo)
-        {
-            if (buffer == nullptr)
-                buffer = fbo;
-            else
-                throw std::runtime_error("Error, buffer already initialized!");
-        }
+    void BufferReference::bindTexture(int location)
+    {
+        buffer->bindTexture(location);
+    }
 
-        void bindTexture(int location)
-        {
-            buffer.bindTexture(location);
-        }
+    void BufferReference::updateTexture(std::function<void()> a)
+    {
+        buffer->updateTexture(std::move(a));
+    }
 
-        void updateTexture(Action a)
-        {
-            buffer.updateTexture(a);
-        }
+    int BufferReference::Width() const
+    {
+        return buffer->Width();
+    }
 
-        int Width
-        {
-            get
-            {
-                return buffer.Width;
-            }
-        }
-
-        int Height
-        {
-            get
-            {
-                return buffer.Height;
-            }
-        }
+    int BufferReference::Height() const
+    {
+        return buffer->Height();
     }
 }

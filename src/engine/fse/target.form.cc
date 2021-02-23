@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SimpleEngine.fse.Targets
+namespace SimpleEngine::fse.Targets
 {
     struct FormTarget : Target
     {

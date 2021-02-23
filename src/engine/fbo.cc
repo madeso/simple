@@ -1,187 +1,144 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Tao.OpenGl;
+﻿#include "engine/fbo.h"
+
+#include "engine/opengl.h"
+#include "fmt/core.h"
 
 namespace SimpleEngine
 {
-    struct RenderBuffer
+    unsigned int RenderBuffer::Buffer() const
     {
-        int buffer;
+        return buffer;
+    }
 
-        int Buffer
+    RenderBuffer::RenderBuffer(int internalFormat, int width, int height)
+    {
+        glGenRenderbuffers(1, &buffer);
+
+        bind();
+        glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, width, height);
+    }
+
+    void RenderBuffer::bind()
+    {
+        glBindRenderbuffer(GL_RENDERBUFFER, buffer);
+    }
+
+    Size::Size()
+        : Width(512)
+        , Height(512)
+    {
+    }
+
+    Size::Size(int w, int h)
+        : Width(w)
+        , Height(h)
+    {
+    }
+
+    bool Size::operator<(const Size& other) const
+    {
+        if (Width == other.Width)
         {
-            get
-            {
-                return buffer;
-            }
+            return Height < other.Height;
         }
-
-        RenderBuffer(int internalFormat, int width, int height)
+        else
         {
-            glGenRenderbuffersEXT(1, out buffer);
-
-            bind();
-            glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, internalFormat, width, height);
-        }
-
-        void bind()
-        {
-            glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, buffer);
+            return Width < other.Width;
         }
     }
 
-    struct Size : IComparable<Size>
+    std::string Size::ToString() const
     {
-        Size()
-        {
-            Width = 512;
-            Height = 512;
-        }
-        int Width
-        {
-            get;
-            set;
-        }
-        int Height
-        {
-            get;
-            set;
-        }
-
-        int CompareTo(Size other)
-        {
-            if (this.Width == other.Width)
-            {
-                return this.Height.CompareTo(other.Height);
-            }
-            else
-            {
-                return this.Width.CompareTo(other.Width);
-            }
-        }
-
-        std::string ToString() const
-        {
-            return Width.ToString() + "x" + Height.ToString();
-        }
-
-        struct Comperator : IEqualityComparer<Size>
-        {
-            bool Equals(Size x, Size y)
-            {
-                return x.CompareTo(y) == 0;
-            }
-
-            int GetHashCode(Size s)
-            {
-                return s.Width * 3 + s.Height;
-            }
-        }
+        return fmt::format("{}x{}", Width, Height);
     }
 
-    struct Fbo
+    bool Size::operator==(const Size& rhs) const
     {
-        int fbo;
+        return Width == rhs.Width && Height == rhs.Height;
+    }
 
-        int width;
+    int Fbo::Width() const
+    {
+        return width;
+    }
 
-        int height;
+    int Fbo::Height() const
+    {
+        return height;
+    }
 
-        bool mipmap;
+    Size Fbo::GetSize() const
+    {
+        return Size{Width(), Height()};
+    }
 
-        int Width
+    Fbo::Fbo(int width, int height, bool mipmap)
+        : width(width)
+        , height(height)
+        , mipmap(mipmap)
+    {
+        glGenFramebuffers(1, &fbo);
+        Bind(this);
+
+        depth = std::make_shared<RenderBuffer>(GL_DEPTH_COMPONENT, width, height);
+        attach(depth, GL_DEPTH_ATTACHMENT);
+
+        texture = std::make_shared<Image>(true, width, height, nullptr, mipmap, GL_RGBA);
+        attach(texture, GL_COLOR_ATTACHMENT0);
+
+        int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (status != GL_FRAMEBUFFER_COMPLETE)
         {
-            get
-            {
-                return width;
-            }
+            throw std::runtime_error(fmt::format("Something went wrong when creating framebuffer: {}", status));
         }
 
-        int Height
-        {
-            get
-            {
-                return height;
-            }
-        }
+        Bind(nullptr);
+    }
 
-        Size Size
-        {
-            get
-            {
-                return Size{Width = Width, Height = Height};
-            }
-        }
+    void Fbo::attach(std::shared_ptr<RenderBuffer> b, int attachmentPoint)
+    {
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachmentPoint, GL_RENDERBUFFER, b->Buffer());
+    }
 
-        RenderBuffer depth;
-        Image texture;
+    void Fbo::attach(std::shared_ptr<Image> img, int attachmentPoint)
+    {
+        const int mipmaplevel = 0;
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentPoint, GL_TEXTURE_2D, img->Id(), mipmaplevel);
+    }
 
-        Fbo(int width, int height, bool mipmap)
-        {
-            this.width = width;
-            this.height = height;
-            this.mipmap = mipmap;
+    void Fbo::updateTexture(std::function<void()> renderer)
+    {
+        Bind(this);
+        glPushAttrib(GL_VIEWPORT_BIT);
+        glViewport(0, 0, width, height);
 
-            glGenFramebuffersEXT(1, out fbo);
-            Bind(this);
+        renderer();
 
-            depth = RenderBuffer(GL_DEPTH_COMPONENT, width, height);
-            attach(depth, GL_DEPTH_ATTACHMENT_EXT);
+        glPopAttrib();
+        Bind(nullptr);
+    }
 
-            texture = Image(true, width, height, IntPtr.Zero, mipmap, GL_RGBA);
-            attach(texture, GL_COLOR_ATTACHMENT0_EXT);
+    void Fbo::bindTexture()
+    {
+        texture->bind();
+    }
 
-            int status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-            if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
-                throw std::runtime_error("Something went wrong when creating framebuffer: " + status.ToString());
+    void Fbo::bindTexture(int location)
+    {
+        texture->bind(location);
+    }
 
-            Bind(nullptr);
-        }
+    namespace
+    {
+        Fbo* bound = nullptr;
+    }
 
-        void attach(RenderBuffer b, int attachmentPoint)
-        {
-            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, attachmentPoint, GL_RENDERBUFFER_EXT, b.Buffer);
-        }
-
-        void attach(Image img, int attachmentPoint)
-        {
-            const int mipmaplevel = 0;
-            glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, attachmentPoint, GL_TEXTURE_2D, img.Id, mipmaplevel);
-        }
-
-        static Fbo bound = nullptr;
-
-        static void Bind(Fbo a)
-        {
-            if (bound != nullptr && a != nullptr)
-                throw std::runtime_error("Already bound a fbo");
-            bound = a;
-            int fbo = a != nullptr ? a.fbo : 0;
-            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
-        }
-
-        void updateTexture(Action renderer)
-        {
-            Bind(this);
-            glPushAttrib(GL_VIEWPORT_BIT);
-            glViewport(0, 0, width, height);
-
-            renderer();
-
-            glPopAttrib();
-            Bind(nullptr);
-        }
-
-        void bindTexture()
-        {
-            texture.bind();
-        }
-
-        void bindTexture(int location)
-        {
-            texture.bind(location);
-        }
+    void Bind(Fbo* a)
+    {
+        if (bound != nullptr && a != nullptr)
+            throw std::runtime_error("Already bound a fbo");
+        bound = a;
+        int fbo = a != nullptr ? a->fbo : 0;
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     }
 }

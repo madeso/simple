@@ -60,6 +60,21 @@ set(src
     engine/meshinstance.cc engine/meshinstance.h
     engine/mesh.cc engine/mesh.h
 
+    engine/stringseperator.cc
+    engine/stringseperator.h
+
+    engine/shader.cc engine/shader.h
+    engine/fbo.cc engine/fbo.h
+    engine/pool.cc engine/pool.h
+
+    engine/fse/renderargs.cc engine/fse/renderargs.h
+    engine/fse/map.cc engine/fse/map.h
+    engine/fse/bufferreference.cc engine/fse/bufferreference.h
+    engine/fse/binder.cc engine/fse/binder.h
+    # engine/fse/target.cc
+    # engine/fse/command.cc
+    # engine/fse/provider.cc
+
     engine/setup.cc engine/setup.h
     engine/main.cc engine/main.h
 )
