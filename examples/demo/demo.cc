@@ -1,12 +1,18 @@
-﻿#include <memory>
+﻿#include <SDL2/SDL.h>
+
+#include <memory>
 #include <vector>
 
+#include "engine/camera.h"
 #include "engine/ckey.h"
 #include "engine/filesystem.h"
 #include "engine/medialoader.h"
 #include "engine/quat.h"
+#include "engine/setup.h"
 #include "engine/vec2.h"
 #include "engine/vec3.h"
+#include "engine/window.h"
+#include "engine/world.h"
 
 using namespace SimpleEngine;
 
@@ -14,10 +20,10 @@ namespace SimpleTest
 {
     struct Key
     {
-        virtual void run(Ckey b, bool s) = 0;
+        virtual void run(const Ckey& b, bool s) = 0;
         virtual int Value() = 0;
 
-        static void Run(Ckey b, bool s, const std::vector<std::shared_ptr<Key>>& keys)
+        static void Run(const Ckey& b, bool s, const std::vector<std::shared_ptr<Key>>& keys)
         {
             for (auto k : keys)
                 k->run(b, s);
@@ -34,19 +40,24 @@ namespace SimpleTest
         bool status = false;
         Ckey b;
 
-        Hold(Ckey b)
+        Hold(const Ckey& k)
+            : b(k)
         {
-            this.b = b;
         }
-        void run(Ckey b, bool s) override
+
+        void run(const Ckey& k, bool s) override
         {
-            if (this.b.equals(b))
+            if (b == k)
+            {
                 status = s;
+            }
         }
+
         bool IsDown()
         {
             return status;
         }
+
         int Value() override
         {
             return IsDown() ? 1 : 0;
@@ -59,12 +70,12 @@ namespace SimpleTest
         std::shared_ptr<Key> minus;
 
         PlusMinus(std::shared_ptr<Key> p, std::shared_ptr<Key> m)
+            : plus(p)
+            , minus(m)
         {
-            plus = p;
-            minus = m;
         }
 
-        void run(Ckey b, bool s) override
+        void run(const Ckey& b, bool s) override
         {
             plus->run(b, s);
             minus->run(b, s);
@@ -76,7 +87,7 @@ namespace SimpleTest
         }
     };
 
-    struct Demo
+    struct Demo : public Window
     {
         Camera cam = Camera();
 
@@ -88,10 +99,10 @@ namespace SimpleTest
         float sensitivity = 0.1f;
         float mousesmoothing = 6;
 
-        std::shared_ptr<Key> rightleft = std::make_shared<PlusMinus>(std::make_shared<Hold>(Ckey(Keys.D)), std::make_shared<Hold>(Ckey(Keys.A)));
-        std::shared_ptr<Key> forback = std::make_shared<PlusMinus>(std::make_shared<Hold>(Ckey(Keys.W)), std::make_shared<Hold>(Ckey(Keys.S)));
-        std::shared_ptr<Key> updown = std::make_shared<PlusMinus>(std::make_shared<Hold>(Ckey(Keys.Space)), std::make_shared<Hold>(Ckey(Keys.ControlKey)));
-        std::shared_ptr<Hold> sprint = std::make_shared<Hold>(std::make_shared<Ckey>(Keys.ShiftKey));
+        std::shared_ptr<Key> rightleft = std::make_shared<PlusMinus>(std::make_shared<Hold>(Ckey(SDLK_d)), std::make_shared<Hold>(Ckey(SDLK_a)));
+        std::shared_ptr<Key> forback = std::make_shared<PlusMinus>(std::make_shared<Hold>(Ckey(SDLK_w)), std::make_shared<Hold>(Ckey(SDLK_s)));
+        std::shared_ptr<Key> updown = std::make_shared<PlusMinus>(std::make_shared<Hold>(Ckey(SDLK_SPACE)), std::make_shared<Hold>(Ckey(SDLK_LCTRL)));
+        std::shared_ptr<Hold> sprint = std::make_shared<Hold>(Ckey(SDLK_LSHIFT));
 
         std::shared_ptr<World> world;
         std::shared_ptr<Pipeline> pipe;
@@ -100,51 +111,50 @@ namespace SimpleTest
         {
             Setup::basicOpenGL();
 
-            FileSystem fs = FileSystem();
-            fs.addDefaultRoots("pretty good", "simple test");
-            MediaLoader loader = MediaLoader(fs);
+            auto fs = std::make_shared<FileSystem>();
+            fs->addDefaultRoots("pretty good", "simple test");
+            auto loader = MediaLoader(fs);
             //Texture sample = loader.fetch<Texture>("sample.bmp");
 
-            world = World::Load(loader, "level01.lvl");
+            world = World::Load(&loader, "level01.lvl");
             //world.add(MeshInstance(loader.fetch<Mesh>("basicroad.obj")));
 
-            pipe = Pipeline::Create("pipeline.xml", loader, frame.Width, frame.Height);
+            pipe = Pipeline::Create("pipeline.xml", loader, Width, Height);
         }
 
         void Render(float delta)
         {
             /*fbo.updateTexture(delegate()
                     {
-                        world.render(frame.Width, frame.Height, cam);
+                        world.render(Width, Height, cam);
                     });*/
-            pipe->render(RenderArgs(world, cam, frame.Width, frame.Height));
+            pipe->render(RenderArgs(world, cam, Width, Height));
             /*Shader.Bind(shader);
-                    FullscreenQuad.render(fbo, frame.Width, frame.Height);
+                    FullscreenQuad.render(fbo, Width, Height);
                     Shader.Unbind();*/
         }
 
         void Run(float delta, const vec2& mouse_movement)
         {
             /*frame.begin();
-                    world.render(frame.Width, frame.Height, cam);
+                    world.render(Width, Height, cam);
                     frame.swap();*/
             mousesmooth = vec2::Curve(mouse_movement, mousesmooth, mousesmoothing);
-            movement = vec3::Curve(Key::Combine(rightleft, updown, forback).Normalized() * (3 + sprint.Value() * 3), movement, 5);
+            movement = vec3::Curve(Key::Combine(rightleft, updown, forback).Normalized() * (3 + sprint->Value() * 3), movement, 5);
 
             // math::Quaternion(math::op::vec3::yAxisPositive, -x) * math::Quaternion(mRotation.getRight(), y) * mRotation;
 
             quat final = quat::FpsQuat(cam.rotation, mousesmooth.x * sensitivity, mousesmooth.y * sensitivity);
-            cam.location += cam.rotation.getRUI(movement) * delta;
+            cam.location = cam.location + cam.rotation.getRUI(movement) * delta;
             cam.rotate(final);
         }
 
-        void OnKey()
+        void OnButton(const Ckey& button, bool down)
         {
-            System.Diagnostics.Debug.WriteLine(e);
-            if (e.button.equals(Ckey(Keys.Escape)))
+            if (button == Ckey(SDLK_ESCAPE))
                 running = false;
             else
-                Key::Run(e.button, e.down, rightleft, forback, updown, sprint);
+                Key::Run(button, down, {rightleft, forback, updown, sprint});
         }
     };
 }

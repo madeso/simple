@@ -17,5 +17,7 @@ namespace SimpleEngine
         explicit Ckey(SDL_Keycode k);
 
         std::string ToString() const;
+
+        bool operator==(const Ckey& rhs) const;
     };
 }

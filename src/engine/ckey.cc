@@ -18,4 +18,9 @@ namespace SimpleEngine
         assert(type == Type::Key);
         return fmt::format("key: {0}", SDL_GetKeyName(key));
     }
+
+    bool Ckey::operator==(const Ckey& rhs) const
+    {
+        return type == rhs.type && key == rhs.key;
+    }
 }
