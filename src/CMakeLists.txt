@@ -66,6 +66,7 @@ set(src
     engine/shader.cc engine/shader.h
     engine/fbo.cc engine/fbo.h
     engine/pool.cc engine/pool.h
+    engine/fullscreenquad.cc engine/fullscreenquad.h
 
     engine/fse/renderargs.cc engine/fse/renderargs.h
     engine/fse/map.cc engine/fse/map.h

@@ -156,5 +156,11 @@ namespace SimpleTest
             else
                 Key::Run(button, down, {rightleft, forback, updown, sprint});
         }
+
+        void Begin()
+        {
+            Setup::Viewport(Rect.FromLTWH(0, 0, Width, Height));
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        }
     };
 }
