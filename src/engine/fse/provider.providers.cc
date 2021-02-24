@@ -13,16 +13,25 @@ namespace SimpleEngine::fse
 
 namespace SimpleEngine::fse::Providers
 {
+    namespace
+    {
+        std::shared_ptr<Provider> PostLoad(std::shared_ptr<Provider> prov, std::shared_ptr<Xml::Element> x)
+        {
+            Provider::PostLoad(prov, x);
+            return prov;
+        }
+    }
+
     std::shared_ptr<Provider> Create(std::shared_ptr<Xml::Element> x)
     {
         const auto name = x->GetName();
         if (name == "fullscreen")
         {
-            return std::make_shared<RenderFullscreenProvider>(x);
+            return PostLoad(std::make_shared<RenderFullscreenProvider>(x), x);
         }
         else if (name == "world")
         {
-            return std::make_shared<RenderWorldProvider>(x);
+            return PostLoad(std::make_shared<RenderWorldProvider>(x), x);
         }
         else
         {

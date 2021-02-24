@@ -31,7 +31,11 @@ namespace SimpleEngine::fse
 
     struct Provider
     {
+        Provider(std::shared_ptr<Xml::Element> el);
         ~Provider();
+
+        static void PostLoad(std::shared_ptr<Provider> provider, std::shared_ptr<Xml::Element> el);
+
         std::shared_ptr<Target> target;
         std::string targetname;
 
@@ -54,8 +58,6 @@ namespace SimpleEngine::fse
         void callCommands();
 
         std::shared_ptr<BufferReference> createBuffer(const std::string& name);
-
-        Provider(std::shared_ptr<Xml::Element> el);
 
         static void link(std::shared_ptr<Provider> provider, Linker* linker);
 

@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 
+#include "engine/fse/command.commands.h"
 #include "engine/fse/command.h"
 #include "engine/fse/linker.h"
 #include "engine/fse/renderargs.h"
@@ -29,6 +30,23 @@ namespace SimpleEngine::fse
     const std::string& Provider::Id() const
     {
         return id;
+    }
+
+    Provider::Provider(std::shared_ptr<Xml::Element> el)
+    {
+        targetname = Xml::GetAttributeString(el, "target");
+    }
+
+    void Provider::PostLoad(std::shared_ptr<Provider> provider, std::shared_ptr<Xml::Element> el)
+    {
+        for (std::shared_ptr<Xml::Element> e : Xml::Elements(el))
+        {
+            provider->commands.emplace_back(Commands::Create(e, provider));
+        }
+    }
+
+    Provider::~Provider()
+    {
     }
 
     void Provider::Id(const std::string& value)
@@ -60,9 +78,7 @@ namespace SimpleEngine::fse
             callCommands();
         }
 
-        target->apply([this, ra]() {
-            doProvide(ra);
-        });
+        target->apply([this, ra]() { doProvide(ra); });
     }
 
     void Provider::denyAutocallOfCommands()
@@ -81,18 +97,6 @@ namespace SimpleEngine::fse
     std::shared_ptr<BufferReference> Provider::createBuffer(const std::string& name)
     {
         return std::make_shared<BufferReference>(name);
-    }
-
-    Provider::Provider(std::shared_ptr<Xml::Element> el)
-    {
-        targetname = Xml::GetAttributeString(el, "target");
-
-#ifdef NOTYET
-        for (std::shared_ptr<Xml::Element> e : Xml::Elements(el))
-        {
-            commands.emplace_back(Commands::Create(e, this));
-        }
-#endif
     }
 
     void Provider::link(std::shared_ptr<Provider> provider, Linker* linker)

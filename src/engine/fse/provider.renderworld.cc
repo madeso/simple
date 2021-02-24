@@ -14,14 +14,15 @@ namespace SimpleEngine::fse::Providers
 {
     RenderWorldProvider::RenderWorldProvider(std::shared_ptr<Xml::Element> e)
         : Provider(e)
+        , shadername(Xml::GetAttributeString(e, "shader"))
     {
-        shadername = Xml::GetAttributeString(e, "shader");
     }
 
     std::string RenderWorldProvider::ToString() const
     {
         const auto loaded_string = ((shader != nullptr) ? "(loaded)" : "");
-        return fmt::format("{} renders world with {}{}", Provider::ToString(), Nullstring(shadername, "no shader"), loaded_string);
+        return fmt::format("{} renders world with {}{}", Provider::ToString(), Nullstring(shadername, "no shader"),
+                           loaded_string);
     }
 
     void RenderWorldProvider::doProvide(RenderArgs* ra)
