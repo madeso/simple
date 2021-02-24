@@ -90,6 +90,7 @@ set(src
     engine/fse/target.form.cc engine/fse/target.form.h
     engine/fse/target.targets.cc engine/fse/target.targets.h
 
+    engine/key.cc engine/key.h
     engine/setup.cc engine/setup.h
     engine/main.cc engine/main.h
 )

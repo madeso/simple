@@ -7,6 +7,7 @@
 #include "engine/ckey.h"
 #include "engine/filesystem.h"
 #include "engine/fse/pipeline.h"
+#include "engine/key.h"
 #include "engine/medialoader.h"
 #include "engine/opengl.h"
 #include "engine/quat.h"
@@ -21,74 +22,6 @@ using namespace SimpleEngine;
 
 namespace SimpleTest
 {
-    struct Key
-    {
-        virtual void run(const Ckey& b, bool s) = 0;
-        virtual int Value() = 0;
-
-        static void Run(const Ckey& b, bool s, const std::vector<std::shared_ptr<Key>>& keys)
-        {
-            for (auto k : keys) k->run(b, s);
-        }
-
-        static vec3 Combine(std::shared_ptr<Key> x, std::shared_ptr<Key> y, std::shared_ptr<Key> z)
-        {
-            return vec3(x->Value(), y->Value(), z->Value());
-        }
-    };
-
-    struct Hold : public Key
-    {
-        bool status = false;
-        Ckey b;
-
-        Hold(const Ckey& k)
-            : b(k)
-        {
-        }
-
-        void run(const Ckey& k, bool s) override
-        {
-            if (b == k)
-            {
-                status = s;
-            }
-        }
-
-        bool IsDown()
-        {
-            return status;
-        }
-
-        int Value() override
-        {
-            return IsDown() ? 1 : 0;
-        }
-    };
-
-    struct PlusMinus : public Key
-    {
-        std::shared_ptr<Key> plus;
-        std::shared_ptr<Key> minus;
-
-        PlusMinus(std::shared_ptr<Key> p, std::shared_ptr<Key> m)
-            : plus(p)
-            , minus(m)
-        {
-        }
-
-        void run(const Ckey& b, bool s) override
-        {
-            plus->run(b, s);
-            minus->run(b, s);
-        }
-
-        int Value() override
-        {
-            return plus->Value() - minus->Value();
-        }
-    };
-
     struct Demo : public Window
     {
         Camera cam = Camera();
