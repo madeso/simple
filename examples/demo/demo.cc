@@ -6,8 +6,11 @@
 #include "engine/camera.h"
 #include "engine/ckey.h"
 #include "engine/filesystem.h"
+#include "engine/fse/pipeline.h"
 #include "engine/medialoader.h"
+#include "engine/opengl.h"
 #include "engine/quat.h"
+#include "engine/rect.h"
 #include "engine/setup.h"
 #include "engine/vec2.h"
 #include "engine/vec3.h"
@@ -25,8 +28,7 @@ namespace SimpleTest
 
         static void Run(const Ckey& b, bool s, const std::vector<std::shared_ptr<Key>>& keys)
         {
-            for (auto k : keys)
-                k->run(b, s);
+            for (auto k : keys) k->run(b, s);
         }
 
         static vec3 Combine(std::shared_ptr<Key> x, std::shared_ptr<Key> y, std::shared_ptr<Key> z)
@@ -99,13 +101,16 @@ namespace SimpleTest
         float sensitivity = 0.1f;
         float mousesmoothing = 6;
 
-        std::shared_ptr<Key> rightleft = std::make_shared<PlusMinus>(std::make_shared<Hold>(Ckey(SDLK_d)), std::make_shared<Hold>(Ckey(SDLK_a)));
-        std::shared_ptr<Key> forback = std::make_shared<PlusMinus>(std::make_shared<Hold>(Ckey(SDLK_w)), std::make_shared<Hold>(Ckey(SDLK_s)));
-        std::shared_ptr<Key> updown = std::make_shared<PlusMinus>(std::make_shared<Hold>(Ckey(SDLK_SPACE)), std::make_shared<Hold>(Ckey(SDLK_LCTRL)));
+        std::shared_ptr<Key> rightleft =
+            std::make_shared<PlusMinus>(std::make_shared<Hold>(Ckey(SDLK_d)), std::make_shared<Hold>(Ckey(SDLK_a)));
+        std::shared_ptr<Key> forback =
+            std::make_shared<PlusMinus>(std::make_shared<Hold>(Ckey(SDLK_w)), std::make_shared<Hold>(Ckey(SDLK_s)));
+        std::shared_ptr<Key> updown = std::make_shared<PlusMinus>(std::make_shared<Hold>(Ckey(SDLK_SPACE)),
+                                                                  std::make_shared<Hold>(Ckey(SDLK_LCTRL)));
         std::shared_ptr<Hold> sprint = std::make_shared<Hold>(Ckey(SDLK_LSHIFT));
 
         std::shared_ptr<World> world;
-        std::shared_ptr<Pipeline> pipe;
+        std::shared_ptr<fse::Pipeline> pipe;
 
         void Main()
         {
@@ -114,12 +119,12 @@ namespace SimpleTest
             auto fs = std::make_shared<FileSystem>();
             fs->addDefaultRoots("pretty good", "simple test");
             auto loader = MediaLoader(fs);
-            //Texture sample = loader.fetch<Texture>("sample.bmp");
+            // Texture sample = loader.fetch<Texture>("sample.bmp");
 
             world = World::Load(&loader, "level01.lvl");
-            //world.add(MeshInstance(loader.fetch<Mesh>("basicroad.obj")));
+            // world.add(MeshInstance(loader.fetch<Mesh>("basicroad.obj")));
 
-            pipe = Pipeline::Create("pipeline.xml", loader, Width, Height);
+            pipe = fse::Pipeline::Create("pipeline.xml", &loader, Width, Height);
         }
 
         void Render(float delta)
@@ -128,7 +133,7 @@ namespace SimpleTest
                     {
                         world.render(Width, Height, cam);
                     });*/
-            auto ra = RenderArgs(world, cam, Width, Height);
+            auto ra = fse::RenderArgs(world, cam, Width, Height);
             pipe->render(&ra);
             /*Shader.Bind(shader);
                     FullscreenQuad.render(fbo, Width, Height);
@@ -141,9 +146,11 @@ namespace SimpleTest
                     world.render(Width, Height, cam);
                     frame.swap();*/
             mousesmooth = vec2::Curve(mouse_movement, mousesmooth, mousesmoothing);
-            movement = vec3::Curve(Key::Combine(rightleft, updown, forback).Normalized() * (3 + sprint->Value() * 3), movement, 5);
+            movement = vec3::Curve(Key::Combine(rightleft, updown, forback).Normalized() * (3 + sprint->Value() * 3),
+                                   movement, 5);
 
-            // math::Quaternion(math::op::vec3::yAxisPositive, -x) * math::Quaternion(mRotation.getRight(), y) * mRotation;
+            // math::Quaternion(math::op::vec3::yAxisPositive, -x) * math::Quaternion(mRotation.getRight(), y) *
+            // mRotation;
 
             quat final = quat::FpsQuat(cam.rotation, mousesmooth.x * sensitivity, mousesmooth.y * sensitivity);
             cam.location = cam.location + cam.rotation.getRUI(movement) * delta;
@@ -160,7 +167,7 @@ namespace SimpleTest
 
         void Begin()
         {
-            Setup::Viewport(Rect.FromLTWH(0, 0, Width, Height));
+            Setup::Viewport(Rect::FromLTWH(0, 0, Width, Height));
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
     };
