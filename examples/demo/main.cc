@@ -31,7 +31,7 @@ namespace SimpleTest
                 switch (e.type)
                 {
                 case SDL_MOUSEMOTION:
-                    mouse_delta = mouse_delta + SimpleEngine::vec2(e.motion.x, e.motion.y);
+                    mouse_delta = mouse_delta + SimpleEngine::vec2(e.motion.xrel, e.motion.yrel);
                     break;
                 }
             }
