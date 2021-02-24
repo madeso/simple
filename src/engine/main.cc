@@ -67,9 +67,17 @@ namespace SimpleEngine
             SDL_Event event;
             while (SDL_PollEvent(&event))
             {
-                ImGui_ImplSDL2_ProcessEvent(&event);
-                app->use_mouse = !io.WantCaptureMouse;
-                app->use_keyboard = !io.WantCaptureKeyboard;
+                if (app->use_imgui)
+                {
+                    ImGui_ImplSDL2_ProcessEvent(&event);
+                    app->use_mouse = !io.WantCaptureMouse;
+                    app->use_keyboard = !io.WantCaptureKeyboard;
+                }
+                else
+                {
+                    app->use_mouse = true;
+                    app->use_keyboard = true;
+                }
                 app->OnEvent(event);
                 switch (event.type)
                 {

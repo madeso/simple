@@ -12,6 +12,8 @@ namespace SimpleEngine
         bool run = true;
         bool use_mouse = true;
         bool use_keyboard = true;
+        bool use_imgui = true;
+
         virtual ~App() = default;
 
         virtual void OnRender(int w, int h) = 0;

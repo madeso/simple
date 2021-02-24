@@ -11,6 +11,8 @@ namespace SimpleTest
     {
         std::shared_ptr<Demo> demo;
         SimpleEngine::vec2 mouse_delta = SimpleEngine::vec2(0, 0);
+        bool tab = false;
+        bool last_tab = false;
 
         App()
         {
@@ -31,7 +33,10 @@ namespace SimpleTest
                 switch (e.type)
                 {
                 case SDL_MOUSEMOTION:
-                    mouse_delta = mouse_delta + SimpleEngine::vec2(e.motion.xrel, e.motion.yrel);
+                    if (use_imgui == false)
+                    {
+                        mouse_delta = mouse_delta + SimpleEngine::vec2(e.motion.xrel, e.motion.yrel);
+                    }
                     break;
                 }
             }
@@ -43,6 +48,16 @@ namespace SimpleTest
                 case SDL_KEYDOWN:
                 case SDL_KEYUP:
                     demo->OnButton(SimpleEngine::Ckey(e.key.keysym.sym), e.type == SDL_KEYDOWN);
+                    if (e.key.keysym.sym == SDLK_TAB)
+                    {
+                        tab = e.type == SDL_KEYDOWN;
+                        if (tab && tab != last_tab)
+                        {
+                            use_imgui = !use_imgui;
+                            SDL_SetRelativeMouseMode(use_imgui ? SDL_FALSE : SDL_TRUE);
+                        }
+                        last_tab = tab;
+                    }
                     break;
                 }
             }
