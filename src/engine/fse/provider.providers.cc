@@ -1,26 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
+﻿#include "engine/fse/provider.providers.h"
 
-namespace SimpleEngine::fse.Providers
+#include <stdexcept>
+
+#include "engine/fse/provider.renderfullscreen.h"
+#include "engine/fse/provider.renderworld.h"
+#include "fmt/core.h"
+
+namespace SimpleEngine::fse
 {
-    namespace Providers
+    struct Provider;
+}
+
+namespace SimpleEngine::fse::Providers
+{
+    std::shared_ptr<Provider> Create(std::shared_ptr<Xml::Element> x)
     {
-        static Provider Create(std::shared_ptr<Xml::Element> x)
+        const auto name = x->GetName();
+        if (name == "fullscreen")
         {
-            std::string name = x.Name;
-            if (name == "fullscreen")
-            {
-                return RenderFullscreenProvider(x);
-            }
-            else if (name == "world")
-            {
-                return RenderWorldProvider(x);
-            }
-            else
-                throw std::runtime_error(name + " is not a known provider");
+            return std::make_shared<RenderFullscreenProvider>(x);
+        }
+        else if (name == "world")
+        {
+            return std::make_shared<RenderWorldProvider>(x);
+        }
+        else
+        {
+            throw std::runtime_error(fmt::format("{} is not a known provider", name));
         }
     }
 }

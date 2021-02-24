@@ -1,52 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
+﻿#include "engine/fse/command.bindbuffer.h"
 
-namespace SimpleEngine::fse.Commands
+#include "engine/fse/binder.h"
+#include "engine/fse/bufferreference.h"
+#include "engine/fse/linker.h"
+#include "engine/fse/target.h"
+#include "fmt/core.h"
+
+namespace SimpleEngine::fse::Commands
 {
-    struct BindBufferCommand : Command
+    std::string BindBufferCommand::ToString() const
     {
-        BufferReference buffer;
-        Target targ;
-        int location;
-        std::string name;
+        return fmt::format("{} binds buffer {} to {}", Command::ToString(), name, location);
+    }
 
-        std::string ToString() const
-        {
-            return base.ToString() + " binds buffer " + name + " to " + location.ToString();
-        }
+    BindBufferCommand::BindBufferCommand(std::shared_ptr<Xml::Element> el, std::shared_ptr<Provider> prov)
+        : Command(el, prov)
+        , name(Xml::GetAttributeString(el, "buffer"))
+        , location(Xml::GetAttribute<int>(
+              el, "location", [](const std::string& s) { return std::stoi(s); }, -1))
+    {
+    }
 
-        BindBufferCommand(std::shared_ptr<Xml::Element> el, Provider prov)
-            : base(el, prov)
-        {
-            name = Xml::GetAttributeString(el, "buffer");
-            location = Xml::GetAttribute<int>(el, "location", std::stoi, -1);
-        }
+    void BindBufferCommand::apply()
+    {
+        buffer->bindTexture(location);
+    }
 
-        override void apply()
-        {
-            buffer.bindTexture(location);
-        }
+    void BindBufferCommand::doLink(Linker* user)
+    {
+        buffer = createBuffer(name);
+        targ = user->getTarget(name);
+    }
 
-        override void doLink(Linker user)
-        {
-            buffer = createBuffer(name);
-            targ = user.getTarget(name);
-        }
+    void BindBufferCommand::doBind(Binder* bd)
+    {
+        bd->reference(buffer);
+    }
 
-        override void doBind(Binder bd)
-        {
-            bd.reference(buffer);
-        }
-
-        override IEnumerable<Provider> Dependencies
-        {
-            get
-            {
-                yield return targ.Provider;
-            }
-        }
+    std::vector<std::shared_ptr<Provider>> BindBufferCommand::Dependencies()
+    {
+        return {targ->Provider()};
     }
 }

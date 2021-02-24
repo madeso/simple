@@ -1,81 +1,87 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
+﻿#include "engine/fse/linker.h"
+
+#include "engine/filesystem.h"
+#include "engine/fse/pipeline.h"
+#include "engine/fse/provider.h"
+#include "engine/fse/target.h"
+#include "engine/medialoader.h"
+#include "engine/xml.h"
+#include "fmt/core.h"
 
 namespace SimpleEngine::fse
 {
-    struct Linker
+    Linker::Linker()
+        : providers([](const std::string& name) -> std::shared_ptr<Provider> { throw std::runtime_error(fmt::format("{} is not a defined provider", name)); })
+        , targets([](const std::string& name) -> std::shared_ptr<Target> { throw std::runtime_error(fmt::format("{} is not a defined target", name)); })
     {
-        Map<Provider> providers = Map<Provider>(delegate(std::string name) { throw std::runtime_error(name + " is not a defined provider"); });
-        Map<Target> targets = Map<Target>(delegate(std::string name) { throw std::runtime_error(name + " is not a defined target"); });
+    }
 
-        Provider getProvider(const std::string& name)
+    std::shared_ptr<Provider> Linker::getProvider(const std::string& name)
+    {
+        return providers.get(name);
+    }
+    void Linker::addProvider(std::shared_ptr<Provider> prov)
+    {
+        providers.add(prov->Id(), prov);
+    }
+
+    void Linker::addTarget(std::shared_ptr<Target> targ)
+    {
+        targets.add(targ->Id(), targ);
+    }
+    std::shared_ptr<Target> Linker::getTarget(const std::string& name)
+    {
+        return targets.get(name);
+    }
+
+    std::shared_ptr<Pipeline> Linker::getPipeline(std::shared_ptr<Target> target)
+    {
+        auto pl = std::make_shared<Pipeline>();
+
+        pl->add(target->Provider());
+
+        return pl;
+    }
+
+    void Linker::link()
+    {
+        for (auto p : providers.Data())
         {
-            return providers.get(name);
-        }
-        void addProvider(Provider prov)
-        {
-            providers.add(prov.Id, prov);
-        }
-
-        void addTarget(Target targ)
-        {
-            targets.add(targ.Id, targ);
-        }
-        Target getTarget(std::string name)
-        {
-            return targets.get(name);
-        }
-
-        Pipeline getPipeline(Target target)
-        {
-            Pipeline pl = Pipeline();
-
-            pl.add(target.Provider);
-
-            return pl;
-        }
-
-        void link()
-        {
-            for (Provider p : providers.Data)
-            {
-                p.link(this);
-            }
-
-            for (Target t : targets.Data)
-            {
-                t.link(this);
-                if (t.Provider == nullptr)
-                    throw std::runtime_error(t.ToString() + " is missing a provider");
-            }
-
-            for (Provider p : providers.Data)
-            {
-                p.postlink(this);
-            }
+            Provider::link(p, this);
         }
 
-        std::string read(std::string path, MediaLoader ml, int width, int height)
+        for (auto t : targets.Data())
         {
-            std::shared_ptr<Xml::Element> root = Xml::Open(Xml::FromStream(ml.FS.open(path)), "pipeline");
-            std::string t = Xml::GetAttributeString(root, "target");
-            for (std::shared_ptr<Xml::Element> targetElement : Xml::Elements(root["targets"]))
-            {
-                Target target = Targets.Targets.Create(targetElement, width, height);
-                target.Id = Xml::GetAttributeString(targetElement, "id");
-                addTarget(target);
-            }
-            for (std::shared_ptr<Xml::Element> providerElement : Xml::Elements(root["providers"]))
-            {
-                Provider provider = Providers.Providers.Create(providerElement);
-                provider.Id = Xml::GetAttributeString(providerElement, "id");
-                addProvider(provider);
-            }
-
-            return t;
+            t->link(this);
+            if (t->Provider() == nullptr)
+                throw std::runtime_error(fmt::format("{} is missing a provider", t->ToString()));
         }
-    };
+
+        for (auto p : providers.Data())
+        {
+            p->postlink(this);
+        }
+    }
+
+#ifdef NOTYET
+    std::string Linker::read(const std::string& path, MediaLoader* ml, int width, int height)
+    {
+        std::shared_ptr<Xml::Element> root = Xml::Open(ml->FS()->open(path), "pipeline");
+        std::string t = Xml::GetAttributeString(root, "target");
+        for (std::shared_ptr<Xml::Element> targetElement : Xml::Elements(root->GetChild("targets")))
+        {
+            auto target = Targets::Create(targetElement, width, height);
+            target.Id = Xml::GetAttributeString(targetElement, "id");
+            addTarget(target);
+        }
+        for (std::shared_ptr<Xml::Element> providerElement : Xml::Elements(root->GetChild("providers")))
+        {
+            auto provider = Providers::Create(providerElement);
+            provider.Id = Xml::GetAttributeString(providerElement, "id");
+            addProvider(provider);
+        }
+
+        return t;
+    }
+#endif
 }

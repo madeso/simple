@@ -72,9 +72,23 @@ set(src
     engine/fse/map.cc engine/fse/map.h
     engine/fse/bufferreference.cc engine/fse/bufferreference.h
     engine/fse/binder.cc engine/fse/binder.h
-    # engine/fse/target.cc
-    # engine/fse/command.cc
-    # engine/fse/provider.cc
+    engine/fse/target.cc engine/fse/target.h
+    engine/fse/command.cc engine/fse/command.h
+    engine/fse/provider.cc engine/fse/provider.h
+    engine/fse/pipeline.cc engine/fse/pipeline.h
+    engine/fse/linker.cc engine/fse/linker.h
+
+    engine/fse/command.setvec2uniform.cc engine/fse/command.setvec2uniform.h
+    engine/fse/command.bindbuffer.cc engine/fse/command.bindbuffer.h
+    engine/fse/command.commands.cc engine/fse/command.commands.h
+
+    engine/fse/provider.renderworld.cc engine/fse/provider.renderworld.h
+    engine/fse/provider.renderfullscreen.cc engine/fse/provider.renderfullscreen.h
+    engine/fse/provider.providers.cc engine/fse/provider.providers.h
+
+    engine/fse/target.buffer.cc engine/fse/target.buffer.h
+    engine/fse/target.form.cc engine/fse/target.form.h
+    engine/fse/target.targets.cc engine/fse/target.targets.h
 
     engine/setup.cc engine/setup.h
     engine/main.cc engine/main.h

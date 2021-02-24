@@ -1,27 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
+﻿#include "engine/fse/target.targets.h"
 
-namespace SimpleEngine::fse.Targets
+#include <stdexcept>
+
+#include "engine/fse/target.buffer.h"
+#include "engine/fse/target.form.h"
+#include "fmt/format.h"
+
+namespace SimpleEngine::fse
 {
-    namespace Targets
-    {
-        static Target Create(std::shared_ptr<Xml::Element> x, int width, int height)
-        {
-            std::string name = x.Name;
+    struct Target;
+}
 
-            if (name == "buffer")
-            {
-                return BufferTarget(x);
-            }
-            else if (name == "form")
-            {
-                return FormTarget(width, height);
-            }
-            else
-                throw std::runtime_error(name + " is not a known target");
+namespace SimpleEngine::fse::Targets
+{
+    std::shared_ptr<Target> Create(std::shared_ptr<Xml::Element> x, int width, int height)
+    {
+        const auto name = x->GetName();
+
+        if (name == "buffer")
+        {
+            return std::make_shared<BufferTarget>(x);
+        }
+        else if (name == "form")
+        {
+            return std::make_shared<FormTarget>(width, height);
+        }
+        else
+        {
+            throw std::runtime_error(fmt::format("{} is not a known target", name));
         }
     }
 }

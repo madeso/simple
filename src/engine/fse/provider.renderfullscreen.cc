@@ -1,45 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
+﻿#include "engine/fse/provider.renderfullscreen.h"
 
-namespace SimpleEngine::fse.Providers
+#include "engine/cpp.h"
+#include "engine/fse/binder.h"
+#include "engine/fse/target.h"
+#include "engine/fullscreenquad.h"
+#include "fmt/core.h"
+
+namespace SimpleEngine::fse::Providers
 {
-    struct RenderFullscreenProvider : Provider
+    std::string RenderFullscreenProvider::ToString() const
     {
-        Shader sh;
-        std::string shadername;
+        const auto shader_loaded = (sh != nullptr) ? "loaded" : "";
+        return fmt::format("{} renders fullscreen with {}{}", Provider::ToString(), Nullstring(shadername, "no shader"),
+                           shader_loaded);
+    }
 
-        std::string ToString() const
-        {
-            return base.ToString() + " renders fullscreen with " + CSharp.Nullstring(shadername, "no shader") + ((sh != nullptr) ? "loaded" : "");
-        }
+    RenderFullscreenProvider::RenderFullscreenProvider(std::shared_ptr<Xml::Element> el)
+        : Provider(el)
+        , shadername(Xml::GetAttributeString(el, "shader"))
+    {
+    }
 
-        RenderFullscreenProvider(std::shared_ptr<Xml::Element> el)
-            : base(el)
-        {
-            shadername = Xml::GetAttributeString(el, "shader");
-        }
+    void RenderFullscreenProvider::doProvide(RenderArgs* ra)
+    {
+        if (sh != nullptr)
+            Shader::Bind(sh);
+        callCommands();  // lets call the commands
+        FullscreenQuad::render(nullptr, target->Width(), target->Height());
+        if (sh != nullptr)
+            Shader::Unbind();
+    }
 
-        override void doProvide(RenderArgs ra)
-        {
-            if (sh != nullptr)
-                Shader.Bind(sh);
-            callCommands();  // lets call the commands
-            FullscreenQuad.render(nullptr, Target.Width, Target.Height);
-            if (sh != nullptr)
-                Shader.Unbind();
-        }
+    void RenderFullscreenProvider::doLink(Linker* user)
+    {
+        denyAutocallOfCommands();  // call the commands outself
+    }
 
-        override void doLink(Linker user)
-        {
-            denyAutocallOfCommands();  // call the commands outself
-        }
-
-        override void doBind(Binder bd)
-        {
-            sh = bd.getShaderOrNull(shadername);
-        }
+    void RenderFullscreenProvider::doBind(Binder* bd)
+    {
+        sh = bd->getShaderOrNull(shadername);
     }
 }

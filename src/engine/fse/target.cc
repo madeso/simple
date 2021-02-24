@@ -1,99 +1,86 @@
-﻿#include <functional>
+#include "engine/fse/target.h"
+
+#include <functional>
 #include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 #include "engine/fbo.h"
+#include "engine/fse/binder.h"
 #include "engine/fse/bufferreference.h"
+#include "engine/fse/provider.h"
 #include "engine/shader.h"
 #include "fmt/core.h"
 
 namespace SimpleEngine::fse
 {
-    using namespace SimpleEngine;
-
-    struct Target
+    std::string Target::Id() const
     {
-        virtual void link(Linker usr) = 0;
-        virtual void apply(std::function<void()> a) = 0;
-        virtual int Width() = 0;
-        virtual int Height() = 0;
+        return id;
+    }
 
-        std::string id;
+    void Target::Id(const std::string& value)
+    {
+        if (id.empty())
+            id = value;
+        else
+            throw std::runtime_error("Unable to change id from " + id + " to " + value);
+    }
 
-        std::vector<std::shared_ptr<BufferReference>> references;
+    std::string Target::ToString() const
+    {
+        return id;
+    }
 
-        std::map<std::string, Size> associations;
+    std::shared_ptr<BufferReference> Target::createBuffer(const std::string& name)
+    {
+        auto r = std::make_shared<BufferReference>(name);
+        references.emplace_back(r);
+        return r;
+    }
 
-        std::shared_ptr<Provider> provider;
+    std::shared_ptr<BufferReference> Target::createBuffer(const std::string& name, int width, int height)
+    {
+        associate(name, width, height);
+        return createBuffer(name);
+    }
 
-        std::string Id() const
+    void Target::associate(const std::string& name, int width, int height)
+    {
+        associations.emplace(name, Size{width, height});
+    }
+
+    std::shared_ptr<Provider> Target::Provider()
+    {
+        return provider;
+    }
+
+    void Target::Provider(std::shared_ptr<fse::Provider> value)
+    {
+        if (value == nullptr)
+            throw std::runtime_error("Provider is null");
+
+        if (provider == nullptr)
         {
-            return id;
+            provider = value;
         }
-
-        void Id(const std::string& value)
+        else
         {
-            if (id.empty())
-                id = value;
-            else
-                throw std::runtime_error("Unable to change id from " + id + " to " + value);
+            throw std::runtime_error(
+                fmt::format("failed to set {} as a provider for {}", value->ToString(), ToString()));
         }
+    }
 
-        const std::string& ToString() const
+    void Target::bind(Binder* binder)
+    {
+        for (auto br : references)
         {
-            return Id();
+            binder->reference(br);
         }
-
-        std::shared_ptr<BufferReference> createBuffer(const std::string& name)
+        for (auto k : associations)
         {
-            auto r = std::make_shared<BufferReference>(name);
-            references.emplace_back(r);
-            return r;
-        }
-
-        std::shared_ptr<BufferReference> createBuffer(const std::string& name, int width, int height)
-        {
-            associate(name, width, height);
-            return createBuffer(name);
-        }
-
-        void associate(const std::string& name, int width, int height)
-        {
-            associations.emplace(name, Size{width, height});
-        }
-
-        std::shared_ptr<Provider> Provider()
-        {
-            return provider;
-        }
-
-        void Provider(std::shared_ptr<Provider> value)
-        {
-            if (value == nullptr)
-                throw std::runtime_error("Provider is null");
-
-            if (provider == nullptr)
-            {
-                provider = value;
-            }
-            else
-            {
-                throw std::runtime_error(fmt::format("failed to set {} as a provider for {}", value->ToString(), ToString()));
-            }
-        }
-
-        void bind(Binder binder)
-        {
-            for (auto br : references)
-            {
-                binder.reference(br);
-            }
-            for (auto k : associations)
-            {
-                binder.associate(k.first, k.second);
-            }
+            binder->associate(k.first, k.second);
         }
     }
 }

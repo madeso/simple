@@ -1,163 +1,139 @@
-﻿#include <memory>
-#include <stdexcept>
-#include <string>
+﻿#include "engine/fse/provider.h"
 
+#include <stdexcept>
+
+#include "engine/fse/command.h"
+#include "engine/fse/linker.h"
+#include "engine/fse/renderargs.h"
+#include "engine/fse/target.h"
 #include "engine/stringseperator.h"
 #include "fmt/core.h"
 
 namespace SimpleEngine::fse
 {
-    struct Target;
-
-    struct Provider
+    Link::Link(const std::string& n)
+        : name(n)
     {
-        std::shared_ptr<Target> target;
-        std::string targetname;
+    }
 
-        std::string id;
+    void Link::provide(RenderArgs* ra)
+    {
+        prov->doProvide(ra);
+    }
 
-        bool autocallCommands = true;
-        std::vector<std::shared_ptr<Command>> commands;
-        std::vector<std::shared_ptr<Provider>> providers;
+    void Link::sortout(Linker* usr)
+    {
+        prov = usr->getProvider(name);
+    }
 
-        const std::string& Id() const
+    const std::string& Provider::Id() const
+    {
+        return id;
+    }
+
+    void Provider::Id(const std::string& value)
+    {
+        if (id.empty())
         {
-            return id;
+            id = value;
+        }
+        else
+        {
+            throw std::runtime_error(fmt::format("Unable to change id from {} to {}", id, value));
+        }
+    }
+
+    std::string Provider::ToString() const
+    {
+        std::vector<std::string> commandnames;
+        for (auto& c : commands)
+        {
+            commandnames.emplace_back(c->ToString());
+        }
+        return Id() + "(" + targetname + "): <" + StringSeperator(",", " and ", "").ToString(commandnames) + ">";
+    }
+
+    void Provider::provide(RenderArgs* ra)
+    {
+        if (autocallCommands)
+        {
+            callCommands();
         }
 
-        void Id(const std::string& value)
+        target->apply([this, ra]() {
+            doProvide(ra);
+        });
+    }
+
+    void Provider::denyAutocallOfCommands()
+    {
+        autocallCommands = false;
+    }
+
+    void Provider::callCommands()
+    {
+        for (auto c : commands)
         {
-            if (id.empty())
-            {
-                id = value;
-            }
-            else
-            {
-                throw std::runtime_error(fmt::format("Unable to change id from {} to {}", id, value));
-            }
+            c->apply();
+        }
+    }
+
+    std::shared_ptr<BufferReference> Provider::createBuffer(const std::string& name)
+    {
+        return std::make_shared<BufferReference>(name);
+    }
+
+    Provider::Provider(std::shared_ptr<Xml::Element> el)
+    {
+        targetname = Xml::GetAttributeString(el, "target");
+
+#ifdef NOTYET
+        for (std::shared_ptr<Xml::Element> e : Xml::Elements(el))
+        {
+            commands.emplace_back(Commands::Create(e, this));
+        }
+#endif
+    }
+
+    void Provider::link(std::shared_ptr<Provider> provider, Linker* linker)
+    {
+        if (provider->targetname != "")
+        {
+            provider->target = linker->getTarget(provider->targetname);
+            provider->target->Provider(provider);
         }
 
-        std::string ToString() const
+        for (auto c : provider->commands)
         {
-            return Id() + "(" + targetname + "): <" + StringSeperator(",", " and ", "").ToString(commands) + ">";
+            c->link(linker);
         }
 
-        void provide(RenderArgs ra)
-        {
-            if (autocallCommands)
-            {
-                callCommands();
-            }
+        provider->doLink(linker);
+    }
 
-            target->apply([this, ra]() {
-                doProvide(ra);
-            });
+    void Provider::bind(Binder* bd)
+    {
+        doBind(bd);
+
+        for (auto c : commands)
+        {
+            c->bind(bd);
         }
+    }
 
-        void denyAutocallOfCommands()
+    void Provider::postlink(Linker* linker)
+    {
+        for (auto c : commands)
         {
-            autocallCommands = false;
-        }
+            c->link(linker);
 
-        void callCommands()
-        {
-            for (auto c : commands)
+            for (auto p : c->Dependencies())
             {
-                c->apply();
-            }
-        }
-
-        void doProvide(RenderArgs ra);
-
-        Target Target
-        {
-            get
-            {
-                return target;
-            }
-        }
-
-        struct Link
-        {
-            Provider prov = nullptr;
-            std::string name;
-
-            Link(std::string name)
-            {
-                this.name = name;
-            }
-
-            void provide(RenderArgs ra)
-            {
-                prov.doProvide(ra);
-            }
-
-            void sortout(Linker usr)
-            {
-                prov = usr.getProvider(name);
-            }
-        }
-
-        BufferReference
-        createBuffer(std::string name)
-        {
-            return BufferReference(name);
-        }
-
-        Provider(std::shared_ptr<Xml::Element> el)
-        {
-            targetname = Xml::GetAttributeString(el, "target");
-
-            for (std::shared_ptr<Xml::Element> e : Xml::Elements(el))
-            {
-                commands.Add(Commands.Commands.Create(e, this));
-            }
-        }
-
-        void link(Linker linker)
-        {
-            if (false == std::string.IsNullOrEmpty(targetname))
-            {
-                target = linker.getTarget(targetname);
-                target.Provider = this;
-            }
-
-            for (auto c : commands)
-            {
-                c->link(linker);
-            }
-
-            doLink(linker);
-        }
-
-        void doLink(Linker linker);
-
-        void bind(Binder bd)
-        {
-            doBind(bd);
-
-            for (auto c : commands)
-            {
-                c->bind(bd);
-            }
-        }
-
-        void doBind(Binder bd);
-
-        void postlink(Linker linker)
-        {
-            for (auto c : commands)
-            {
-                c->link(linker);
-
-                for (auto p : c.Dependencies)
+                if (p == nullptr)
                 {
-                    if (p == nullptr)
-                    {
-                        throw std::runtime_error("null pointer exception");
-                    }
-                    providers.emplace_back(p);
+                    throw std::runtime_error("null pointer exception");
                 }
+                providers.emplace_back(p);
             }
         }
     }

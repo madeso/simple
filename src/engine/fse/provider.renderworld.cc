@@ -1,48 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
+﻿#include "engine/fse/provider.renderworld.h"
 
-namespace SimpleEngine::fse.Providers
+#include <string>
+
+#include "engine/cpp.h"
+#include "engine/fse/binder.h"
+#include "engine/fse/provider.h"
+#include "engine/fse/renderargs.h"
+#include "engine/shader.h"
+#include "engine/xml.h"
+#include "fmt/core.h"
+
+namespace SimpleEngine::fse::Providers
 {
-    struct RenderWorldProvider : Provider
+    RenderWorldProvider::RenderWorldProvider(std::shared_ptr<Xml::Element> e)
+        : Provider(e)
     {
-        Shader shader = nullptr;
-        std::string shadername;
+        shadername = Xml::GetAttributeString(e, "shader");
+    }
 
-        RenderWorldProvider(std::shared_ptr<Xml::Element> e)
-            : base(e)
+    std::string RenderWorldProvider::ToString() const
+    {
+        const auto loaded_string = ((shader != nullptr) ? "(loaded)" : "");
+        return fmt::format("{} renders world with {}{}", Provider::ToString(), Nullstring(shadername, "no shader"), loaded_string);
+    }
+
+    void RenderWorldProvider::doProvide(RenderArgs* ra)
+    {
+        if (shader != nullptr)
+            Shader::Bind(shader);
+
+        ra->render();
+
+        if (shader != nullptr)
+            Shader::Unbind();
+    }
+
+    void RenderWorldProvider::doLink(Linker* user)
+    {
+    }
+
+    void RenderWorldProvider::doBind(Binder* bd)
+    {
+        if (shadername != "")
         {
-            shadername = Xml::GetAttributeString(e, "shader");
-        }
-
-        std::string ToString() const
-        {
-            return base.ToString() + " renders world with " + CSharp.Nullstring(shadername, "no shader") + ((shader != nullptr) ? "(loaded)" : "");
-        }
-
-        override void doProvide(RenderArgs ra)
-        {
-            if (shader != nullptr)
-                Shader.Bind(shader);
-
-            ra.render();
-
-            if (shader != nullptr)
-                Shader.Unbind();
-        }
-
-        override void doLink(Linker user)
-        {
-        }
-
-        override void doBind(Binder bd)
-        {
-            if (false == std::string.IsNullOrEmpty(shadername))
-            {
-                shader = bd.getShader(shadername);
-            }
+            shader = bd->getShader(shadername);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿#include <functional>
+﻿#pragma once
+
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -13,7 +15,7 @@ namespace SimpleEngine::fse
         std::map<std::string, T> m;
         TGenerator generator;
 
-        Map(TGenerator g)
+        Map(TGenerator&& g)
             : generator(std::move(g))
         {
         }
@@ -41,7 +43,7 @@ namespace SimpleEngine::fse
             std::vector<T> r;
             for (auto& kv : m)
             {
-                r.emplace_back(kv.Value);
+                r.emplace_back(kv.second);
             }
             return r;
         }

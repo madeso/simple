@@ -1,55 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
+﻿#include "engine/fse/target.buffer.h"
 
-namespace SimpleEngine::fse.Targets
+#include "engine/fse/bufferreference.h"
+#include "fmt/core.h"
+
+namespace SimpleEngine::fse::Targets
 {
-    struct BufferTarget : Target
+    std::string BufferTarget::Name() const
     {
-        BufferReference buffer;
-        std::string Name
-        {
-            get
-            {
-                return Id;
-            }
-        }
+        return Id();
+    }
 
-        std::string ToString() const
-        {
-            return base.ToString() + " targeting a buffer (" + width.ToString() + "x" + height.ToString() + ") named " + Name;
-        }
+    std::string BufferTarget::ToString() const
+    {
+        return fmt::format("{} targeting a buffer ({}x{}) named {}", Target::ToString(), width, height, Name());
+    }
 
-        int width;
-        int height;
+    BufferTarget::BufferTarget(std::shared_ptr<Xml::Element> el)
+        : width(Xml::GetAttribute<int>(
+              el, "width", [](const std::string& s) { return std::stoi(s); }, 512))
+        , height(Xml::GetAttribute<int>(
+              el, "height", [](const std::string& s) { return std::stoi(s); }, 512))
+    {
+    }
 
-        BufferTarget(std::shared_ptr<Xml::Element> el)
-        {
-            //name = Xml::GetAttributeString(el, "name");
-            width = Xml::GetAttribute<int>(el, "width", std::stoi, 512);
-            height = Xml::GetAttribute<int>(el, "height", std::stoi, 512);
-        }
+    void BufferTarget::apply(Target::ApplyFunction a)
+    {
+        buffer->updateTexture(a);
+    }
 
-        override void apply(Action a)
-        {
-            buffer.updateTexture(a);
-        }
+    int BufferTarget::Width()
+    {
+        return buffer->Width();
+    }
 
-        override int Width
-        {
-            get { return buffer.Width; }
-        }
+    int BufferTarget::Height()
+    {
+        return buffer->Height();
+    }
 
-        override int Height
-        {
-            get { return buffer.Height; }
-        }
-
-        override void link(Linker usr)
-        {
-            buffer = createBuffer(Name, width, height);
-        }
+    void BufferTarget::link(Linker*)
+    {
+        buffer = createBuffer(Name(), width, height);
     }
 }

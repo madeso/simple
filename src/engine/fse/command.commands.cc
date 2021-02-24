@@ -1,22 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
+﻿#include "command.commands.h"
 
-namespace SimpleEngine::fse.Commands
+#include "command.bindbuffer.h"
+#include "command.setvec2uniform.h"
+#include "engine/xml.h"
+#include "fmt/core.h"
+
+namespace SimpleEngine::fse::Commands
 {
-    namespace Commands
+    std::shared_ptr<Command> Create(std::shared_ptr<Xml::Element> el, std::shared_ptr<Provider> pro)
     {
-        static Command Create(std::shared_ptr<Xml::Element> el, Provider pro)
+        std::string name = el->GetName();
+        if (name == "bindbuffer")
         {
-            std::string name = el.Name;
-            if (name == "bindbuffer")
-                return BindBufferCommand(el, pro);
-            else if (name == "setu2")
-                return SetVec2Uniform(el, pro);
-            else
-                throw std::runtime_error(name + " is not a valid command");
+            return std::make_shared<BindBufferCommand>(el, pro);
+        }
+        else if (name == "setu2")
+        {
+            return std::make_shared<SetVec2Uniform>(el, pro);
+        }
+        else
+        {
+            throw std::runtime_error(fmt::format("{} is not a valid command", name));
         }
     }
 }

@@ -28,6 +28,11 @@ namespace SimpleEngine::Xml
         return std::make_shared<Element>(document, el);
     }
 
+    std::string Element::GetName()
+    {
+        return element->Name();
+    }
+
     std::string ErrorToString(tinyxml2::XMLError err)
     {
         switch (err)

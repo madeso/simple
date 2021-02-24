@@ -1,61 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/fse/pipeline.h"
+
+#include <algorithm>
+
+#include "engine/fse/binder.h"
+#include "engine/fse/linker.h"
+#include "engine/fse/target.h"
+#include "engine/medialoader.h"
 
 namespace SimpleEngine::fse
 {
-    struct Pipeline
+    std::shared_ptr<Pipeline> Pipeline::Create(const std::string& path, MediaLoader* ml, int width, int height)
     {
-        std::vector<Provider> providers = std::vector<Provider>();
+        Linker linker;
+        std::string t = linker.read(path, ml, width, height);
+        linker.link();
+        auto pp = linker.getPipeline(linker.getTarget(t));
+        auto bind = Binder(ml->FS());
+        pp->bind(&bind);
+        bind.createBuffers();
+        return pp;
+    }
 
-        static Pipeline Create(std::string path, MediaLoader ml, int width, int height)
+    void Pipeline::bind(Binder* binder)
+    {
+        for (auto p : providers)
         {
-            Linker linker = Linker();
-            std::string t = linker.read(path, ml, width, height);
-            linker.link();
-            Pipeline pp = linker.getPipeline(linker.getTarget(t));
-            Binder bind = Binder(ml.FS);
-            pp.bind(bind);
-            bind.createBuffers();
-            return pp;
-        }
-
-        void bind(Binder binder)
-        {
-            for (Provider p : providers)
+            p->bind(binder);
+            if (p->target != nullptr)
             {
-                p.bind(binder);
-                if (p.Target != nullptr)
-                {
-                    p.Target.bind(binder);
-                }
+                p->target->bind(binder);
             }
         }
+    }
 
-        Pipeline()
+    void Pipeline::render(RenderArgs* ra)
+    {
+        for (auto p : providers)
         {
+            p->provide(ra);
+        }
+    }
+
+    void Pipeline::add(std::shared_ptr<Provider> pr)
+    {
+        for (auto p : pr->providers)
+        {
+            add(p);
         }
 
-        void render(RenderArgs ra)
+        if (std::find(providers.begin(), providers.end(), pr) == providers.end())
         {
-            for (Provider p : providers)
-            {
-                p.provide(ra);
-            }
-        }
-
-        void add(Provider pr)
-        {
-            for (Provider p : pr.Providers)
-            {
-                add(p);
-            }
-
-            if (false == providers.Contains(pr))
-            {
-                providers.Add(pr);
-            }
+            providers.emplace_back(pr);
         }
     }
 }

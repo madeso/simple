@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <string>
 
 namespace SimpleEngine
 {
@@ -7,4 +8,6 @@ namespace SimpleEngine
     {
         v.erase(std::remove_if(v.begin(), v.end(), callback), v.end());
     }
+
+    std::string Nullstring(const std::string& str, const std::string& empty);
 }

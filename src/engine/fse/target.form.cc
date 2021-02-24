@@ -1,43 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#include "engine/fse/target.form.h"
 
-namespace SimpleEngine::fse.Targets
+#include "fmt/core.h"
+
+namespace SimpleEngine::fse::Targets
 {
-    struct FormTarget : Target
+    FormTarget::FormTarget(int w, int h)
+        : width(w)
+        , height(h)
     {
-        int width;
-        int height;
+    }
 
-        FormTarget(int width, int height)
-        {
-            this.width = width;
-            this.height = height;
-        }
+    std::string FormTarget::ToString() const
+    {
+        return fmt::format("{} targeting a form", Target::ToString());
+    }
 
-        std::string ToString() const
-        {
-            return base.ToString() + " targeting a form";
-        }
+    void FormTarget::apply(Target::ApplyFunction a)
+    {
+        a();
+    }
 
-        override void apply(Action a)
-        {
-            a();
-        }
+    int FormTarget::Width()
+    {
+        return width;
+    }
 
-        override int Width
-        {
-            get { return width; }
-        }
+    int FormTarget::Height()
+    {
+        return height;
+    }
 
-        override int Height
-        {
-            get { return height; }
-        }
-
-        override void link(Linker usr)
-        {
-        }
+    void FormTarget::link(Linker*)
+    {
     }
 }

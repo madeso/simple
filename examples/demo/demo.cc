@@ -128,7 +128,8 @@ namespace SimpleTest
                     {
                         world.render(Width, Height, cam);
                     });*/
-            pipe->render(RenderArgs(world, cam, Width, Height));
+            auto ra = RenderArgs(world, cam, Width, Height);
+            pipe->render(&ra);
             /*Shader.Bind(shader);
                     FullscreenQuad.render(fbo, Width, Height);
                     Shader.Unbind();*/
