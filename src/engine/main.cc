@@ -22,8 +22,8 @@ namespace SimpleEngine
         SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
         SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
 
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
         static const int width = 800;
         static const int height = 600;
@@ -91,7 +91,8 @@ namespace SimpleEngine
             ImGui::Render();
             glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
             glClear(GL_COLOR_BUFFER_BIT);
-            //glUseProgram(0); // You may want this if using this code in an OpenGL 3+ context where shaders may be bound
+            // glUseProgram(0); // You may want this if using this code in an OpenGL 3+ context where shaders may be
+            // bound
 
             app->OnRender((int)io.DisplaySize.x, (int)io.DisplaySize.y);
             ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());

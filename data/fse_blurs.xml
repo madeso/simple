@@ -19,8 +19,13 @@
     {
       float a = 0.005;
       vec2 dir = vec2(direction.x, direction.y)*a;
-      vec4 color = (texture2D(tex,gl_TexCoord[0].st - dir )*2 + texture2D(tex,gl_TexCoord[0].st + dir )*2 + texture2D(tex,gl_TexCoord[0].st) ) / 5.0;
-		  gl_FragColor = color;
+      vec4 color =
+        (
+            texture2D(tex, gl_TexCoord[0].st - dir )*2.0 +
+            texture2D(tex, gl_TexCoord[0].st + dir )*2.0 +
+            texture2D(tex, gl_TexCoord[0].st)
+        ) / 5.0;
+      gl_FragColor = color;
     }
     ]]>
   </fragment>

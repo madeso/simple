@@ -6,7 +6,7 @@
     void main()
     {
       gl_Position = gl_Position = ftransform();
-      Distance = gl_Position.z / 20;
+      Distance = gl_Position.z / 20.0;
     }
     ]]>
   </vertex>

@@ -6,6 +6,7 @@
 
 #include "engine/filesystem.h"
 #include "engine/opengl.h"
+#include "engine/strings.h"
 #include "engine/vec2.h"
 #include "fmt/core.h"
 
@@ -106,8 +107,8 @@ namespace SimpleEngine
 
     void Shader::LoadFrom(const std::string& path, std::shared_ptr<Xml::Element> shader)
     {
-        std::string vertexsource = Xml::GetTextOfSubElement(shader, "vertex");
-        std::string fragmentsource = Xml::GetTextOfSubElement(shader, "fragment");
+        std::string vertexsource = Trim(Xml::GetTextOfSubElement(shader, "vertex"));
+        std::string fragmentsource = Trim(Xml::GetTextOfSubElement(shader, "fragment"));
 
         mProgram = glCreateProgram();
 
@@ -116,7 +117,9 @@ namespace SimpleEngine
 
         attach(vertex);
         attach(fragment);
-        glLinkProgram(Program());
+        auto prog = Program();
+        auto func = glLinkProgram;
+        glLinkProgram(prog);
 
         if (false == LinkStatus())
         {
