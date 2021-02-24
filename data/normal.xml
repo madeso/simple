@@ -1,4 +1,5 @@
 <shader>
+<bind/>
   <vertex>
     <![CDATA[
     varying float Distance;

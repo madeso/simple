@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cmath>
 
+#include "engine/angle.h"
 #include "engine/axisangle.h"
 #include "engine/fileutil.h"
 #include "engine/mat33.h"
@@ -47,6 +48,24 @@ namespace SimpleEngine
         , z(other.z)
         , w(other.w)
     {
+    }
+
+    quat quat::FromYawPitchRoll(const angle& yaw, const angle& pitch, const angle& roll)
+    {
+        // Abbreviations for the various angular functions
+        const auto cy = (yaw * 0.5f).Cos();
+        const auto sy = (yaw * 0.5f).Sin();
+        const auto cp = (pitch * 0.5f).Cos();
+        const auto sp = (pitch * 0.5f).Sin();
+        const auto cr = (roll * 0.5f).Cos();
+        const auto sr = (roll * 0.5f).Sin();
+
+        const auto w = cr * cp * cy + sr * sp * sy;
+        const auto x = sr * cp * cy - cr * sp * sy;
+        const auto y = cr * sp * cy + sr * cp * sy;
+        const auto z = cr * cp * sy - sr * sp * cy;
+
+        return quat(vec3(x, y, z), w);
     }
 
     quat quat::Read(BinaryReader& br)
@@ -226,10 +245,8 @@ namespace SimpleEngine
         float tXW = 2 * x * w;
         float tXZ = 2 * x * z;
         float tYW = 2 * y * w;
-        return mat33::FromRowMajor(mat33::FA{
-            1 - tYY - tZZ, tXY - tZW, tXZ + tYW,
-            tXY + tZW, 1 - tXX - tZZ, tYZ - tXW,
-            tXZ - tYW, tYZ + tXW, 1 - tXX - tYY});
+        return mat33::FromRowMajor(mat33::FA{1 - tYY - tZZ, tXY - tZW, tXZ + tYW, tXY + tZW, 1 - tXX - tZZ, tYZ - tXW,
+                                             tXZ - tYW, tYZ + tXW, 1 - tXX - tYY});
     }
 
     float quat::operator()(int index) const

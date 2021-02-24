@@ -9,6 +9,7 @@ namespace SimpleEngine
     struct mat33;
     struct BinaryReader;
     struct BinaryWriter;
+    struct angle;
 
     struct quat
     {
@@ -23,6 +24,8 @@ namespace SimpleEngine
         quat(float w, const vec3& vec);
         quat(const vec3& v, float w);
         quat(const quat& other);
+
+        static quat FromYawPitchRoll(const angle& yaw, const angle& pitch, const angle& roll);
 
         static quat Read(BinaryReader& br);
         static void Write(const quat& q, BinaryWriter& br);

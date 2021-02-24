@@ -1,5 +1,9 @@
 <level>
     <world>
+        <mesh file="spot_triangulated.obj">
+            <position x="0" y="0" z="0" />
+            <rotation y="0" p="0" r="0" />
+        </mesh>
     </world>
 
     <camera>

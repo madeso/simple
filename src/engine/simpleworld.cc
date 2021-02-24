@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "engine/angle.h"
 #include "engine/cpp.h"
 #include "engine/filesystem.h"
 #include "engine/math1.h"
@@ -25,6 +26,12 @@ namespace SimpleEngine
             return math1::ParseFloat(val);
         }
 
+        angle ap(std::shared_ptr<Xml::Element> e, std::string p)
+        {
+            const auto f = dp(e, p);
+            return angle::FromDegrees(f);
+        }
+
         vec3 GetPosition(std::shared_ptr<Xml::Element> e)
         {
             return vec3(dp(e, "x"), dp(e, "y"), dp(e, "z"));
@@ -32,7 +39,7 @@ namespace SimpleEngine
 
         quat GetRotation(std::shared_ptr<Xml::Element> e)
         {
-            return quat(dp(e, "w"), vec3(dp(e, "x"), dp(e, "y"), dp(e, "z")));
+            return quat::FromYawPitchRoll(ap(e, "y"), ap(e, "p"), ap(e, "r"));
         }
 
         void sendToList(RenderList* target, const std::vector<std::shared_ptr<Renderable>>& container)
@@ -72,11 +79,11 @@ namespace SimpleEngine
 
     void SimpleWorld::addMeshes(MediaLoader* loader, std::shared_ptr<Xml::Element> level, RenderableAddTarget target)
     {
-        for (std::shared_ptr<Xml::Element> entity : Xml::ElementsNamed(level, "entity"))
+        for (std::shared_ptr<Xml::Element> entity : Xml::ElementsNamed(level, "mesh"))
         {
-            auto t = Xml::GetAttributeString(entity, "type");
-            auto name = Xml::GetAttributeString(entity, "name");
-            auto meshpath = t + ".mdf";
+            // auto name = Xml::GetAttributeString(entity, "name");
+            auto meshpath = Xml::GetAttributeString(entity, "file");
+            // auto meshpath = t + ".mdf";
             auto mesh = std::make_shared<MeshInstance>(loader->fetch<Mesh>(meshpath));
             mesh->pos = GetPosition(entity->GetChild("position"));
             mesh->rot = GetRotation(entity->GetChild("rotation"));

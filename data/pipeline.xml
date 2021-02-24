@@ -11,17 +11,17 @@
     <fullscreen id="renderlow" shader="" target="depth_lo">
       <bindbuffer id="binder" buffer="depth" location="0"/>
     </fullscreen>
-    
+
     <fullscreen id="blurh" shader="fse_blurs.xml" target="debpth_blur_h">
       <setu2 id="set_direction" shader="fse_blurs.xml" uniform="direction" x="1" y="0"/>
       <bindbuffer id="binder" buffer="depth_lo" location="0"/>
     </fullscreen>
-    
+
     <fullscreen id="blurv" shader="fse_blurs.xml" target="depthblur">
       <setu2 id="set_direction" shader="fse_blurs.xml" uniform="direction" x="0" y="1"/>
       <bindbuffer id="binder" buffer="debpth_blur_h" location="0"/>
     </fullscreen>
-    
+
     <fullscreen id="ssao" shader="fse_ssao.xml" target="view">
       <bindbuffer id="depth" buffer="depth" location="0"/>
       <bindbuffer id="deapthblurred" buffer="depthblur" location="1"/>
