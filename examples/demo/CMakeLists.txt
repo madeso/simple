@@ -1,6 +1,6 @@
 set(src
     main.cc
-    demo.cc
+    demo.cc demo.h
 )
 
 add_executable(demo WIN32 MACOSX_BUNDLE ${src})
