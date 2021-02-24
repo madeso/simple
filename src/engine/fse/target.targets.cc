@@ -23,7 +23,7 @@ namespace SimpleEngine::fse::Targets
         }
         else if (name == "form")
         {
-            return std::make_shared<FormTarget>(width, height);
+            return std::make_shared<FormTarget>(x, width, height);
         }
         else
         {

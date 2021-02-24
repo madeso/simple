@@ -4,8 +4,9 @@
 
 namespace SimpleEngine::fse::Targets
 {
-    FormTarget::FormTarget(int w, int h)
-        : width(w)
+    FormTarget::FormTarget(std::shared_ptr<Xml::Element> x, int w, int h)
+        : Target(x)
+        , width(w)
         , height(h)
     {
     }

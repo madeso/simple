@@ -5,6 +5,15 @@
 
 namespace SimpleEngine::fse::Targets
 {
+    BufferTarget::BufferTarget(std::shared_ptr<Xml::Element> el)
+        : Target(el)
+        , width(Xml::GetAttribute<int>(
+              el, "width", [](const std::string& s) { return std::stoi(s); }, 512))
+        , height(Xml::GetAttribute<int>(
+              el, "height", [](const std::string& s) { return std::stoi(s); }, 512))
+    {
+    }
+
     std::string BufferTarget::Name() const
     {
         return Id();
@@ -13,14 +22,6 @@ namespace SimpleEngine::fse::Targets
     std::string BufferTarget::ToString() const
     {
         return fmt::format("{} targeting a buffer ({}x{}) named {}", Target::ToString(), width, height, Name());
-    }
-
-    BufferTarget::BufferTarget(std::shared_ptr<Xml::Element> el)
-        : width(Xml::GetAttribute<int>(
-              el, "width", [](const std::string& s) { return std::stoi(s); }, 512))
-        , height(Xml::GetAttribute<int>(
-              el, "height", [](const std::string& s) { return std::stoi(s); }, 512))
-    {
     }
 
     void BufferTarget::apply(Target::ApplyFunction a)

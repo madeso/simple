@@ -33,8 +33,9 @@ namespace SimpleEngine::fse
     }
 
     Provider::Provider(std::shared_ptr<Xml::Element> el)
+        : targetname(Xml::GetAttributeString(el, "target"))
+        , id(Xml::GetAttributeString(el, "id"))
     {
-        targetname = Xml::GetAttributeString(el, "target");
     }
 
     void Provider::PostLoad(std::shared_ptr<Provider> provider, std::shared_ptr<Xml::Element> el)

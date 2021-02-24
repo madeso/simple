@@ -15,6 +15,8 @@ namespace SimpleEngine::fse::Targets
 {
     struct BufferTarget : public Target
     {
+        BufferTarget(std::shared_ptr<Xml::Element> el);
+
         std::shared_ptr<BufferReference> buffer;
         int width;
         int height;
@@ -22,8 +24,6 @@ namespace SimpleEngine::fse::Targets
         std::string Name() const;
 
         std::string ToString() const override;
-
-        BufferTarget(std::shared_ptr<Xml::Element> el);
 
         void apply(Target::ApplyFunction a) override;
 

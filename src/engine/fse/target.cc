@@ -15,6 +15,11 @@
 
 namespace SimpleEngine::fse
 {
+    Target::Target(std::shared_ptr<Xml::Element> el)
+        : id(Xml::GetAttributeString(el, "id"))
+    {
+    }
+
     std::string Target::Id() const
     {
         return id;

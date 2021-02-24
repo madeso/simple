@@ -3,7 +3,9 @@
 #include "engine/filesystem.h"
 #include "engine/fse/pipeline.h"
 #include "engine/fse/provider.h"
+#include "engine/fse/provider.providers.h"
 #include "engine/fse/target.h"
+#include "engine/fse/target.targets.h"
 #include "engine/medialoader.h"
 #include "engine/xml.h"
 #include "fmt/core.h"
@@ -11,8 +13,12 @@
 namespace SimpleEngine::fse
 {
     Linker::Linker()
-        : providers([](const std::string& name) -> std::shared_ptr<Provider> { throw std::runtime_error(fmt::format("{} is not a defined provider", name)); })
-        , targets([](const std::string& name) -> std::shared_ptr<Target> { throw std::runtime_error(fmt::format("{} is not a defined target", name)); })
+        : providers([](const std::string& name) -> std::shared_ptr<Provider> {
+            throw std::runtime_error(fmt::format("{} is not a defined provider", name));
+        })
+        , targets([](const std::string& name) -> std::shared_ptr<Target> {
+            throw std::runtime_error(fmt::format("{} is not a defined target", name));
+        })
     {
     }
 
@@ -63,7 +69,6 @@ namespace SimpleEngine::fse
         }
     }
 
-#ifdef NOTYET
     std::string Linker::read(const std::string& path, MediaLoader* ml, int width, int height)
     {
         std::shared_ptr<Xml::Element> root = Xml::Open(ml->FS()->open(path), "pipeline");
@@ -71,17 +76,14 @@ namespace SimpleEngine::fse
         for (std::shared_ptr<Xml::Element> targetElement : Xml::Elements(root->GetChild("targets")))
         {
             auto target = Targets::Create(targetElement, width, height);
-            target.Id = Xml::GetAttributeString(targetElement, "id");
             addTarget(target);
         }
         for (std::shared_ptr<Xml::Element> providerElement : Xml::Elements(root->GetChild("providers")))
         {
             auto provider = Providers::Create(providerElement);
-            provider.Id = Xml::GetAttributeString(providerElement, "id");
             addProvider(provider);
         }
 
         return t;
     }
-#endif
 }

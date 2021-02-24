@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "engine/fse/target.h"
+#include "engine/xml.h"
 
 namespace SimpleEngine::fse::Targets
 {
@@ -9,7 +10,7 @@ namespace SimpleEngine::fse::Targets
         int width;
         int height;
 
-        FormTarget(int w, int h);
+        FormTarget(std::shared_ptr<Xml::Element> x, int w, int h);
 
         std::string ToString() const override;
 
