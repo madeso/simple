@@ -74,9 +74,9 @@ namespace SimpleEngine
     {
         for (std::shared_ptr<Xml::Element> entity : Xml::ElementsNamed(level, "entity"))
         {
-            std::string t = Xml::GetAttributeString(entity, "type");
-            std::string name = Xml::GetAttributeString(entity, "name");
-            std::string meshpath = t + ".mdf";
+            auto t = Xml::GetAttributeString(entity, "type");
+            auto name = Xml::GetAttributeString(entity, "name");
+            auto meshpath = t + ".mdf";
             auto mesh = std::make_shared<MeshInstance>(loader->fetch<Mesh>(meshpath));
             mesh->pos = GetPosition(entity->GetChild("position"));
             mesh->rot = GetRotation(entity->GetChild("rotation"));
