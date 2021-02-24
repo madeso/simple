@@ -45,7 +45,7 @@ namespace SimpleTest
         std::shared_ptr<World> world;
         std::shared_ptr<fse::Pipeline> pipe;
 
-        void Main()
+        Demo()
         {
             Setup::basicOpenGL();
 
@@ -60,7 +60,7 @@ namespace SimpleTest
             pipe = fse::Pipeline::Create("pipeline.xml", &loader, Width, Height);
         }
 
-        void Render(float delta)
+        void Render()
         {
             /*fbo.updateTexture(delegate()
                     {
@@ -73,7 +73,7 @@ namespace SimpleTest
                     Shader.Unbind();*/
         }
 
-        void Run(float delta, const vec2& mouse_movement)
+        void OnFrame(float delta, const vec2& mouse_movement)
         {
             /*frame.begin();
                     world.render(Width, Height, cam);
@@ -98,7 +98,7 @@ namespace SimpleTest
                 Key::Run(button, down, {rightleft, forback, updown, sprint});
         }
 
-        void Begin()
+        void OnBeginRender()
         {
             Setup::Viewport(Rect::FromLTWH(0, 0, Width, Height));
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
