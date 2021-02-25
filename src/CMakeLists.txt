@@ -46,7 +46,6 @@ set(src_math
     engine/actor.cc engine/actor.h
     engine/camera.cc engine/camera.h
     engine/renderablegrid.cc engine/renderablegrid.h
-    engine/actorfile.cc engine/actorfile.h
     engine/world.cc engine/world.h
     engine/simpleworld.cc engine/simpleworld.h
     engine/entity.cc engine/entity.h
@@ -59,6 +58,7 @@ set(src_math
 )
 
  set(src_load
+    engine/actorfile.cc engine/actorfile.h
     engine/meshfile.cc engine/meshfile.h
     engine/animationfile.cc engine/animationfile.h
     engine/load/milkshape.common.cc engine/load/milkshape.common.h
