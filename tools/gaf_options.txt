@@ -1,0 +1,12 @@
+--include-json
+--enum
+EnumClass
+--json_return
+String
+--imgui-header
+<imgui/imgui.h>
+"window/imgui_icons.h"
+--imgui-add
+"Add"
+--imgui-remove
+"Remove"
