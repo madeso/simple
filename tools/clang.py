@@ -113,11 +113,14 @@ def make_clang_tidy(root):
         print_clang_tidy_source(root, clang_tidy_file)
 
 
-def call_clang_tidy(project_build_folder, source_file):
+def call_clang_tidy(project_build_folder, source_file, fix: bool):
     """
     runs clang-tidy and returns all the text output
     """
-    command = ['clang-tidy', '-p', project_build_folder, source_file]
+    command = ['clang-tidy', '-p', project_build_folder]
+    if fix:
+        command.append('--fix')
+    command.append(source_file)
     return subprocess.check_output(command, universal_newlines=True,
                                    encoding='utf8', stderr=subprocess.STDOUT)
 
@@ -129,11 +132,11 @@ def total(counter):
     return sum(counter.values())
 
 
-def run_clang_tidy(source_file, project_build_folder):
+def run_clang_tidy(source_file, project_build_folder, fix: bool):
     """
     runs the clang-tidy process, printing status to terminal
     """
-    output = call_clang_tidy(project_build_folder, source_file)
+    output = call_clang_tidy(project_build_folder, source_file, fix)
     warnings = collections.Counter()
     classes = collections.Counter()
     for line in output.split('\n'):
@@ -229,7 +232,7 @@ def handle_tidy(args):
         for source_file in source_files:
             print(os.path.basename(source_file), flush=True)
             if args.nop is False:
-                warnings, classes = run_clang_tidy(full_path_to_file(root, project, source_file), project_build_folder)
+                warnings, classes = run_clang_tidy(full_path_to_file(root, project, source_file), project_build_folder, args.fix)
                 project_counter.update(warnings)
                 total_classes.update(classes)
 
@@ -261,6 +264,7 @@ def main():
 
     sub = sub_parsers.add_parser('tidy', help='do clang tidy on files')
     sub.add_argument('--nop', action='store_true', help="don't do anything")
+    sub.add_argument('--fix', action='store_true', help="try to fix the issue")
     sub.set_defaults(func=handle_tidy)
 
     sub = sub_parsers.add_parser('format', help='do clang format on files')
