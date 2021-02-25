@@ -1,4 +1,4 @@
-﻿#include "engine/load/milkshape.binary.h"
+#include "engine/load/milkshape.binary.h"
 
 #include <fstream>
 #include <vector>
@@ -142,10 +142,11 @@ namespace SimpleEngine::load::MilkshapeBinary
 
         std::string ReadString(int count)
         {
-            char b[count + 1];
-            fs.read(b, sizeof(char) * count);
+            std::vector<char> b;
+            b.resize(count + 1, 0);
+            fs.read(b.data(), sizeof(char) * count);
             b[count] = 0;
-            return b;
+            return b.data();
         }
 
         Runner(const std::string& path)

@@ -1,4 +1,4 @@
-﻿#include "engine/meshfile.h"
+#include "engine/meshfile.h"
 
 #include <cstdlib>
 #include <filesystem>
@@ -314,7 +314,7 @@ namespace SimpleEngine
         // should return hello:user.bmp
         std::string Resolve(const std::string& basepath, const std::string& file)
         {
-            return std::filesystem::path(file).filename();
+            return std::filesystem::path(file).filename().string();
         }
     }
 }

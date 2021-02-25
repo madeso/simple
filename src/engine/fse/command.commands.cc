@@ -1,4 +1,7 @@
-﻿#include "command.commands.h"
+#include "command.commands.h"
+
+#include <stdexcept>
+
 
 #include "command.bindbuffer.h"
 #include "command.setvec2uniform.h"

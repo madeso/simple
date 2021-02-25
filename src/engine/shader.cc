@@ -1,4 +1,4 @@
-﻿#include "engine/shader.h"
+#include "engine/shader.h"
 
 #include <cstdint>
 #include <stdexcept>
@@ -17,9 +17,9 @@ namespace SimpleEngine
         mShader = glCreateShader(type);
         int length = source.length();
         std::vector<char> str;
-        str.resize(source.length(), 0);
-        strcpy(&str[0], source.c_str());
-        char* sstr = &str[0];
+        str.resize(source.length()+1, 0);
+        strcpy(str.data(), source.c_str());
+        char* sstr = str.data();
         glShaderSource(Shader(), 1, &sstr, &length);
         glCompileShader(mShader);
 

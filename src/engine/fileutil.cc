@@ -1,4 +1,4 @@
-﻿#include "engine/fileutil.h"
+#include "engine/fileutil.h"
 
 #include <filesystem>
 #include <stdexcept>
@@ -77,22 +77,22 @@ namespace SimpleEngine
         std::pair<std::string, std::string> Split(const std::string& path)
         {
             auto p = fs::path{path};
-            return {p.parent_path(), p.filename()};
+            return {p.parent_path().string(), p.filename().string()};
         }
 
         std::string GetExtension(const std::string& p)
         {
-            return fs::path{p}.extension();
+            return fs::path{p}.extension().string();
         }
 
         std::string GetFileNameWithoutExtension(const std::string& p)
         {
-            return fs::path{p}.stem();
+            return fs::path{p}.stem().string();
         }
 
         std::string GetFileName(const std::string& p)
         {
-            return fs::path{p}.filename();
+            return fs::path{p}.filename().string();
         }
     }
 }

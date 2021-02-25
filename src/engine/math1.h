@@ -1,4 +1,4 @@
-﻿#include <string>
+#include <string>
 
 namespace SimpleEngine
 {
@@ -44,5 +44,7 @@ namespace SimpleEngine
         bool isSame(float length, float last);
 
         float ZeroOrValue(float mark);
+
+        constexpr float pi = 3.14159265359f;
     }
 }

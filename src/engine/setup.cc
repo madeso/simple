@@ -1,7 +1,8 @@
-﻿#include "engine/setup.h"
+#include "engine/setup.h"
 
 #include <cmath>
 
+#include "math1.h"
 #include "engine/opengl.h"
 #include "engine/rect.h"
 
@@ -38,7 +39,7 @@ namespace
     {
         float ymax, xmax;
         float temp, temp2, temp3, temp4;
-        ymax = znear * tanf(fovyInDegrees * M_PI / 360.0);
+        ymax = znear * tanf(fovyInDegrees * SimpleEngine::math1::pi / 360.0);
         // ymin = -ymax;
         // xmin = -ymax * aspectRatio;
         xmax = ymax * aspectRatio;

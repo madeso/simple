@@ -1,6 +1,6 @@
-﻿#include "demo/demo.h"
+#include "demo/demo.h"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "engine/filesystem.h"
 #include "engine/medialoader.h"

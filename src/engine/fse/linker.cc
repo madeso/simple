@@ -1,4 +1,7 @@
-﻿#include "engine/fse/linker.h"
+#include "engine/fse/linker.h"
+
+#include <stdexcept>
+
 
 #include "engine/filesystem.h"
 #include "engine/fse/pipeline.h"

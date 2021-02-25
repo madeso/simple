@@ -1,4 +1,7 @@
-﻿#include "engine/fbo.h"
+#include "engine/fbo.h"
+
+#include <stdexcept>
+
 
 #include "engine/opengl.h"
 #include "fmt/core.h"

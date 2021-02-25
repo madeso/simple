@@ -2,20 +2,19 @@
 
 #include <cmath>
 
+#include "engine/math1.h"
 #include "fmt/core.h"
 
 namespace
 {
-    constexpr float pi = M_PI;
-
     float rad2deg(float rad)
     {
-        return (float)(180 / pi) * rad;
+        return (float)(180 / SimpleEngine::math1::pi) * rad;
     }
 
     float deg2rad(float deg)
     {
-        return (float)pi / 180 * deg;
+        return (float)SimpleEngine::math1::pi / 180 * deg;
     }
 }
 
@@ -53,7 +52,7 @@ namespace SimpleEngine
 
     angle angle::FromPercentOf360(float percent)
     {
-        return angle::FromRadians((float)(percent * pi * 2));
+        return angle::FromRadians((float)(percent * math1::pi * 2));
     }
 
     angle angle::operator-() const
