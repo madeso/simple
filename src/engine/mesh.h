@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 
@@ -11,8 +11,6 @@ namespace SimpleEngine
     {
         std::shared_ptr<CompiledMesh> mesh;
 
-        void load(MediaLoader* ml, FileSystem* fs, const std::string& path) override;
-
-        std::shared_ptr<CompiledMesh> Compiled();
+        void Load(MediaLoader* ml, FileSystem* fs, const std::string& path) override;
     };
 }

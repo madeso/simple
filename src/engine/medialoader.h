@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <map>
 #include <memory>
@@ -20,7 +20,7 @@ namespace SimpleEngine
         MediaLoader(std::shared_ptr<FileSystem> fs);
 
         template <typename T>
-        std::shared_ptr<T> fetch(const std::string& file)
+        std::shared_ptr<T> GetOrLoad(const std::string& file)
         {
             auto found = loaded.find(file);
             if (found != loaded.end())
@@ -39,7 +39,7 @@ namespace SimpleEngine
         std::shared_ptr<T> forceLoad(const std::string& file)
         {
             auto t = std::make_shared<T>();
-            t->load(this, sys.get(), file);
+            t->Load(this, sys.get(), file);
             loaded[file] = t;
             return t;
         }

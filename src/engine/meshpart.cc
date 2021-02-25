@@ -17,7 +17,7 @@ namespace SimpleEngine
     MeshPart::MeshPart(MediaLoader* ml, const MaterialDef& m, MeshDef* def, Poseable* p)
         : poseable(p)
     {
-        mat = std::make_shared<Material>(m.diffuse, ml->fetch<Texture>(m.texture));
+        mat = std::make_shared<Material>(m.diffuse, ml->GetOrLoad<Texture>(m.texture));
         for (const auto& tri : def->TrianglesFor(m))
         {
             faces.emplace_back(def->lookup(tri));
@@ -40,7 +40,7 @@ namespace SimpleEngine
     {
         PushedMatrix dnum;
 
-        mat->apply();
+        mat->Apply();
         glTranslatef(p.x, p.y, p.z);
         AxisAngle aa = rot.AxisAngle();
         // apply rotation
@@ -51,8 +51,8 @@ namespace SimpleEngine
             for (int i = 0; i < 3; ++i)
             {
                 Vertex v = face[i];
-                vec3 vert = (poseable->CurrentPose() != nullptr)
-                                ? poseable->CurrentPose()->transforms[v.bone] * v.vertex
+                vec3 vert = (poseable->GetPose() != nullptr)
+                                ? poseable->GetPose()->transforms[v.bone] * v.vertex
                                 : v.vertex;
                 glNormal3f(v.normal.x, v.normal.y, v.normal.z);
                 glTexCoord2f(v.uv.x, v.uv.y);

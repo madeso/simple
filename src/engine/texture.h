@@ -23,7 +23,7 @@ namespace SimpleEngine
     {
         std::shared_ptr<Image> img;
 
-        void load(MediaLoader* ml, FileSystem* fs, const std::string& path) override;
+        void Load(MediaLoader* ml, FileSystem* fs, const std::string& path) override;
 
         void bind(int location = 0);
     };

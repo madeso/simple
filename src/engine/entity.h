@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 #include <string>
@@ -15,7 +15,7 @@ namespace SimpleEngine
 
     struct Entity
     {
-        std::vector<std::shared_ptr<Renderable>> visual;
+        std::vector<std::shared_ptr<Renderable>> renderables;
         std::string name;
 
         Entity(const std::string& n);
@@ -24,6 +24,6 @@ namespace SimpleEngine
 
         static std::shared_ptr<Entity> Create(MediaLoader* loader, const std::string& name, std::shared_ptr<Xml::Element> root, const vec3& pos, const quat& rot);
 
-        void add(std::shared_ptr<Renderable> r);
+        void AddRenderable(std::shared_ptr<Renderable> r);
     };
 }

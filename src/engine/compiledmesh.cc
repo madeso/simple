@@ -31,7 +31,7 @@ namespace SimpleEngine
         }
     }
 
-    void CompiledMesh::sendToRenderer(RenderList* r, const vec3& pos, const quat& rot)
+    void CompiledMesh::SendToRenderer(RenderList* r, const vec3& pos, const quat& rot)
     {
         for (auto& part : parts)
         {
@@ -39,12 +39,12 @@ namespace SimpleEngine
         }
     }
 
-    void CompiledMesh::setPose(std::shared_ptr<CompiledPose> new_pose)
+    void CompiledMesh::SetPose(std::shared_ptr<CompiledPose> new_pose)
     {
         pose = new_pose;
     }
 
-    std::shared_ptr<CompiledPose> CompiledMesh::CurrentPose()
+    std::shared_ptr<CompiledPose> CompiledMesh::GetPose()
     {
         return pose;
     }

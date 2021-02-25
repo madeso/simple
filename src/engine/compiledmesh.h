@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 
@@ -20,10 +20,10 @@ namespace SimpleEngine
 
         CompiledMesh(MediaLoader* ml, MeshDef* def);
 
-        void sendToRenderer(RenderList* r, const vec3& pos, const quat& rot);
+        void SendToRenderer(RenderList* r, const vec3& pos, const quat& rot);
 
-        void setPose(std::shared_ptr<CompiledPose> new_pose);
+        void SetPose(std::shared_ptr<CompiledPose> new_pose);
 
-        std::shared_ptr<CompiledPose> CurrentPose() override;
+        std::shared_ptr<CompiledPose> GetPose() override;
     };
 }

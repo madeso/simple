@@ -31,17 +31,17 @@ namespace SimpleEngine
         for (auto meshel : Xml::ElementsNamed(visual, "mesh"))
         {
             std::string meshpath = Xml::GetAttributeString(meshel, "file");
-            auto mesh = std::make_shared<MeshInstance>(loader->fetch<Mesh>(meshpath));
+            auto mesh = std::make_shared<MeshInstance>(loader->GetOrLoad<Mesh>(meshpath));
             mesh->pos = pos;
             mesh->rot = rot;
-            ent->add(mesh);
+            ent->AddRenderable(mesh);
         }
 
         return ent;
     }
 
-    void Entity::add(std::shared_ptr<Renderable> r)
+    void Entity::AddRenderable(std::shared_ptr<Renderable> r)
     {
-        visual.emplace_back(r);
+        renderables.emplace_back(r);
     }
 }

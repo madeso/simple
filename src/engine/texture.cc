@@ -38,7 +38,7 @@ namespace SimpleEngine
         glDeleteTextures(1, &text);
     }
 
-    void Texture::load(MediaLoader* ml, FileSystem* fs, const std::string& path)
+    void Texture::Load(MediaLoader* ml, FileSystem* fs, const std::string& path)
     {
         const auto filename = fs->open(path);
 

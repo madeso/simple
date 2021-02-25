@@ -5,26 +5,26 @@
 
 namespace SimpleEngine
 {
-    void Camera::sendRotationAndPosition() const
+    void Camera::SendRotationAndPosition() const
     {
-        sendRotation();
-        sendPosition();
+        SendRotation();
+        SendPosition();
     }
 
-    void Camera::sendPosition() const
+    void Camera::SendPosition() const
     {
         // -position
         glTranslatef(-location.x, -location.y, -location.z);
     }
 
-    void Camera::sendRotation() const
+    void Camera::SendRotation() const
     {
         // -rotatation
         const auto aa = rotation.AxisAngle();
         glRotatef(-aa.angle.inDegrees(), aa.axis.x, aa.axis.y, aa.axis.z);
     }
 
-    void Camera::rotate(const quat& q)
+    void Camera::Rotate(const quat& q)
     {
         rotation = quat::Combine(rotation, q);
     }

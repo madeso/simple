@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "engine/quat.h"
 #include "engine/vec3.h"
@@ -7,13 +7,13 @@ namespace SimpleEngine
 {
     struct Camera
     {
-        void sendRotationAndPosition() const;
+        void SendRotationAndPosition() const;
 
-        void sendPosition() const;
+        void SendPosition() const;
 
-        void sendRotation() const;
+        void SendRotation() const;
 
-        void rotate(const quat& q);
+        void Rotate(const quat& q);
 
         vec3 location = vec3::Zero();
         quat rotation = quat::Identity();

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <array>
 #include <map>
@@ -33,7 +33,7 @@ namespace SimpleEngine
     };
 
     using Tri = std::array<VertexData, 3>;
-    struct Data
+    struct StupidTriData
     {
         std::vector<Tri> tris = std::vector<Tri>();
     };
@@ -100,8 +100,8 @@ namespace SimpleEngine
         std::vector<vec3> normals;
         std::vector<std::shared_ptr<Bone>> bones;
 
-        std::map<std::string, std::shared_ptr<Data>> datas;
-        std::shared_ptr<Data> currentd;
+        std::map<std::string, std::shared_ptr<StupidTriData>> datas;
+        std::shared_ptr<StupidTriData> currentd;
 
         std::map<std::string, std::shared_ptr<MaterialDef>> materials;
 

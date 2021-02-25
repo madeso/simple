@@ -15,7 +15,7 @@ namespace SimpleEngine
     {
     }
 
-    void Material::apply()
+    void Material::Apply()
     {
         glColor3f(color.x, color.y, color.z);
         tex->bind();

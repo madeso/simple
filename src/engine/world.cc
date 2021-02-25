@@ -20,7 +20,7 @@ namespace SimpleEngine
         Setup::view3d(width, height);
         {
             PushedMatrix fm;
-            c.sendRotation();
+            c.SendRotation();
             RenderList list;
             cameraSendTo(&list);
             list.render();
@@ -29,7 +29,7 @@ namespace SimpleEngine
         glClear(GL_DEPTH_BUFFER_BIT);
         {
             PushedMatrix fm;
-            c.sendRotationAndPosition();
+            c.SendRotationAndPosition();
             RenderList list;
             worldSendTo(&list);
             list.render();

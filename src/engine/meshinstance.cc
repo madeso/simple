@@ -1,4 +1,4 @@
-﻿#include "engine/meshinstance.h"
+#include "engine/meshinstance.h"
 
 #include "engine/compiledmesh.h"
 
@@ -11,7 +11,7 @@ namespace SimpleEngine
 
     void MeshInstance::sendToRenderer(RenderList* r)
     {
-        mesh->Compiled()->sendToRenderer(r, pos, rot);
+        mesh->mesh->SendToRenderer(r, pos, rot);
     }
 
     void MeshInstance::render()

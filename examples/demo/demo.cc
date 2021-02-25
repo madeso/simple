@@ -62,7 +62,7 @@ namespace SimpleTest
 
         quat final = quat::FpsQuat(cam.rotation, mousesmooth.x * sensitivity, mousesmooth.y * sensitivity);
         cam.location = cam.location + cam.rotation.getRUI(movement) * delta;
-        cam.rotate(final);
+        cam.Rotate(final);
     }
 
     void Demo::OnButton(const Ckey& button, bool down)

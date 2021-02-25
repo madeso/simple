@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 
@@ -9,6 +9,6 @@ namespace SimpleEngine
     struct Poseable
     {
         virtual ~Poseable() = default;
-        virtual std::shared_ptr<CompiledPose> CurrentPose() = 0;
+        virtual std::shared_ptr<CompiledPose> GetPose() = 0;
     };
 }

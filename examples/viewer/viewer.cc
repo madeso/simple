@@ -90,7 +90,7 @@ namespace ModelView
 
         if (mesh != nullptr)
         {
-            mesh->sendToRenderer(&list, vec3::Zero(), quat::Identity());
+            mesh->SendToRenderer(&list, vec3::Zero(), quat::Identity());
         }
 
         list.render();
@@ -242,7 +242,7 @@ namespace ModelView
             return;
         float val = SafeAnimationPosition();
         auto pose = anim->getPose(val);
-        mesh->setPose(std::make_shared<CompiledPose>(CompiledPose::Compile(pose, *def)));
+        mesh->SetPose(std::make_shared<CompiledPose>(CompiledPose::Compile(pose, *def)));
         forceRedraw();
     }
 

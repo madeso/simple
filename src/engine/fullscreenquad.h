@@ -1,7 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "engine/fbo.h"
 
-namespace SimpleEngine::FullscreenQuad
+namespace SimpleEngine
 {
-    void render(std::shared_ptr<Fbo> texture, int Width, int Height);
+    void RenderFullscreenQuad(std::shared_ptr<Fbo> texture, int Width, int Height);
 }

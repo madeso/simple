@@ -1,4 +1,4 @@
-﻿#include "engine/fse/provider.renderfullscreen.h"
+#include "engine/fse/provider.renderfullscreen.h"
 
 #include "engine/cpp.h"
 #include "engine/fse/binder.h"
@@ -28,7 +28,7 @@ namespace SimpleEngine::fse::Providers
             Shader::Bind(sh);
         }
         callCommands();  // lets call the commands
-        FullscreenQuad::render(nullptr, target->Width(), target->Height());
+        RenderFullscreenQuad(nullptr, target->Width(), target->Height());
         if (sh != nullptr)
         {
             Shader::Unbind();

@@ -85,7 +85,7 @@ namespace SimpleEngine
             // auto name = Xml::GetAttributeString(entity, "name");
             auto meshpath = Xml::GetAttributeString(entity, "file");
             // auto meshpath = t + ".mdf";
-            auto mesh = std::make_shared<MeshInstance>(loader->fetch<Mesh>(meshpath));
+            auto mesh = std::make_shared<MeshInstance>(loader->GetOrLoad<Mesh>(meshpath));
             mesh->pos = GetPosition(entity->GetChild("position"));
             mesh->rot = GetRotation(entity->GetChild("rotation"));
             target(mesh);
@@ -120,7 +120,7 @@ namespace SimpleEngine
     void SimpleWorld::addEntity(std::shared_ptr<Entity> ent)
     {
         entities.push_back(ent);
-        for (auto r : ent->visual)
+        for (auto r : ent->renderables)
         {
             add(r);
         }

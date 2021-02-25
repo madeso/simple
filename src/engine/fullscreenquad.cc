@@ -1,13 +1,13 @@
-﻿#include "engine/fullscreenquad.h"
+#include "engine/fullscreenquad.h"
 
 #include "engine/fbo.h"
 #include "engine/opengl.h"
 #include "engine/setup.h"
 #include "engine/texture.h"
 
-namespace SimpleEngine::FullscreenQuad
+namespace SimpleEngine
 {
-    void render(std::shared_ptr<Fbo> texture, int Width, int Height)
+    void RenderFullscreenQuad(std::shared_ptr<Fbo> texture, int Width, int Height)
     {
         Setup::view2d(Width, Height);
 

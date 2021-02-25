@@ -214,7 +214,7 @@ namespace SimpleEngine
         }
         if (datas.find(name) == datas.end())
         {
-            datas.emplace(name, std::make_shared<Data>());
+            datas.emplace(name, std::make_shared<StupidTriData>());
         }
         currentd = datas[name];
     }
