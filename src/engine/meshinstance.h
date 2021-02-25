@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 
@@ -17,8 +17,8 @@ namespace SimpleEngine
 
         MeshInstance(std::shared_ptr<Mesh> def);
 
-        void sendToRenderer(RenderList* r) override;
+        void SendToRenderer(RenderList* r) override;
 
-        void render() override;
+        void OnRender() override;
     };
 }

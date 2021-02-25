@@ -8,11 +8,11 @@ namespace SimpleEngine
     struct Material
     {
         Material();
-        Material(const vec3& c, std::shared_ptr<Texture> t);
+        Material(const vec3& c, std::shared_ptr<TextureMedia> t);
 
         void Apply();
 
         vec3 color;
-        std::shared_ptr<Texture> tex;
+        std::shared_ptr<TextureMedia> tex;
     };
 }

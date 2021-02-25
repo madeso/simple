@@ -22,7 +22,7 @@ namespace SimpleTest
                                              std::make_shared<Hold>(Ckey(SDLK_LCTRL))))
         , sprint(std::make_shared<Hold>(Ckey(SDLK_LSHIFT)))
     {
-        Setup::basicOpenGL();
+        Setup::BasicOpenGL();
 
         auto fs = std::make_shared<FileSystem>();
         fs->addDefaultRoots("pretty good", "simple test");

@@ -19,7 +19,7 @@ namespace SimpleEngine::fse::Commands
 
     void SetVec2Uniform::apply()
     {
-        uniform->bindUniform(vec);
+        uniform->BindUniform(vec);
     }
 
     std::vector<std::shared_ptr<Provider>> SetVec2Uniform::Dependencies()
@@ -34,6 +34,6 @@ namespace SimpleEngine::fse::Commands
     void SetVec2Uniform::doBind(Binder* bd)
     {
         shader = bd->getShader(shaderName);
-        uniform = shader->getUniform(uniformName);
+        uniform = shader->GetUniformFromName(uniformName);
     }
 }

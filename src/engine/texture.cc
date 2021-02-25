@@ -1,4 +1,4 @@
-﻿#include "engine/texture.h"
+#include "engine/texture.h"
 
 #include "engine/filesystem.h"
 #include "engine/opengl.h"
@@ -6,39 +6,39 @@
 
 namespace SimpleEngine
 {
-    unsigned int Image::Id()
+    unsigned int Texture::GetId()
     {
-        return text;
+        return texture_id;
     }
 
-    Image::Image(bool alpha, int width, int height, unsigned char* bitmapData, bool mipmap, int format)
+    Texture::Texture(bool alpha, int width, int height, unsigned char* bitmap_data, bool mipmap, int format)
     {
-        glGenTextures(1, &text);
-        bind();
-        int internalformat = alpha ? GL_RGBA8 : GL_RGB8;
+        glGenTextures(1, &texture_id);
+        Bind();
+        int internal_format = alpha ? GL_RGBA8 : GL_RGB8;
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mipmap ? GL_LINEAR_MIPMAP_NEAREST : GL_LINEAR);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, GL_UNSIGNED_BYTE, bitmapData);
+        glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, bitmap_data);
         if (mipmap)
         {
             glGenerateMipmap(GL_TEXTURE_2D);
         }
     }
 
-    void Image::bind(int location)
+    void Texture::Bind(int location)
     {
         glActiveTexture(GL_TEXTURE0 + location);
-        glBindTexture(GL_TEXTURE_2D, text);
+        glBindTexture(GL_TEXTURE_2D, texture_id);
     }
 
-    Image::~Image()
+    Texture::~Texture()
     {
-        glDeleteTextures(1, &text);
+        glDeleteTextures(1, &texture_id);
     }
 
-    void Texture::Load(MediaLoader* ml, FileSystem* fs, const std::string& path)
+    void TextureMedia::Load(MediaLoader* ml, FileSystem* fs, const std::string& path)
     {
         const auto filename = fs->open(path);
 
@@ -46,19 +46,19 @@ namespace SimpleEngine
         int h = 0;
         int comp = 0;
         stbi_set_flip_vertically_on_load(1);
-        unsigned char* image = stbi_load(filename.c_str(), &w, &h, &comp, 3);
+        unsigned char* pixel_data = stbi_load(filename.c_str(), &w, &h, &comp, 3);
 
-        if (image != nullptr)
+        if (pixel_data != nullptr)
         {
             const bool alpha = comp == 4;
             const int format = alpha ? GL_RGBA : GL_RGB;
-            img = std::make_shared<Image>(alpha, w, h, image, false, format);
-            stbi_image_free(image);
+            image = std::make_shared<Texture>(alpha, w, h, pixel_data, false, format);
+            stbi_image_free(pixel_data);
         }
     }
 
-    void Texture::bind(int location)
+    void TextureMedia::Bind(int location)
     {
-        img->bind(location);
+        image->Bind(location);
     }
 }

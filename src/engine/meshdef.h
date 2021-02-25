@@ -17,7 +17,7 @@ namespace SimpleEngine
 
     struct PointData
     {
-        int boneid;
+        int bone_id;
         vec3 location;
 
         PointData(int bone, const vec3& loc);
@@ -32,11 +32,8 @@ namespace SimpleEngine
         int uv;
     };
 
-    using Tri = std::array<VertexData, 3>;
-    struct StupidTriData
-    {
-        std::vector<Tri> tris = std::vector<Tri>();
-    };
+    using Triangle = std::array<VertexData, 3>;
+    using TriangleList = std::vector<Triangle>;
 
     struct Vertex
     {
@@ -58,14 +55,14 @@ namespace SimpleEngine
 
         std::string ToString() const;
 
-        bool hasParent() const;
+        bool HasParent() const;
 
-        std::vector<std::shared_ptr<Bone>> childs;
+        std::vector<std::shared_ptr<Bone>> children;
     };
 
-    struct MaterialDef
+    struct MaterialDefinition
     {
-        MaterialDef(const std::string& n);
+        MaterialDefinition(const std::string& n);
 
         std::string name;
         vec3 ambient = vec3(0.2f, 0.2f, 0.2f);
@@ -78,16 +75,16 @@ namespace SimpleEngine
 
         std::string texture;
 
-        std::string TextureOrName() const;
+        std::string GetTextureOrName() const;
 
         std::string ToString() const;
     };
 
-    struct Mpd
+    struct MatrixPointData
     {
-        Mpd();
+        MatrixPointData();
 
-        Mpd(const mat44& mm);
+        MatrixPointData(const mat44& mm);
 
         mat44 m;
         std::vector<std::shared_ptr<PointData>> pd;
@@ -100,10 +97,10 @@ namespace SimpleEngine
         std::vector<vec3> normals;
         std::vector<std::shared_ptr<Bone>> bones;
 
-        std::map<std::string, std::shared_ptr<StupidTriData>> datas;
-        std::shared_ptr<StupidTriData> currentd;
+        std::map<std::string, std::shared_ptr<TriangleList>> datas;
+        std::shared_ptr<TriangleList> current_data;
 
-        std::map<std::string, std::shared_ptr<MaterialDef>> materials;
+        std::map<std::string, std::shared_ptr<MaterialDefinition>> materials;
 
         std::shared_ptr<CompiledMesh> compiledMesh;
 
@@ -111,38 +108,36 @@ namespace SimpleEngine
 
         MeshDef& mapBones();
 
-        std::vector<std::shared_ptr<Bone>> RootBones() const;
+        std::vector<std::shared_ptr<Bone>> GetRootBones() const;
 
-        std::vector<Tri> TrianglesFor(const MaterialDef& material) const;
+        std::vector<Triangle> GetTrianglesFor(const MaterialDefinition& material) const;
 
-        std::vector<std::shared_ptr<MaterialDef>> Materials() const;
+        std::vector<std::shared_ptr<MaterialDefinition>> GetMaterials() const;
 
-        std::vector<Vertex> lookup(const Tri& tri) const;
+        std::vector<Vertex> GetVerticesForTriangle(const Triangle& tri) const;
 
-        void addPoint(const vec3& p, int bone);
-
+        void AddPoint(const vec3& p, int bone);
         void AddUv(const vec2& u);
+        std::shared_ptr<MaterialDefinition> AddMaterial(const std::string& name);
 
-        std::shared_ptr<MaterialDef> addMaterial(const std::string& name);
+        void SelectCurrentMaterial(const std::string& name);
 
-        void selectMaterial(const std::string& name);
+        void AddTriangle(const Triangle& t);
 
-        void addTri(const Tri& t);
+        void AddNomal(const vec3& v);
 
-        void addNomal(const vec3& v);
+        std::shared_ptr<CompiledMesh> GetCompiledMesh();
 
-        std::shared_ptr<CompiledMesh> Compiled();
+        void Compile(MediaLoader* ml);
 
-        void compile(MediaLoader* ml);
+        std::shared_ptr<Bone> CreateNewBone();
 
-        std::shared_ptr<Bone> newBone();
+        bool HasTrianglesFor(MaterialDefinition m);
 
-        bool hasTrianglesFor(MaterialDef m);
+        void ScaleMeshAndBones(float scale);
 
-        void scale(float scale);
+        std::shared_ptr<MaterialDefinition> GetExistingMaterialNamed(const std::string& name);
 
-        std::shared_ptr<MaterialDef> getMaterialNamed(const std::string& name);
-
-        void translateFiles(const std::map<std::string, std::string>& overrides);
+        void TranslateTexturePaths(const std::map<std::string, std::string>& overrides);
     };
 }

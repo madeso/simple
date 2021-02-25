@@ -9,7 +9,7 @@ namespace SimpleEngine
 {
     void RenderFullscreenQuad(std::shared_ptr<Fbo> texture, int Width, int Height)
     {
-        Setup::view2d(Width, Height);
+        Setup::View2d(Width, Height);
 
         if (texture != nullptr)
         {

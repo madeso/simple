@@ -16,14 +16,14 @@ namespace SimpleEngine
         vec3 pos;
         quat rot;
 
-        int Id() override
+        int GetId() override
         {
-            return part->Id();
+            return part->GetId();
         }
 
-        void render() override
+        void OnRender() override
         {
-            part->render(pos, rot);
+            part->OnRender(pos, rot);
         }
     };
 
@@ -32,23 +32,23 @@ namespace SimpleEngine
         int id;
         Renderable* r;
 
-        int Id() override
+        int GetId() override
         {
             return id;
         }
 
-        void render() override
+        void OnRender() override
         {
-            r->render();
+            r->OnRender();
         }
     };
 
     bool Compare(std::shared_ptr<RenderDta> x, std::shared_ptr<RenderDta> y)
     {
-        return x->Id() < y->Id();
+        return x->GetId() < y->GetId();
     }
 
-    void RenderList::add(std::shared_ptr<MeshPart> part, const vec3& pos, const quat& rot)
+    void RenderList::Add(std::shared_ptr<MeshPart> part, const vec3& pos, const quat& rot)
     {
         auto d = std::make_shared<RenderMeshPart>();
         d->part = part;
@@ -57,7 +57,7 @@ namespace SimpleEngine
         datas.emplace_back(d);
     }
 
-    void RenderList::add(Renderable* r, int id)
+    void RenderList::Add(Renderable* r, int id)
     {
         auto rr = std::make_shared<RenderRenderable>();
         rr->id = id;
@@ -65,12 +65,12 @@ namespace SimpleEngine
         datas.emplace_back(rr);
     }
 
-    void RenderList::render()
+    void RenderList::OnRender()
     {
         std::sort(datas.begin(), datas.end(), Compare);
         for (auto& data : datas)
         {
-            data->render();
+            data->OnRender();
         }
     }
 }

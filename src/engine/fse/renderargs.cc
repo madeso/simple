@@ -17,6 +17,6 @@ namespace SimpleEngine::fse
 
     void RenderArgs::render()
     {
-        World->render(Width, Height, Cam);
+        World->Render(Width, Height, Cam);
     }
 }

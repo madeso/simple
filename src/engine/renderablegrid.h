@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <vector>
 
@@ -14,7 +14,7 @@ namespace SimpleEngine
         vec3 start;
         vec3 end;
 
-        void render() const;
+        void OnRender() const;
     };
 
     struct RenderableGrid : public Renderable
@@ -26,8 +26,8 @@ namespace SimpleEngine
         float spacing = 2;
         vec3 c = vec3{0.8f, 0.8f, 0.8f};  // light gray
 
-        void sendToRenderer(RenderList* r) override;
+        void SendToRenderer(RenderList* r) override;
 
-        void render() override;
+        void OnRender() override;
     };
 }

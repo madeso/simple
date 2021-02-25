@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <functional>
 #include <memory>
@@ -16,30 +16,30 @@ namespace SimpleEngine
 
     struct SimpleWorld : public World
     {
-        std::vector<std::shared_ptr<Renderable>> worldRenderables;
-        std::vector<std::shared_ptr<Renderable>> cameraRenderables;
+        std::vector<std::shared_ptr<Renderable>> world_renderables;
+        std::vector<std::shared_ptr<Renderable>> camera_renderables;
         std::vector<std::shared_ptr<Entity>> entities;
 
         using RenderableAddTarget = std::function<void(std::shared_ptr<Renderable>)>;
 
         SimpleWorld(MediaLoader* loader, const std::string& file);
 
-        void addEntities(MediaLoader* loader, std::shared_ptr<Xml::Element> level);
+        void AddEntities(MediaLoader* loader, std::shared_ptr<Xml::Element> level);
 
-        void addMeshes(MediaLoader* loader, std::shared_ptr<Xml::Element> level, RenderableAddTarget target);
+        void AddMeshes(MediaLoader* loader, std::shared_ptr<Xml::Element> level, RenderableAddTarget target);
 
-        void add(std::shared_ptr<Renderable> r) override;
+        void Add(std::shared_ptr<Renderable> r) override;
 
-        void remove(std::shared_ptr<Renderable> r) override;
+        void Remove(std::shared_ptr<Renderable> r) override;
 
-        void worldSendTo(RenderList* list) override;
+        void SendWorldRenderablesToList(RenderList* list) override;
 
-        void addCamera(std::shared_ptr<Renderable> r) override;
+        void AddCameraRenderable(std::shared_ptr<Renderable> r) override;
 
-        void cameraSendTo(RenderList* list) override;
+        void SendCameraRenderablesToList(RenderList* list) override;
 
-        void addEntity(std::shared_ptr<Entity> ent) override;
+        void AddEntity(std::shared_ptr<Entity> ent) override;
 
-        void clearScreen() override;
+        void ClearScreen() override;
     };
 }

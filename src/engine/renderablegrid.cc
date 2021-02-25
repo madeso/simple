@@ -11,18 +11,18 @@ namespace SimpleEngine
     {
     }
 
-    void Line::render() const
+    void Line::OnRender() const
     {
         glVertex3f(start.x, start.y, start.z);
         glVertex3f(end.x, end.y, end.z);
     }
 
-    void RenderableGrid::sendToRenderer(RenderList* r)
+    void RenderableGrid::SendToRenderer(RenderList* r)
     {
-        r->add(this, 0);
+        r->Add(this, 0);
     }
 
-    void RenderableGrid::render()
+    void RenderableGrid::OnRender()
     {
         std::vector<Line> lines = std::vector<Line>();
         int count = (int)(halflength / spacing);
@@ -45,7 +45,7 @@ namespace SimpleEngine
         glColor3f(c.x, c.y, c.z);
         glBegin(GL_LINES);
         for (Line l : lines)
-            l.render();
+            l.OnRender();
         glEnd();
         glEnable(GL_TEXTURE_2D);
     }

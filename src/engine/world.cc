@@ -14,16 +14,16 @@ namespace SimpleEngine
         return std::make_shared<SimpleWorld>(loader, file);
     }
 
-    void World::render(int width, int height, const Camera& c)
+    void World::Render(int width, int height, const Camera& c)
     {
-        clearScreen();
-        Setup::view3d(width, height);
+        ClearScreen();
+        Setup::View3d(width, height);
         {
             PushedMatrix fm;
             c.SendRotation();
             RenderList list;
-            cameraSendTo(&list);
-            list.render();
+            SendCameraRenderablesToList(&list);
+            list.OnRender();
         }
 
         glClear(GL_DEPTH_BUFFER_BIT);
@@ -31,8 +31,8 @@ namespace SimpleEngine
             PushedMatrix fm;
             c.SendRotationAndPosition();
             RenderList list;
-            worldSendTo(&list);
-            list.render();
+            SendWorldRenderablesToList(&list);
+            list.OnRender();
         }
     }
 }

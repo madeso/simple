@@ -122,7 +122,7 @@ namespace SimpleEngine
                 }
             }
 
-            for (auto mat : def->Materials())
+            for (auto mat : def->GetMaterials())
             {
                 std::string matname = ToLower(mat->name);
                 if (auto found = texmap.find(matname); found != texmap.end())
@@ -135,11 +135,11 @@ namespace SimpleEngine
             if (texmap.empty() == false)
                 throw std::runtime_error("Some materials was not mapped");
 
-            def->scale(scale);
+            def->ScaleMeshAndBones(scale);
             if (animation != nullptr)
-                animation->scale(scale);
+                animation->Scale(scale);
 
-            def->translateFiles(overrides);
+            def->TranslateTexturePaths(overrides);
 
             def->mapBones();
             std::shared_ptr<Actor> actor = std::make_shared<Actor>(def);
@@ -148,7 +148,7 @@ namespace SimpleEngine
             {
                 for (AnimationInformation ai : animinfo)
                 {
-                    auto an = animation->subanim(ai);
+                    auto an = animation->GetSubAnimation(ai);
                     actor->AddAnimation(ai.name, std::make_shared<Animation>(an));
                 }
             }

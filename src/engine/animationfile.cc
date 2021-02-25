@@ -50,14 +50,14 @@ namespace SimpleEngine
                         {
                             float time = br.ReadSingle();
                             vec3 pos = vec3::Read(br);
-                            ab.addPositon(time, pos);
+                            ab.AddPositon(time, pos);
                         }
                         int rotcount = br.ReadInt32();
                         for (int rotid = 0; rotid < rotcount; ++rotid)
                         {
                             float time = br.ReadSingle();
                             quat rot = quat::Read(br);
-                            ab.addRotation(time, rot);
+                            ab.AddRotation(time, rot);
                         }
                     }
                 }

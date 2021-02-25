@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -51,23 +51,23 @@ namespace SimpleEngine
 
         std::string ToString() const;
 
-        float Length() const;
+        float GetLength() const;
 
-        void addPositon(float time, const vec3& vec3);
-        void addPositon(const FramePosition& ff);
+        void AddPositon(float time, const vec3& vec3);
+        void AddPositon(const FramePosition& ff);
 
-        void addRotation(float time, const quat& rotation);
-        void addRotation(const FrameRotation& ff);
+        void AddRotation(float time, const quat& rotation);
+        void AddRotation(const FrameRotation& ff);
 
-        PoseForBone getBonePose(float time) const;
+        PoseForBone GetBonePose(float time) const;
 
         static quat Interpolate(float time, const std::vector<FrameRotation>& fr);
 
         static vec3 Interpolate(float time, const std::vector<FramePosition>& fp);
 
-        AnimationForBone sub(int start, int end);
+        AnimationForBone GetSubAnimation(int start, int end);
 
-        void scale(float scale);
+        void Scale(float scale);
     };
 
     struct Pose
@@ -85,7 +85,7 @@ namespace SimpleEngine
 
         static CompiledPose Compile(const Pose& pose, const MeshDef& def);
 
-        static void updateMatrix(std::vector<mat44>* result, std::shared_ptr<Bone> bone, const Pose& pose, const std::vector<std::shared_ptr<Bone>>& list);
+        static void UpdateMatrix(std::vector<mat44>* result, std::shared_ptr<Bone> bone, const Pose& pose, const std::vector<std::shared_ptr<Bone>>& list);
     };
 
     struct AnimationInformation
@@ -99,16 +99,16 @@ namespace SimpleEngine
     struct Animation
     {
         std::vector<AnimationForBone> bones;
-        float Length;
+        float length;
 
         Animation(const std::vector<AnimationForBone>& b);
 
-        Pose getPose(float time) const;
+        Pose GetPose(float time) const;
 
-        Animation subanim(int start, int end) const;
+        Animation GetSubAnimation(int start, int end) const;
 
-        Animation subanim(const AnimationInformation& info);
+        Animation GetSubAnimation(const AnimationInformation& info);
 
-        void scale(float scale);
+        void Scale(float scale);
     };
 }

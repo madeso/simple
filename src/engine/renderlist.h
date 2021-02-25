@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -14,18 +14,18 @@ namespace SimpleEngine
     {
         virtual ~RenderDta() = default;
 
-        virtual int Id() = 0;
-        virtual void render() = 0;
+        virtual int GetId() = 0;
+        virtual void OnRender() = 0;
     };
 
     struct RenderList
     {
         std::vector<std::shared_ptr<RenderDta>> datas;
 
-        void add(std::shared_ptr<MeshPart> part, const vec3& pos, const quat& rot);
+        void Add(std::shared_ptr<MeshPart> part, const vec3& pos, const quat& rot);
 
-        void add(Renderable* r, int id);
+        void Add(Renderable* r, int id);
 
-        void render();
+        void OnRender();
     };
 }

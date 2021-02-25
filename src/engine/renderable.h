@@ -8,7 +8,7 @@ namespace SimpleEngine
     {
         virtual ~Renderable() = default;
 
-        virtual void sendToRenderer(RenderList* r) = 0;
-        virtual void render() = 0;
+        virtual void SendToRenderer(RenderList* r) = 0;
+        virtual void OnRender() = 0;
     };
 }

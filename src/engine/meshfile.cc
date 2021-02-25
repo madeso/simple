@@ -37,7 +37,7 @@ namespace SimpleEngine
                 int materials = br.ReadInt32();
                 for (int materialid = 0; materialid < materials; ++materialid)
                 {
-                    auto m = def->addMaterial(MaterialNameFromId(materialid));
+                    auto m = def->AddMaterial(MaterialNameFromId(materialid));
                     m->texture = br.ReadString();
                     m->ambient = vec3::Read(br);
                     m->diffuse = vec3::Read(br);
@@ -49,7 +49,7 @@ namespace SimpleEngine
                 int bonecount = br.ReadInt32();
                 for (int boneid = 0; boneid < bonecount; ++boneid)
                 {
-                    auto bone = def->newBone();
+                    auto bone = def->CreateNewBone();
                     bone->name = br.ReadString();
                     bone->parent = br.ReadInt32();
                     bone->pos = vec3::Read(br);
@@ -61,7 +61,7 @@ namespace SimpleEngine
                 {
                     int boneid = br.ReadInt32();
                     vec3 p = vec3(br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
-                    def->addPoint(p, boneid);
+                    def->AddPoint(p, boneid);
                 }
                 int uvcount = br.ReadInt32();
                 for (int uvid = 0; uvid < uvcount; ++uvid)
@@ -73,12 +73,12 @@ namespace SimpleEngine
                 for (int normalid = 0; normalid < normalcount; ++normalid)
                 {
                     vec3 p = vec3(br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
-                    def->addNomal(p);
+                    def->AddNomal(p);
                 }
 
                 for (int materialid = 0; materialid < materials; ++materialid)
                 {
-                    def->selectMaterial(MaterialNameFromId(materialid));
+                    def->SelectCurrentMaterial(MaterialNameFromId(materialid));
                     int tricount = br.ReadInt32();
                     for (int triid = 0; triid < tricount; ++triid)
                     {
@@ -89,7 +89,7 @@ namespace SimpleEngine
                             data[i].uv = br.ReadInt32();
                             data[i].normal = br.ReadInt32();
                         }
-                        def->addTri(Tri(data));
+                        def->AddTriangle(Triangle(data));
                     }
                 }
             }
@@ -101,7 +101,7 @@ namespace SimpleEngine
             auto bw = BinaryWriter(path);
 
             bw.WriteInt32(0);
-            auto materials = def->Materials();
+            auto materials = def->GetMaterials();
             bw.WriteInt32(materials.size());
             for (auto mat : materials)
             {
@@ -129,7 +129,7 @@ namespace SimpleEngine
             bw.WriteInt32(def->points.size());
             for (auto v : def->points)
             {
-                bw.WriteInt32(v->boneid);
+                bw.WriteInt32(v->bone_id);
                 bw.WriteSingle(v->location.x);
                 bw.WriteSingle(v->location.y);
                 bw.WriteSingle(v->location.z);
@@ -149,9 +149,9 @@ namespace SimpleEngine
             }
             for (auto mat : materials)
             {
-                std::vector<Tri> tris = std::vector<Tri>(def->TrianglesFor(*mat));
+                std::vector<Triangle> tris = std::vector<Triangle>(def->GetTrianglesFor(*mat));
                 bw.WriteInt32(tris.size());
-                for (Tri tri : tris)
+                for (Triangle tri : tris)
                 {
                     for (int i = 0; i < 3; ++i)
                     {
@@ -181,7 +181,7 @@ namespace SimpleEngine
 
         void LoadMaterialLibrary(std::shared_ptr<MeshDef> mesh, FileSystem* fs, const std::string& path)
         {
-            std::shared_ptr<MaterialDef> mat;
+            std::shared_ptr<MaterialDefinition> mat;
             const auto file = fs->open(path);
             {
                 for (std::string l : FileUtil::LinesIn(file))
@@ -192,7 +192,7 @@ namespace SimpleEngine
                         auto data = Split(line);
                         if (data[0] == "newmtl")
                         {
-                            mat = mesh->addMaterial(Trim(data[1]));
+                            mat = mesh->AddMaterial(Trim(data[1]));
                         }
                         else if (data[0] == "Ka")
                         {
@@ -240,7 +240,7 @@ namespace SimpleEngine
                         auto data = Split(line);
                         if (data[0] == "v")
                         {
-                            mesh->addPoint(vec3(floatParse(data[1]), floatParse(data[2]), floatParse(data[3])), -1);
+                            mesh->AddPoint(vec3(floatParse(data[1]), floatParse(data[2]), floatParse(data[3])), -1);
                         }
                         else if (data[0] == "vt")
                         {
@@ -248,7 +248,7 @@ namespace SimpleEngine
                         }
                         else if (data[0] == "vn")
                         {
-                            mesh->addNomal(vec3(floatParse(data[1]), floatParse(data[2]), floatParse(data[3])));
+                            mesh->AddNomal(vec3(floatParse(data[1]), floatParse(data[2]), floatParse(data[3])));
                         }
                         else if (data[0] == "f")
                         {
@@ -266,12 +266,12 @@ namespace SimpleEngine
                                 throw std::runtime_error("Face data incomplete");
                             for (int i = 2; i < vd.size(); ++i)
                             {
-                                mesh->addTri(Tri{vd[0], vd[1], vd[i]});
+                                mesh->AddTriangle(Triangle{vd[0], vd[1], vd[i]});
                             }
                         }
                         else if (data[0] == "usemtl")
                         {
-                            mesh->selectMaterial(Trim(data[1]));
+                            mesh->SelectCurrentMaterial(Trim(data[1]));
                         }
                         else if (data[0] == "mtllib")
                         {

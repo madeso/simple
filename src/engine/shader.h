@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <stdexcept>
 #include <string>
@@ -23,13 +23,13 @@ namespace SimpleEngine
 
         ShaderSource(const std::string& name, const std::string& source, ShaderType type);
 
-        std::string getInfoLog();
+        std::string GetInfoLog();
 
-        int mShader;
+        int shader_id;
 
-        bool CompileStatus();
+        bool GetCompileStatus();
 
-        int Shader();
+        int GetId();
     };
 
     struct Uniform
@@ -38,16 +38,16 @@ namespace SimpleEngine
 
         Uniform(Shader* s, const std::string& name);
 
-        void bindUniform(int location);
-        void bindUniform(float value);
+        void BindUniform(int location);
+        void BindUniform(float value);
 
-        void bindUniform(const vec2& v);
+        void BindUniform(const vec2& v);
     };
 
     struct ShaderBind
     {
         virtual ~ShaderBind() = default;
-        virtual void bind() = 0;
+        virtual void Bind() = 0;
     };
 
     struct StaticUniformSamplerBind : public ShaderBind
@@ -57,7 +57,7 @@ namespace SimpleEngine
 
         StaticUniformSamplerBind(std::shared_ptr<Xml::Element> root, Shader* shader);
 
-        void bind() override;
+        void Bind() override;
     };
 
     struct Shader
@@ -73,22 +73,22 @@ namespace SimpleEngine
 
         void LoadFrom(const std::string& path, std::shared_ptr<Xml::Element> shader);
 
-        std::string getInfoLog();
+        std::string GetInfoLog();
 
-        void attach(std::shared_ptr<ShaderSource> src);
+        void Attach(std::shared_ptr<ShaderSource> src);
 
-        bool LinkStatus();
+        bool GetLinkStatus();
 
-        int Program();
+        int GetProgramId();
 
         static bool IsShadersSupported();
 
-        int mProgram;
+        int program_id;
 
         static void Bind(std::shared_ptr<Shader> shader);
 
         static void Unbind();
 
-        std::shared_ptr<Uniform> getUniform(const std::string& varname);
+        std::shared_ptr<Uniform> GetUniformFromName(const std::string& varname);
     };
 }

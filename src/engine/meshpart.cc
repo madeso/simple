@@ -14,33 +14,33 @@ namespace SimpleEngine
 {
     struct Poseable;
 
-    MeshPart::MeshPart(MediaLoader* ml, const MaterialDef& m, MeshDef* def, Poseable* p)
+    MeshPart::MeshPart(MediaLoader* ml, const MaterialDefinition& m, MeshDef* def, Poseable* p)
         : poseable(p)
     {
-        mat = std::make_shared<Material>(m.diffuse, ml->GetOrLoad<Texture>(m.texture));
-        for (const auto& tri : def->TrianglesFor(m))
+        material = std::make_shared<Material>(m.diffuse, ml->GetOrLoad<TextureMedia>(m.texture));
+        for (const auto& tri : def->GetTrianglesFor(m))
         {
-            faces.emplace_back(def->lookup(tri));
+            faces.emplace_back(def->GetVerticesForTriangle(tri));
         }
     }
 
-    int MeshPart::Id()
+    int MeshPart::GetId()
     {
         if (id == -1)
-            id = calculateId();
+            id = CalculateId();
         return id;
     }
 
-    int MeshPart::calculateId() const
+    int MeshPart::CalculateId() const
     {
         return 0;
     }
 
-    void MeshPart::render(const vec3& p, const quat& rot) const
+    void MeshPart::OnRender(const vec3& p, const quat& rot) const
     {
         PushedMatrix dnum;
 
-        mat->Apply();
+        material->Apply();
         glTranslatef(p.x, p.y, p.z);
         AxisAngle aa = rot.AxisAngle();
         // apply rotation

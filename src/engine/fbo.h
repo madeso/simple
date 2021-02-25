@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <functional>
 
@@ -46,13 +46,13 @@ namespace SimpleEngine
         Size GetSize() const;
 
         std::shared_ptr<RenderBuffer> depth;
-        std::shared_ptr<Image> texture;
+        std::shared_ptr<Texture> texture;
 
         Fbo(int width, int height, bool mipmap);
 
         void attach(std::shared_ptr<RenderBuffer> b, int attachmentPoint);
 
-        void attach(std::shared_ptr<Image> img, int attachmentPoint);
+        void attach(std::shared_ptr<Texture> img, int attachmentPoint);
 
         void updateTexture(std::function<void()> renderer);
 

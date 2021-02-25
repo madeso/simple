@@ -64,7 +64,7 @@ namespace ModelView
 
         current_filename = filename;
         model_information = fmt::format("{0} points, {1} texcoords {2} tris, {3}/{4} bones",
-                                        def->points.size(), def->uvs.size(), def->TriCount(), def->bones.size(), def->RootBones().size());
+                                        def->points.size(), def->uvs.size(), def->TriCount(), def->bones.size(), def->GetRootBones().size());
 
         forceRedraw();
     }
@@ -72,8 +72,8 @@ namespace ModelView
     void Viewer::newMesh(std::shared_ptr<FileSystem> fs)
     {
         auto ml = MediaLoader(fs);
-        def->compile(&ml);
-        mesh = def->Compiled();
+        def->Compile(&ml);
+        mesh = def->GetCompiledMesh();
         forceRedraw();
     }
 
@@ -86,14 +86,14 @@ namespace ModelView
         RenderList list;
 
         RenderableGrid grid;
-        grid.sendToRenderer(&list);
+        grid.SendToRenderer(&list);
 
         if (mesh != nullptr)
         {
             mesh->SendToRenderer(&list, vec3::Zero(), quat::Identity());
         }
 
-        list.render();
+        list.OnRender();
     }
 
     void Viewer::OnMouseMove(float mx, float my)
@@ -195,7 +195,7 @@ namespace ModelView
         animation_position = 0.0f;
         current_animation = name;
 
-        animation_information = fmt::format("{0} bones, {1}s long", anim->bones.size(), anim->Length);
+        animation_information = fmt::format("{0} bones, {1}s long", anim->bones.size(), anim->length);
 
         UpdatePose();
     }
@@ -212,9 +212,9 @@ namespace ModelView
             return animation_position;
         }
 
-        if (animation_position > anim->Length)
+        if (animation_position > anim->length)
         {
-            return anim->Length;
+            return anim->length;
         }
         else
         {
@@ -229,7 +229,7 @@ namespace ModelView
             return 0.0f;
         }
 
-        return anim->Length;
+        return anim->length;
     }
 
     void Viewer::UpdatePose()
@@ -241,7 +241,7 @@ namespace ModelView
         if (mesh == nullptr)
             return;
         float val = SafeAnimationPosition();
-        auto pose = anim->getPose(val);
+        auto pose = anim->GetPose(val);
         mesh->SetPose(std::make_shared<CompiledPose>(CompiledPose::Compile(pose, *def)));
         forceRedraw();
     }
@@ -262,9 +262,9 @@ namespace ModelView
 
         animation_position += dt;
 
-        while (animation_position > anim->Length)
+        while (animation_position > anim->length)
         {
-            animation_position -= anim->Length;
+            animation_position -= anim->length;
         }
         UpdatePose();
         forceRedraw();

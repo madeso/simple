@@ -9,12 +9,12 @@ namespace SimpleEngine
     {
     }
 
-    void MeshInstance::sendToRenderer(RenderList* r)
+    void MeshInstance::SendToRenderer(RenderList* r)
     {
         mesh->mesh->SendToRenderer(r, pos, rot);
     }
 
-    void MeshInstance::render()
+    void MeshInstance::OnRender()
     {
     }
 }

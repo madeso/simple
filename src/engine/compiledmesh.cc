@@ -10,9 +10,9 @@ namespace SimpleEngine
     CompiledMesh::CompiledMesh(MediaLoader* ml, MeshDef* def)
     {
         std::vector<std::string> errors;
-        for (auto& m : def->Materials())
+        for (auto& m : def->GetMaterials())
         {
-            if (def->hasTrianglesFor(*m))
+            if (def->HasTrianglesFor(*m))
             {
                 try
                 {
@@ -35,7 +35,7 @@ namespace SimpleEngine
     {
         for (auto& part : parts)
         {
-            r->add(part, pos, rot);
+            r->Add(part, pos, rot);
         }
     }
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -10,7 +10,7 @@
 namespace SimpleEngine
 {
     struct MediaLoader;
-    struct MaterialDef;
+    struct MaterialDefinition;
     struct MeshDef;
     struct vec3;
     struct quat;
@@ -18,16 +18,16 @@ namespace SimpleEngine
     struct MeshPart
     {
         std::vector<std::vector<Vertex>> faces;
-        std::shared_ptr<Material> mat;
+        std::shared_ptr<Material> material;
         Poseable* poseable;
         int id = -1;
 
-        MeshPart(MediaLoader* ml, const MaterialDef& m, MeshDef* def, Poseable* p);
+        MeshPart(MediaLoader* ml, const MaterialDefinition& m, MeshDef* def, Poseable* p);
 
-        int Id();
+        int GetId();
 
-        int calculateId() const;
+        int CalculateId() const;
 
-        void render(const vec3& p, const quat& rot) const;
+        void OnRender(const vec3& p, const quat& rot) const;
     };
 }

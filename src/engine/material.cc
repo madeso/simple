@@ -9,7 +9,7 @@ namespace SimpleEngine
     {
     }
 
-    Material::Material(const vec3& c, std::shared_ptr<Texture> t)
+    Material::Material(const vec3& c, std::shared_ptr<TextureMedia> t)
         : color(c)
         , tex(t)
     {
@@ -18,6 +18,6 @@ namespace SimpleEngine
     void Material::Apply()
     {
         glColor3f(color.x, color.y, color.z);
-        tex->bind();
+        tex->Bind();
     }
 }

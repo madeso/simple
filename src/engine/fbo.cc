@@ -86,7 +86,7 @@ namespace SimpleEngine
         depth = std::make_shared<RenderBuffer>(GL_DEPTH_COMPONENT, width, height);
         attach(depth, GL_DEPTH_ATTACHMENT);
 
-        texture = std::make_shared<Image>(true, width, height, nullptr, mipmap, GL_RGBA);
+        texture = std::make_shared<Texture>(true, width, height, nullptr, mipmap, GL_RGBA);
         attach(texture, GL_COLOR_ATTACHMENT0);
 
         int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -103,10 +103,10 @@ namespace SimpleEngine
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachmentPoint, GL_RENDERBUFFER, b->Buffer());
     }
 
-    void Fbo::attach(std::shared_ptr<Image> img, int attachmentPoint)
+    void Fbo::attach(std::shared_ptr<Texture> img, int attachmentPoint)
     {
         const int mipmaplevel = 0;
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentPoint, GL_TEXTURE_2D, img->Id(), mipmaplevel);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentPoint, GL_TEXTURE_2D, img->GetId(), mipmaplevel);
     }
 
     void Fbo::updateTexture(std::function<void()> renderer)
@@ -123,12 +123,12 @@ namespace SimpleEngine
 
     void Fbo::bindTexture()
     {
-        texture->bind();
+        texture->Bind();
     }
 
     void Fbo::bindTexture(int location)
     {
-        texture->bind(location);
+        texture->Bind(location);
     }
 
     namespace

@@ -226,12 +226,12 @@ namespace SimpleEngine::load
 
                 for (const auto& pk : b->PositionKeys())
                 {
-                    a.addPositon(pk->time, vec3(pk->x, pk->y, pk->z));
+                    a.AddPositon(pk->time, vec3(pk->x, pk->y, pk->z));
                     added = true;
                 }
                 for (const auto& rk : b->RotationKeys())
                 {
-                    a.addRotation(rk->time, makeQuat(vec3(rk->x, rk->y, rk->z)));
+                    a.AddRotation(rk->time, makeQuat(vec3(rk->x, rk->y, rk->z)));
                     added = true;
                 }
 
@@ -250,14 +250,14 @@ namespace SimpleEngine::load
             int id = 0;
             for (auto mat : model->materials)
             {
-                auto smat = def->addMaterial(MaterialNameFromId(id));
+                auto smat = def->AddMaterial(MaterialNameFromId(id));
                 smat->texture = SmartTexture(mat->diffuseTexture);
                 ++id;
             }
 
             for (auto b : model->bones)
             {
-                auto bn = def->newBone();
+                auto bn = def->CreateNewBone();
                 bn->pos = vec3(b->x, b->y, b->z);
                 bn->rot = makeQuat(vec3(b->rx, b->ry, b->rz));
                 bn->parent = b->parentId;
@@ -275,30 +275,30 @@ namespace SimpleEngine::load
                 nbase += nadded;
                 nadded = 0;
 
-                def->selectMaterial(MaterialNameFromId(me->materialId));
+                def->SelectCurrentMaterial(MaterialNameFromId(me->materialId));
                 for (auto v : me->vertices)
                 {
-                    def->addPoint(v->pos, v->bone);
+                    def->AddPoint(v->pos, v->bone);
                     def->AddUv(vec2(v->u(), 1 - v->v()));
                     ++vadded;
                 }
 
                 for (auto n : me->normals)
                 {
-                    def->addNomal(n->norm);
+                    def->AddNomal(n->norm);
                     ++nadded;
                 }
 
                 for (auto tr : me->tris)
                 {
-                    SimpleEngine::Tri data;
+                    SimpleEngine::Triangle data;
                     data[0].uv = data[0].vertex = vbase + tr->v1;
                     data[1].uv = data[1].vertex = vbase + tr->v2;
                     data[2].uv = data[2].vertex = vbase + tr->v3;
                     data[0].normal = nbase + tr->n1;
                     data[1].normal = nbase + tr->n2;
                     data[2].normal = nbase + tr->n3;
-                    def->addTri(data);
+                    def->AddTriangle(data);
                 }
             }
 

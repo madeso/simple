@@ -1,4 +1,4 @@
-﻿#include "engine/animation.h"
+#include "engine/animation.h"
 
 #include <stdexcept>
 #include <vector>
@@ -77,31 +77,31 @@ namespace SimpleEngine
         return fmt::format("<{0} {1}>", fp.size(), fr.size());
     }
 
-    float AnimationForBone::Length() const
+    float AnimationForBone::GetLength() const
     {
         // get the time of the last frame
         return fp[fp.size() - 1].time;
     }
 
-    void AnimationForBone::addPositon(float time, const vec3& vec3)
+    void AnimationForBone::AddPositon(float time, const vec3& vec3)
     {
-        addPositon(FramePosition(time, vec3));
+        AddPositon(FramePosition(time, vec3));
     }
-    void AnimationForBone::addPositon(const FramePosition& ff)
+    void AnimationForBone::AddPositon(const FramePosition& ff)
     {
         fp.emplace_back(ff);
     }
 
-    void AnimationForBone::addRotation(float time, const quat& rotation)
+    void AnimationForBone::AddRotation(float time, const quat& rotation)
     {
-        addRotation(FrameRotation(time, rotation));
+        AddRotation(FrameRotation(time, rotation));
     }
-    void AnimationForBone::addRotation(const FrameRotation& ff)
+    void AnimationForBone::AddRotation(const FrameRotation& ff)
     {
         fr.emplace_back(ff);
     }
 
-    PoseForBone AnimationForBone::getBonePose(float time) const
+    PoseForBone AnimationForBone::GetBonePose(float time) const
     {
         PoseForBone p = PoseForBone();
         p.location = Interpolate(time, fp);
@@ -127,7 +127,7 @@ namespace SimpleEngine
         return res;
     }
 
-    AnimationForBone AnimationForBone::sub(int start, int end)
+    AnimationForBone AnimationForBone::GetSubAnimation(int start, int end)
     {
         AnimationForBone ab;
         float length = end - start;
@@ -141,17 +141,17 @@ namespace SimpleEngine
                 float mark = fp.time - start;
                 if (first && math1::IsZero(mark) == false)
                 {
-                    ab.addPositon(0, Interpolate(start, this->fp));
+                    ab.AddPositon(0, Interpolate(start, this->fp));
                 }
                 mark = math1::ZeroOrValue(mark);
                 first = false;
-                ab.addPositon(mark, fp.location);
+                ab.AddPositon(mark, fp.location);
                 last = mark;
             }
         }
         if (math1::isSame(length, last) == false)
         {
-            ab.addPositon(length, Interpolate(end, this->fp));
+            ab.AddPositon(length, Interpolate(end, this->fp));
         }
 
         first = true;
@@ -164,17 +164,17 @@ namespace SimpleEngine
                 float mark = fr.time - start;
                 if (first && math1::IsZero(mark) == false)
                 {
-                    ab.addRotation(0, Interpolate(start, this->fr));
+                    ab.AddRotation(0, Interpolate(start, this->fr));
                 }
                 mark = math1::ZeroOrValue(mark);
                 first = false;
-                ab.addRotation(mark, fr.rotation);
+                ab.AddRotation(mark, fr.rotation);
                 last = mark;
             }
         }
         if (math1::isSame(length, last) == false)
         {
-            ab.addRotation(length, Interpolate(end, this->fr));
+            ab.AddRotation(length, Interpolate(end, this->fr));
         }
 
         /*if (ab.fp.Count == 1)
@@ -195,7 +195,7 @@ namespace SimpleEngine
         return ab;
     }
 
-    void AnimationForBone::scale(float scale)
+    void AnimationForBone::Scale(float scale)
     {
         std::vector<FramePosition> nf = std::vector<FramePosition>();
         for (auto& f : fp)
@@ -224,14 +224,14 @@ namespace SimpleEngine
 
         auto result = std::vector<mat44>(pose.bones.size());
         for (int i = 0; i < pose.bones.size(); ++i) result.emplace_back(mat44::Identity());
-        for (auto& root : def.RootBones())
+        for (auto& root : def.GetRootBones())
         {
-            updateMatrix(&result, root, pose, def.bones);
+            UpdateMatrix(&result, root, pose, def.bones);
         }
         return CompiledPose(result);
     }
 
-    void CompiledPose::updateMatrix(std::vector<mat44>* result, std::shared_ptr<Bone> bone, const Pose& pose, const std::vector<std::shared_ptr<Bone>>& list)
+    void CompiledPose::UpdateMatrix(std::vector<mat44>* result, std::shared_ptr<Bone> bone, const Pose& pose, const std::vector<std::shared_ptr<Bone>>& list)
     {
         mat44 parent =
             bone->parentBone == nullptr ? mat44::Identity() : (*result)[bone->parent];
@@ -239,9 +239,9 @@ namespace SimpleEngine
         quat rot = pose.bones[bone->index].rotation;
         // bone->pos Rotate(-bone->rot).
         (*result)[bone->index] = MatrixHelper(parent).Rotate(bone->rot).Translate(bone->pos).Translate(loc).Rotate(-rot).mat44();
-        for (auto& b : bone->childs)
+        for (auto& b : bone->children)
         {
-            updateMatrix(result, b, pose, list);
+            UpdateMatrix(result, b, pose, list);
         }
     }
 
@@ -254,44 +254,44 @@ namespace SimpleEngine
 
     Animation::Animation(const std::vector<AnimationForBone>& b)
         : bones(b)
-        , Length(0.0f)
+        , length(0.0f)
     {
         for (auto& ab : bones)
         {
-            Length = math1::Max(Length, ab.Length());
+            length = math1::Max(length, ab.GetLength());
         }
     }
 
-    Pose Animation::getPose(float time) const
+    Pose Animation::GetPose(float time) const
     {
         std::vector<PoseForBone> bd;
         for (const auto& ab : bones)
         {
-            bd.emplace_back(ab.getBonePose(time));
+            bd.emplace_back(ab.GetBonePose(time));
         }
         return Pose(bd);
     }
 
-    Animation Animation::subanim(int start, int end) const
+    Animation Animation::GetSubAnimation(int start, int end) const
     {
         std::vector<AnimationForBone> bd;
         for (AnimationForBone ab : bones)
         {
-            bd.emplace_back(ab.sub(start, end));
+            bd.emplace_back(ab.GetSubAnimation(start, end));
         }
         return Animation(bd);
     }
 
-    Animation Animation::subanim(const AnimationInformation& info)
+    Animation Animation::GetSubAnimation(const AnimationInformation& info)
     {
-        return subanim(info.start, info.end);
+        return GetSubAnimation(info.start, info.end);
     }
 
-    void Animation::scale(float scale)
+    void Animation::Scale(float scale)
     {
         for (auto& afb : bones)
         {
-            afb.scale(scale);
+            afb.Scale(scale);
         }
     }
 }

@@ -47,7 +47,7 @@ namespace SimpleEngine
         {
             for (auto r : container)
             {
-                r->sendToRenderer(target);
+                r->SendToRenderer(target);
             }
         }
     }
@@ -56,12 +56,12 @@ namespace SimpleEngine
     {
         auto s = loader->FS()->open(file);
         auto level = Xml::Open(s, "level");
-        addMeshes(loader, level->GetChild("world"), [this](auto x) { this->add(x); });
-        addMeshes(loader, level->GetChild("camera"), [this](auto x) { this->addCamera(x); });
-        addEntities(loader, level->GetChild("entity"));
+        AddMeshes(loader, level->GetChild("world"), [this](auto x) { this->Add(x); });
+        AddMeshes(loader, level->GetChild("camera"), [this](auto x) { this->AddCameraRenderable(x); });
+        AddEntities(loader, level->GetChild("entity"));
     }
 
-    void SimpleWorld::addEntities(MediaLoader* loader, std::shared_ptr<Xml::Element> level)
+    void SimpleWorld::AddEntities(MediaLoader* loader, std::shared_ptr<Xml::Element> level)
     {
         for (std::shared_ptr<Xml::Element> entity : Xml::ElementsNamed(level, "entity"))
         {
@@ -74,11 +74,11 @@ namespace SimpleEngine
             quat rot = GetRotation(entity->GetChild("rotation"));
 
             auto gobstream = loader->FS()->open(meshpath);
-            addEntity(Entity::Create(loader, name, Xml::Open(gobstream, "object"), pos, rot));
+            AddEntity(Entity::Create(loader, name, Xml::Open(gobstream, "object"), pos, rot));
         }
     }
 
-    void SimpleWorld::addMeshes(MediaLoader* loader, std::shared_ptr<Xml::Element> level, RenderableAddTarget target)
+    void SimpleWorld::AddMeshes(MediaLoader* loader, std::shared_ptr<Xml::Element> level, RenderableAddTarget target)
     {
         for (std::shared_ptr<Xml::Element> entity : Xml::ElementsNamed(level, "mesh"))
         {
@@ -92,41 +92,41 @@ namespace SimpleEngine
         }
     }
 
-    void SimpleWorld::add(std::shared_ptr<Renderable> r)
+    void SimpleWorld::Add(std::shared_ptr<Renderable> r)
     {
-        worldRenderables.push_back(r);
+        world_renderables.push_back(r);
     }
 
-    void SimpleWorld::remove(std::shared_ptr<Renderable> r)
+    void SimpleWorld::Remove(std::shared_ptr<Renderable> r)
     {
-        Erase(worldRenderables, [r](std::shared_ptr<Renderable>& o) -> bool { return o == r; });
+        Erase(world_renderables, [r](std::shared_ptr<Renderable>& o) -> bool { return o == r; });
     }
 
-    void SimpleWorld::worldSendTo(RenderList* list)
+    void SimpleWorld::SendWorldRenderablesToList(RenderList* list)
     {
-        sendToList(list, worldRenderables);
+        sendToList(list, world_renderables);
     }
 
-    void SimpleWorld::addCamera(std::shared_ptr<Renderable> r)
+    void SimpleWorld::AddCameraRenderable(std::shared_ptr<Renderable> r)
     {
-        cameraRenderables.push_back(r);
+        camera_renderables.push_back(r);
     }
 
-    void SimpleWorld::cameraSendTo(RenderList* list)
+    void SimpleWorld::SendCameraRenderablesToList(RenderList* list)
     {
-        sendToList(list, cameraRenderables);
+        sendToList(list, camera_renderables);
     }
 
-    void SimpleWorld::addEntity(std::shared_ptr<Entity> ent)
+    void SimpleWorld::AddEntity(std::shared_ptr<Entity> ent)
     {
         entities.push_back(ent);
         for (auto r : ent->renderables)
         {
-            add(r);
+            Add(r);
         }
     }
 
-    void SimpleWorld::clearScreen()
+    void SimpleWorld::ClearScreen()
     {
         glClear(GL_COLOR_BUFFER_BIT);
     }

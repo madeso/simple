@@ -83,7 +83,7 @@ namespace SimpleEngine
             glClear(GL_DEPTH_BUFFER_BIT);
         }
 
-        void basicOpenGL()
+        void BasicOpenGL()
         {
             glShadeModel(GL_SMOOTH);
             glEnable(GL_TEXTURE_2D);
@@ -96,7 +96,7 @@ namespace SimpleEngine
             glEnable(GL_CULL_FACE);  // backface culling
         }
 
-        void view3d(int Width, int Height)
+        void View3d(int Width, int Height)
         {
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
@@ -110,7 +110,7 @@ namespace SimpleEngine
             glViewport(rect.Left, rect.Top, rect.Width, rect.Height);
         }
 
-        void view2d(int Width, int Height)
+        void View2d(int Width, int Height)
         {
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
