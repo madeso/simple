@@ -1,4 +1,4 @@
-﻿#include "viewer/viewer.h"
+#include "viewer/viewer.h"
 
 #include <memory>
 #include <string>
@@ -32,7 +32,7 @@ namespace ModelView
     {
     }
 
-    void Viewer::selectMesh(const std::string& fileName)
+    void Viewer::LoadMeshFromFile(const std::string& fileName)
     {
         auto [basefile, filename] = FileUtil::Split(fileName);
 
@@ -60,7 +60,7 @@ namespace ModelView
         }
 
         newMesh(fs);
-        updatePose();
+        UpdatePose();
 
         current_filename = filename;
         model_information = fmt::format("{0} points, {1} texcoords {2} tris, {3}/{4} bones",
@@ -77,7 +77,7 @@ namespace ModelView
         forceRedraw();
     }
 
-    void Viewer::Paint()
+    void Viewer::OnRender()
     {
         vec3 c = vec3::In() * distance;
         glTranslatef(c.x, c.y, c.z);
@@ -96,13 +96,13 @@ namespace ModelView
         list.render();
     }
 
-    void Viewer::MouseMove(float mx, float my)
+    void Viewer::OnMouseMove(float mx, float my)
     {
         if (down)
         {
             vec2 current = vec2(mx, my);
-            rotation->sendMouse(current, oldmouse);
-            oldmouse = current;
+            rotation->sendMouse(current, old_mouse);
+            old_mouse = current;
         }
         forceRedraw();
     }
@@ -111,24 +111,24 @@ namespace ModelView
     {
         if (state && !down)
         {
-            oldmouse = vec2(mx, my);
+            old_mouse = vec2(mx, my);
         }
         down = state;
     }
 
     void Viewer::OnMouseWheel(int delta)
     {
-        zoommem += delta;
+        zoom_memory += delta;
         int zoommove = 0;
 
-        while (zoommem >= kWheelStep)
+        while (zoom_memory >= kWheelStep)
         {
-            zoommem -= kWheelStep;
+            zoom_memory -= kWheelStep;
             ++zoommove;
         }
-        while (zoommem <= -kWheelStep)
+        while (zoom_memory <= -kWheelStep)
         {
-            zoommem += kWheelStep;
+            zoom_memory += kWheelStep;
             --zoommove;
         }
 
@@ -186,10 +186,10 @@ namespace ModelView
     void Viewer::addAnimation(const std::string& name, std::shared_ptr<Animation> anim)
     {
         animations.emplace(name, anim);
-        setAnimation(anim, name);
+        SelectLoadedAnimation(anim, name);
     }
 
-    void Viewer::setAnimation(std::shared_ptr<Animation> anim, const std::string& name)
+    void Viewer::SelectLoadedAnimation(std::shared_ptr<Animation> anim, const std::string& name)
     {
         this->anim = anim;
         animation_position = 0.0f;
@@ -197,7 +197,7 @@ namespace ModelView
 
         animation_information = fmt::format("{0} bones, {1}s long", anim->bones.size(), anim->Length);
 
-        updatePose();
+        UpdatePose();
     }
 
     float Viewer::SafeAnimationPosition()
@@ -222,7 +222,7 @@ namespace ModelView
         }
     }
 
-    float Viewer::getMaxAnimation()
+    float Viewer::GetMaxTimeForCurrentAnimation()
     {
         if (anim == nullptr)
         {
@@ -232,7 +232,7 @@ namespace ModelView
         return anim->Length;
     }
 
-    void Viewer::updatePose()
+    void Viewer::UpdatePose()
     {
         if (anim == nullptr)
             return;
@@ -246,7 +246,7 @@ namespace ModelView
         forceRedraw();
     }
 
-    void Viewer::step(float dt)
+    void Viewer::OnStep(float dt)
     {
         if (anim == nullptr)
             return;
@@ -266,7 +266,7 @@ namespace ModelView
         {
             animation_position -= anim->Length;
         }
-        updatePose();
+        UpdatePose();
         forceRedraw();
     }
 }

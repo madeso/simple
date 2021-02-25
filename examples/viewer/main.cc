@@ -24,7 +24,7 @@ namespace ModelView
 
         void OnStep(float dt) override
         {
-            viewer.step(dt);
+            viewer.OnStep(dt);
 
             if (ImGui::Begin("viewer"))
             {
@@ -39,18 +39,18 @@ namespace ModelView
                 if (viewer.animations.empty() == false)
                 {
                     ImGui::Checkbox("Play", &viewer.playing_animation);
-                    if (ImGui::SliderFloat("Time", &viewer.animation_position, 0.0f, viewer.getMaxAnimation()))
+                    if (ImGui::SliderFloat("Time", &viewer.animation_position, 0.0f, viewer.GetMaxTimeForCurrentAnimation()))
                     {
-                        viewer.updatePose();
+                        viewer.UpdatePose();
                     }
                     if (ImGui::BeginCombo("Animation", viewer.current_animation.empty() ? "<select animation>" : viewer.current_animation.c_str()))
                     {
-                        for (auto a : viewer.animations)
+                        for (const auto& a : viewer.animations)
                         {
                             bool selected = false;
                             if (ImGui::Selectable(a.first.c_str(), &selected))
                             {
-                                viewer.setAnimation(a.second, a.first);
+                                viewer.SelectLoadedAnimation(a.second, a.first);
                             }
                         }
                         ImGui::EndCombo();
@@ -105,7 +105,7 @@ namespace ModelView
             }
             if (file_dialog.showFileDialog(LOAD_MODEL, imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), ".act,.mdf,.obj,*.*"))
             {
-                viewer.selectMesh(file_dialog.selected_path);
+                viewer.LoadMeshFromFile(file_dialog.selected_path);
             }
 
             if (demo)
@@ -121,7 +121,7 @@ namespace ModelView
                 switch (e.type)
                 {
                 case SDL_MOUSEMOTION:
-                    viewer.MouseMove(e.motion.x, e.motion.y);
+                    viewer.OnMouseMove(e.motion.x, e.motion.y);
                     break;
                 case SDL_MOUSEBUTTONDOWN:
                 case SDL_MOUSEBUTTONUP:
@@ -139,7 +139,7 @@ namespace ModelView
             viewer.Width = w;
             viewer.Height = h;
             SimpleEngine::Setup::BeforeRender(w, h);
-            viewer.Paint();
+            viewer.OnRender();
         }
     };
 }

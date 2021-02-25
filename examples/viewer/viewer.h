@@ -1,4 +1,4 @@
-﻿#include <map>
+#include <map>
 #include <memory>
 #include <string>
 
@@ -24,9 +24,9 @@ namespace ModelView
         std::shared_ptr<SimpleEngine::CompiledMesh> mesh;
         std::shared_ptr<SimpleEngine::Animation> anim;
         std::shared_ptr<SimpleEngine::Rotation> rotation;
-        SimpleEngine::vec2 oldmouse;
+        SimpleEngine::vec2 old_mouse;
         bool down = false;
-        int zoommem = 0;
+        int zoom_memory = 0;
         const int kWheelStep = 1;
         float distance = 15;
         float animation_position = 0;
@@ -42,13 +42,13 @@ namespace ModelView
         Viewer();
         ~Viewer();
 
-        void selectMesh(const std::string& fileName);
+        void LoadMeshFromFile(const std::string& fileName);
 
         void newMesh(std::shared_ptr<SimpleEngine::FileSystem> fs);
 
-        void Paint();
+        void OnRender();
 
-        void MouseMove(float mx, float my);
+        void OnMouseMove(float mx, float my);
         void OnLMB(float mx, float my, bool state);
         void OnMouseWheel(int delta);
 
@@ -61,11 +61,11 @@ namespace ModelView
 
         void selectAnimation(const std::string& fileName);
         void addAnimation(const std::string& name, std::shared_ptr<SimpleEngine::Animation> anim);
-        void setAnimation(std::shared_ptr<SimpleEngine::Animation> anim, const std::string& name);
+        void SelectLoadedAnimation(std::shared_ptr<SimpleEngine::Animation> anim, const std::string& name);
         float SafeAnimationPosition();
-        void updatePose();
-        float getMaxAnimation();
+        void UpdatePose();
+        float GetMaxTimeForCurrentAnimation();
 
-        void step(float dt);
+        void OnStep(float dt);
     };
 }
