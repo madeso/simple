@@ -1,4 +1,4 @@
-﻿#include "engine/camera.h"
+#include "engine/camera.h"
 
 #include "engine/axisangle.h"
 #include "engine/opengl.h"
@@ -20,7 +20,7 @@ namespace SimpleEngine
     void Camera::SendRotation() const
     {
         // -rotatation
-        const auto aa = rotation.AxisAngle();
+        const auto aa = rotation.GetAxisAngle();
         glRotatef(-aa.angle.inDegrees(), aa.axis.x, aa.axis.y, aa.axis.z);
     }
 

@@ -64,12 +64,12 @@ namespace SimpleEngine
 
     std::string FrameRotation::ToString() const
     {
-        return fmt::format("{0} {1}", time, rotation.AxisAngle().ToString());
+        return fmt::format("{0} {1}", time, rotation.GetAxisAngle().ToString());
     }
 
     std::string PoseForBone::ToString() const
     {
-        return fmt::format("{0} : {1}", location.ToString(), rotation.AxisAngle().ToString());
+        return fmt::format("{0} : {1}", location.ToString(), rotation.GetAxisAngle().ToString());
     }
 
     std::string AnimationForBone::ToString() const

@@ -61,7 +61,7 @@ namespace SimpleTest
         // mRotation;
 
         quat final = quat::FpsQuat(cam.rotation, mousesmooth.x * sensitivity, mousesmooth.y * sensitivity);
-        cam.location = cam.location + cam.rotation.getRUI(movement) * delta;
+        cam.location = cam.location + cam.rotation.GetRUI(movement) * delta;
         cam.Rotate(final);
     }
 

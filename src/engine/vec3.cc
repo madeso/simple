@@ -102,7 +102,7 @@ namespace SimpleEngine
     vec3 vec3::RotateAroundOrigo(const SimpleEngine::quat& q, const vec3& v)
     {
         SimpleEngine::quat r = q * v.quat() * q.Conjugate();
-        return r.vec();
+        return r.GetVec();
     }
 
     float vec3::Length() const

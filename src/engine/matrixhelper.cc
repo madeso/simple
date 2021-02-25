@@ -24,7 +24,7 @@ namespace SimpleEngine
 
     MatrixHelper& MatrixHelper::Rotate(const quat& q)
     {
-        return mult(q.Conjugate().mat33().mat44());
+        return mult(q.Conjugate().GetMatrix33().mat44());
     }
 
     MatrixHelper& MatrixHelper::Translate(const vec3& t)

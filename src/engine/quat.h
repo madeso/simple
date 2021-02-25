@@ -30,8 +30,8 @@ namespace SimpleEngine
         static quat Read(BinaryReader& br);
         static void Write(const quat& q, BinaryWriter& br);
 
-        vec3 vec() const;
-        void vec(const vec3& v);
+        vec3 GetVec() const;
+        void SetVec(const vec3& v);
 
         quat Conjugate() const;
 
@@ -49,9 +49,9 @@ namespace SimpleEngine
 
         static quat Identity();
 
-        float Length() const;
+        float GetLength() const;
 
-        float LengthSquared() const;
+        float GetLengthSquared() const;
 
         static quat Slerp(const quat& a, float v, const quat& b);
 
@@ -62,17 +62,17 @@ namespace SimpleEngine
         // forces the interpolatation to go the "short way"
         static quat SlerpShortway(const quat& a, float t, const quat& b);
 
-        AxisAngle AxisAngle() const;
+        AxisAngle GetAxisAngle() const;
 
         quat(const SimpleEngine::AxisAngle& aa);
 
-        void normalize();
+        void Normalize();
 
-        quat Normalized() const;
+        quat GetNormalized() const;
 
-        vec3 getRUI(const vec3& rui) const;
+        vec3 GetRUI(const vec3& rui) const;
 
-        SimpleEngine::mat33 mat33() const;
+        SimpleEngine::mat33 GetMatrix33() const;
 
         float operator()(int index) const;
         float& operator()(int index);

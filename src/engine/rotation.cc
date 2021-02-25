@@ -12,7 +12,7 @@ namespace SimpleEngine
 {
     void QuatRot::rotateGl()
     {
-        const auto aa = rotation.AxisAngle();
+        const auto aa = rotation.GetAxisAngle();
         glRotatef(aa.angle.inDegrees(), aa.axis.x, aa.axis.y, aa.axis.z);
     }
 

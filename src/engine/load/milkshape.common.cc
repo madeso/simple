@@ -180,7 +180,7 @@ namespace SimpleEngine::load
 
     std::string RotatonKey::ToString() const
     {
-        return fmt::format("{0} {1}", time, MilkshapeCommon::makeQuat(vec3(x, y, z)).AxisAngle().ToString());
+        return fmt::format("{0} {1}", time, MilkshapeCommon::makeQuat(vec3(x, y, z)).GetAxisAngle().ToString());
     }
 
     std::string Bone::ToString() const
@@ -336,7 +336,7 @@ namespace SimpleEngine::load
             float y = cr * sp * cy + sr * cp * sy;  // Y
             float z = cr * cp * sy - sr * sp * cy;  // Z
             float w = cr * cp * cy + sr * sp * sy;  // W
-            quat a = quat(w, vec3(x, y, z)).Normalized();
+            quat a = quat(w, vec3(x, y, z)).GetNormalized();
             return a;
         }
 

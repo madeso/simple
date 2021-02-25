@@ -41,7 +41,7 @@ TEST_CASE("TestCommonRotations")
 
 TEST_CASE("testMat33")
 {
-    CHECK(AreEqual(quat::Identity().mat33().quat(), quat::Identity()));
+    CHECK(AreEqual(quat::Identity().GetMatrix33().quat(), quat::Identity()));
 }
 
 TEST_CASE("testConstants")
@@ -93,7 +93,7 @@ TEST_CASE("testLocalAxis")
 
 TEST_CASE("testVecOp")
 {
-    CHECK(AreEqual(vec3(1, 2, 3), quat(4, vec3(1, 2, 3)).vec()));
+    CHECK(AreEqual(vec3(1, 2, 3), quat(4, vec3(1, 2, 3)).GetVec()));
 }
 
 TEST_CASE("verifyTestAxisAngle")
@@ -106,9 +106,9 @@ TEST_CASE("verifyTestAxisAngle")
 
 TEST_CASE("checkAxisAngle")
 {
-    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90)), quat(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90))).AxisAngle()));
-    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(-45)), quat(AxisAngle::RightHandAround(-vec3::Up(), Angle::FromDegrees(45))).AxisAngle()));
-    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90)), quat(AxisAngle::RightHandAround(-vec3::Right(), Angle::FromDegrees(-90))).AxisAngle()));
+    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90)), quat(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90))).GetAxisAngle()));
+    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(-45)), quat(AxisAngle::RightHandAround(-vec3::Up(), Angle::FromDegrees(45))).GetAxisAngle()));
+    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90)), quat(AxisAngle::RightHandAround(-vec3::Right(), Angle::FromDegrees(-90))).GetAxisAngle()));
 }
 
 quat qa = quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(45)));

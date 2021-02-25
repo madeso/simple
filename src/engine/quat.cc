@@ -1,4 +1,4 @@
-﻿#include "engine/quat.h"
+#include "engine/quat.h"
 
 #include <cassert>
 #include <cmath>
@@ -86,12 +86,12 @@ namespace SimpleEngine
         br.WriteSingle(q.w);
     }
 
-    vec3 quat::vec() const
+    vec3 quat::GetVec() const
     {
         return vec3(x, y, z);
     }
 
-    void quat::vec(const vec3& value)
+    void quat::SetVec(const vec3& value)
     {
         x = value.x;
         y = value.y;
@@ -100,12 +100,12 @@ namespace SimpleEngine
 
     quat quat::Conjugate() const
     {
-        return quat(w, -vec());
+        return quat(w, -GetVec());
     }
 
     quat quat::AllNegative() const
     {
-        return quat(-w, -vec());
+        return quat(-w, -GetVec());
     }
 
     quat quat::Combine(const quat& current, const quat& extra)
@@ -144,12 +144,12 @@ namespace SimpleEngine
         return quat(1, vec3::Zero());
     }
 
-    float quat::Length() const
+    float quat::GetLength() const
     {
-        return (float)std::sqrt(LengthSquared());
+        return (float)std::sqrt(GetLengthSquared());
     }
 
-    float quat::LengthSquared() const
+    float quat::GetLengthSquared() const
     {
         return x * x + y * y + z * z + w * w;
     }
@@ -165,13 +165,13 @@ namespace SimpleEngine
         Angle theta0 = Angle::Acos(d);
         Angle theta = theta0 * v;
 
-        quat q = (b - a * d).Normalized();
+        quat q = (b - a * d).GetNormalized();
         return a * theta.Cos() + q * theta.Sin();
     }
 
     quat quat::lerp(const quat& a, float v, const quat& b)
     {
-        return (a + v * (b - a)).Normalized();
+        return (a + v * (b - a)).GetNormalized();
     }
 
     float quat::dot(const quat& A, const quat& B)
@@ -188,53 +188,53 @@ namespace SimpleEngine
             return Slerp(a, t, b);
     }
 
-    bool isZero(float f)
+    bool IsZero(float f)
     {
         return std::abs(f) < 0.006;
     }
 
-    AxisAngle quat::AxisAngle() const
+    AxisAngle quat::GetAxisAngle() const
     {
-        if (isZero(x) && isZero(y) && isZero(z))
+        if (IsZero(x) && IsZero(y) && IsZero(z))
         {
             return AxisAngle::RightHandAround(vec3::In(), Angle::FromRadians(0));
         }
         else
         {
-            return AxisAngle::RightHandAround(vec().Normalized(), Angle::Acos(w) * 2);
+            return AxisAngle::RightHandAround(GetVec().Normalized(), Angle::Acos(w) * 2);
         }
     }
 
     quat::quat(const SimpleEngine::AxisAngle& aa)
     {
         Angle half = aa.angle * 0.5f;
-        vec(aa.axis * half.Sin());
+        SetVec(aa.axis * half.Sin());
         w = half.Cos();
-        normalize();
+        Normalize();
     }
 
-    void quat::normalize()
+    void quat::Normalize()
     {
-        float l = Length();
+        float l = GetLength();
         x /= l;
         y /= l;
         z /= l;
         w /= l;
     }
 
-    quat quat::Normalized() const
+    quat quat::GetNormalized() const
     {
         quat q = quat(*this);
-        q.normalize();
+        q.Normalize();
         return q;
     }
 
-    vec3 quat::getRUI(const vec3& rui) const
+    vec3 quat::GetRUI(const vec3& rui) const
     {
         return Right() * rui.x + Up() * rui.y + In() * rui.z;
     }
 
-    mat33 quat::mat33() const
+    mat33 quat::GetMatrix33() const
     {
         float tXX = 2 * math1::Square(x);
         float tYY = 2 * math1::Square(y);
@@ -288,27 +288,27 @@ namespace SimpleEngine
 
     quat operator-(const quat& l, const quat& r)
     {
-        return quat(l.w - r.w, l.vec() - r.vec());
+        return quat(l.w - r.w, l.GetVec() - r.GetVec());
     }
 
     quat operator+(const quat& l, const quat& r)
     {
-        return quat(l.w + r.w, l.vec() + r.vec());
+        return quat(l.w + r.w, l.GetVec() + r.GetVec());
     }
 
     quat operator*(const quat& l, float r)
     {
-        return quat(l.w * r, l.vec() * r);
+        return quat(l.w * r, l.GetVec() * r);
     }
     quat operator*(float r, const quat& l)
     {
-        return quat(l.w * r, l.vec() * r);
+        return quat(l.w * r, l.GetVec() * r);
     }
 
     quat operator*(const quat& l, const quat& r)
     {
-        return quat(r.vec() * l.w + l.vec() * r.w + vec3::cross(l.vec(), r.vec()),
-                    l.w * r.w - vec3::dot(l.vec(), r.vec()));
+        return quat(r.GetVec() * l.w + l.GetVec() * r.w + vec3::cross(l.GetVec(), r.GetVec()),
+                    l.w * r.w - vec3::dot(l.GetVec(), r.GetVec()));
     }
     quat operator-(const quat& me)
     {

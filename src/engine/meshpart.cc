@@ -42,7 +42,7 @@ namespace SimpleEngine
 
         material->Apply();
         glTranslatef(p.x, p.y, p.z);
-        AxisAngle aa = rot.AxisAngle();
+        AxisAngle aa = rot.GetAxisAngle();
         // apply rotation
         glRotatef(aa.angle.inDegrees(), aa.axis.x, aa.axis.y, aa.axis.z);
         glBegin(GL_TRIANGLES);
