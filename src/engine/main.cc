@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 
+#include "engine/opengl.debug.h"
 #include "engine/opengl.h"
 #include "engine/vec3.h"
 #include "imgui.h"
@@ -40,6 +41,8 @@ namespace SimpleEngine
             SDL_LogCritical(SDL_LOG_CATEGORY_ERROR, "Failed to init opengl\n");
             return;
         }
+
+        SetupOpenglDebug();
 
         // Setup Dear ImGui context
         IMGUI_CHECKVERSION();

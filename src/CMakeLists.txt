@@ -93,6 +93,7 @@ set(src
     engine/key.cc engine/key.h
     engine/setup.cc engine/setup.h
     engine/main.cc engine/main.h
+    engine/opengl.debug.cc engine/opengl.debug.h
 )
 
 find_package(Filesystem REQUIRED)
