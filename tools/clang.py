@@ -165,6 +165,10 @@ def print_warning_counter(project_counter, project):
         print('{} at {}'.format(file, count))
 
 
+def full_path_to_file(root, cat, file):
+    return os.path.join(root, cat, file)
+
+
 ##############################################################################
 ##############################################################################
 
@@ -225,7 +229,7 @@ def handle_tidy(args):
         for source_file in source_files:
             print(os.path.basename(source_file), flush=True)
             if args.nop is False:
-                warnings, classes = run_clang_tidy(source_file, project_build_folder)
+                warnings, classes = run_clang_tidy(full_path_to_file(root, project, source_file), project_build_folder)
                 project_counter.update(warnings)
                 total_classes.update(classes)
 
