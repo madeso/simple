@@ -36,8 +36,8 @@ namespace SimpleEngine
         auto diff = vec2::FromTo(oldmouse, current);
         float dx = diff.x * sens;
         float dy = diff.y * sens;
-        const auto rx = quat(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(dx)));
-        const auto ry = quat(AxisAngle::RightHandAround(vec3::Right(), angle::FromDegrees(dy)));
+        const auto rx = quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(dx)));
+        const auto ry = quat(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(dy)));
         const auto final = rx * ry;
         rotation = quat::Combine(rotation, final);
     }

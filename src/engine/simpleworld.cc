@@ -27,10 +27,10 @@ namespace SimpleEngine
             return math1::ParseFloat(val);
         }
 
-        angle ap(std::shared_ptr<Xml::Element> e, std::string p)
+        Angle ap(std::shared_ptr<Xml::Element> e, std::string p)
         {
             const auto f = dp(e, p);
-            return angle::FromDegrees(f);
+            return Angle::FromDegrees(f);
         }
 
         vec3 GetPosition(std::shared_ptr<Xml::Element> e)

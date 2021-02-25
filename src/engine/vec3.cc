@@ -163,9 +163,9 @@ namespace SimpleEngine
         return vec3(math1::Curve(target.x, old.x, smoothing), math1::Curve(target.y, old.y, smoothing), math1::Curve(target.z, old.z, smoothing));
     }
 
-    angle vec3::AngleBetween(const vec3& f, const vec3& t)
+    Angle vec3::AngleBetween(const vec3& f, const vec3& t)
     {
-        return angle::Acos(vec3::dot(f, t));
+        return Angle::Acos(vec3::dot(f, t));
     }
 
     vec3 vec3::Interpolate(const vec3& f, float scale, const vec3& t)

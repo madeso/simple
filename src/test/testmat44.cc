@@ -30,13 +30,13 @@ TEST_CASE("TestIn")
 
 TEST_CASE("TestRotation")
 {
-    vec3 r = mat44::Identity().Help().Rotate(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(-90))).transform(vec3(0, 0, 5));
+    vec3 r = mat44::Identity().Help().Rotate(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(-90))).transform(vec3(0, 0, 5));
     CHECK(AreEqual(r, vec3(5, 0, 0)));
 }
 
 TEST_CASE("TestCombined")
 {
-    vec3 r = mat44::Identity().Help().Rotate(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(-90))).Translate(vec3(0, 0, 5)).transform(vec3(0, 0, 0));
+    vec3 r = mat44::Identity().Help().Rotate(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(-90))).Translate(vec3(0, 0, 5)).transform(vec3(0, 0, 0));
     CHECK(AreEqual(r, vec3(5, 0, 0)));
 }
 

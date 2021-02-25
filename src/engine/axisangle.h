@@ -11,14 +11,14 @@ namespace SimpleEngine
     {
         std::string ToString() const;
 
-        AxisAngle(const vec3& axis, const angle& angle);
+        AxisAngle(const vec3& axis, const Angle& angle);
 
-        static AxisAngle RightHandAround(const vec3& axis, const angle& angle);
+        static AxisAngle RightHandAround(const vec3& axis, const Angle& angle);
 
         AxisAngle Negative() const;
 
         vec3 axis;
-        SimpleEngine::angle angle;
+        SimpleEngine::Angle angle;
     };
 
     AxisAngle operator-(const AxisAngle& me);

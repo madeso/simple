@@ -4,43 +4,43 @@
 
 namespace SimpleEngine
 {
-    struct angle
+    struct Angle
     {
         std::string ToString() const;
 
-        static angle Zero();
+        static Angle Zero();
 
         float inRadians() const;
 
         float inDegrees() const;
 
-        static angle FromRadians(float r);
+        static Angle FromRadians(float r);
 
-        static angle FromDegrees(float deg);
+        static Angle FromDegrees(float deg);
 
-        static angle FromPercentOf360(float percent);
+        static Angle FromPercentOf360(float percent);
 
-        angle operator-() const;
+        Angle operator-() const;
 
-        angle Negative() const;
+        Angle Negative() const;
 
         float Sin() const;
         float Cos() const;
         float Tan();
 
-        static angle Asin(float v);
+        static Angle Asin(float v);
 
-        static angle Acos(float v);
+        static Angle Acos(float v);
 
-        static angle Atan(float v);
+        static Angle Atan(float v);
 
     private:
         float rad;
 
-        angle(float r);
+        Angle(float r);
     };
 
-    angle operator+(angle l, angle r);
-    angle operator-(angle l, angle r);
-    angle operator*(angle l, float r);
+    Angle operator+(Angle l, Angle r);
+    Angle operator-(Angle l, Angle r);
+    Angle operator*(Angle l, float r);
 }

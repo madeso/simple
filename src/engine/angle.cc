@@ -20,98 +20,98 @@ namespace
 
 namespace SimpleEngine
 {
-    std::string angle::ToString() const
+    std::string Angle::ToString() const
     {
         return fmt::format("{}", inDegrees());
     }
 
-    angle angle::Zero()
+    Angle Angle::Zero()
     {
-        return angle::FromRadians(0);
+        return Angle::FromRadians(0);
     }
 
-    float angle::inRadians() const
+    float Angle::inRadians() const
     {
         return rad;
     }
 
-    float angle::inDegrees() const
+    float Angle::inDegrees() const
     {
         return rad2deg(rad);
     }
 
-    angle angle::FromRadians(float r)
+    Angle Angle::FromRadians(float r)
     {
-        return angle{r};
+        return Angle{r};
     }
 
-    angle angle::FromDegrees(float deg)
+    Angle Angle::FromDegrees(float deg)
     {
-        return angle{deg2rad(deg)};
+        return Angle{deg2rad(deg)};
     }
 
-    angle angle::FromPercentOf360(float percent)
+    Angle Angle::FromPercentOf360(float percent)
     {
-        return angle::FromRadians((float)(percent * math1::pi * 2));
+        return Angle::FromRadians((float)(percent * math1::pi * 2));
     }
 
-    angle angle::operator-() const
+    Angle Angle::operator-() const
     {
         return Negative();
     }
 
-    angle angle::Negative() const
+    Angle Angle::Negative() const
     {
-        return angle{-rad};
+        return Angle{-rad};
     }
 
-    float angle::Sin() const
+    float Angle::Sin() const
     {
         return (float)std::sin(inRadians());
     }
 
-    float angle::Cos() const
+    float Angle::Cos() const
     {
         return (float)std::cos(inRadians());
     }
 
-    float angle::Tan()
+    float Angle::Tan()
     {
         return (float)std::tan(inRadians());
     }
 
-    angle angle::Asin(float v)
+    Angle Angle::Asin(float v)
     {
-        return angle::FromRadians((float)std::asin(v));
+        return Angle::FromRadians((float)std::asin(v));
     }
 
-    angle angle::Acos(float v)
+    Angle Angle::Acos(float v)
     {
-        return angle::FromRadians((float)std::acos(v));
+        return Angle::FromRadians((float)std::acos(v));
     }
 
-    angle angle::Atan(float v)
+    Angle Angle::Atan(float v)
     {
-        return angle::FromRadians((float)std::atan(v));
+        return Angle::FromRadians((float)std::atan(v));
     }
 
-    angle::angle(float r)
+    Angle::Angle(float r)
         : rad(r)
     {
     }
 
-    angle operator+(angle l, angle r)
+    Angle operator+(Angle l, Angle r)
     {
-        return angle::FromRadians(l.inRadians() + r.inRadians());
+        return Angle::FromRadians(l.inRadians() + r.inRadians());
     }
 
-    angle operator-(angle l, angle r)
+    Angle operator-(Angle l, Angle r)
     {
-        return angle::FromRadians(l.inRadians() - r.inRadians());
+        return Angle::FromRadians(l.inRadians() - r.inRadians());
     }
 
-    angle operator*(angle l, float r)
+    Angle operator*(Angle l, float r)
     {
-        return angle::FromRadians(l.inRadians() * r);
+        return Angle::FromRadians(l.inRadians() * r);
     }
 }

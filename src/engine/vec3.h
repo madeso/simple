@@ -4,7 +4,7 @@
 
 namespace SimpleEngine
 {
-    struct angle;
+    struct Angle;
     struct quat;
     struct BinaryReader;
     struct BinaryWriter;
@@ -63,7 +63,7 @@ namespace SimpleEngine
 
         static vec3 Curve(const vec3& target, const vec3& old, float smoothing);
 
-        static angle AngleBetween(const vec3& f, const vec3& t);
+        static Angle AngleBetween(const vec3& f, const vec3& t);
 
         // static vec3 Read(System.IO.BinaryReader br)
         // {

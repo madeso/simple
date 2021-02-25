@@ -149,7 +149,7 @@ namespace SimpleEngine
                 for (AnimationInformation ai : animinfo)
                 {
                     auto an = animation->subanim(ai);
-                    actor->add(ai.name, std::make_shared<Animation>(an));
+                    actor->AddAnimation(ai.name, std::make_shared<Animation>(an));
                 }
             }
 

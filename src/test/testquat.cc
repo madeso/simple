@@ -1,4 +1,4 @@
-﻿#include <cmath>
+#include <cmath>
 
 #include "catch.hpp"
 #include "engine/angle.h"
@@ -17,26 +17,26 @@ quat MakeQuat(float w, float x, float y, float z)
 
 TEST_CASE("TestCommonRotations")
 {
-    CHECK(AreEqual(MakeQuat(0, 1, 0, 0), quat(AxisAngle::RightHandAround(vec3::Right(), angle::FromDegrees(180)))));
-    CHECK(AreEqual(MakeQuat(0, 0, 1, 0), quat(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(180)))));
-    CHECK(AreEqual(MakeQuat(0, 0, 0, 1), quat(AxisAngle::RightHandAround(vec3::Out(), angle::FromDegrees(180)))));
+    CHECK(AreEqual(MakeQuat(0, 1, 0, 0), quat(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(180)))));
+    CHECK(AreEqual(MakeQuat(0, 0, 1, 0), quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(180)))));
+    CHECK(AreEqual(MakeQuat(0, 0, 0, 1), quat(AxisAngle::RightHandAround(vec3::Out(), Angle::FromDegrees(180)))));
 
     float k = (float)std::sqrt(0.5f);
-    CHECK(AreEqual(MakeQuat(k, k, 0, 0), quat(AxisAngle::RightHandAround(vec3::Right(), angle::FromDegrees(90)))));
-    CHECK(AreEqual(MakeQuat(k, 0, k, 0), quat(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(90)))));
-    CHECK(AreEqual(MakeQuat(k, 0, 0, k), quat(AxisAngle::RightHandAround(vec3::Out(), angle::FromDegrees(90)))));
+    CHECK(AreEqual(MakeQuat(k, k, 0, 0), quat(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90)))));
+    CHECK(AreEqual(MakeQuat(k, 0, k, 0), quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(90)))));
+    CHECK(AreEqual(MakeQuat(k, 0, 0, k), quat(AxisAngle::RightHandAround(vec3::Out(), Angle::FromDegrees(90)))));
 
-    CHECK(AreEqual(MakeQuat(k, -k, 0, 0), quat(AxisAngle::RightHandAround(vec3::Right(), angle::FromDegrees(-90)))));
-    CHECK(AreEqual(MakeQuat(k, 0, -k, 0), quat(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(-90)))));
-    CHECK(AreEqual(MakeQuat(k, 0, 0, -k), quat(AxisAngle::RightHandAround(vec3::Out(), angle::FromDegrees(-90)))));
+    CHECK(AreEqual(MakeQuat(k, -k, 0, 0), quat(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(-90)))));
+    CHECK(AreEqual(MakeQuat(k, 0, -k, 0), quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(-90)))));
+    CHECK(AreEqual(MakeQuat(k, 0, 0, -k), quat(AxisAngle::RightHandAround(vec3::Out(), Angle::FromDegrees(-90)))));
 
-    CHECK(AreEqual(MakeQuat(k, k, 0, 0), quat(AxisAngle::RightHandAround(vec3::Left(), angle::FromDegrees(-90)))));
-    CHECK(AreEqual(MakeQuat(k, 0, k, 0), quat(AxisAngle::RightHandAround(vec3::Down(), angle::FromDegrees(-90)))));
-    CHECK(AreEqual(MakeQuat(k, 0, 0, k), quat(AxisAngle::RightHandAround(vec3::In(), angle::FromDegrees(-90)))));
+    CHECK(AreEqual(MakeQuat(k, k, 0, 0), quat(AxisAngle::RightHandAround(vec3::Left(), Angle::FromDegrees(-90)))));
+    CHECK(AreEqual(MakeQuat(k, 0, k, 0), quat(AxisAngle::RightHandAround(vec3::Down(), Angle::FromDegrees(-90)))));
+    CHECK(AreEqual(MakeQuat(k, 0, 0, k), quat(AxisAngle::RightHandAround(vec3::In(), Angle::FromDegrees(-90)))));
 
-    CHECK(AreEqual(MakeQuat(k, -k, 0, 0), quat(AxisAngle::RightHandAround(vec3::Left(), angle::FromDegrees(90)))));
-    CHECK(AreEqual(MakeQuat(k, 0, -k, 0), quat(AxisAngle::RightHandAround(vec3::Down(), angle::FromDegrees(90)))));
-    CHECK(AreEqual(MakeQuat(k, 0, 0, -k), quat(AxisAngle::RightHandAround(vec3::In(), angle::FromDegrees(90)))));
+    CHECK(AreEqual(MakeQuat(k, -k, 0, 0), quat(AxisAngle::RightHandAround(vec3::Left(), Angle::FromDegrees(90)))));
+    CHECK(AreEqual(MakeQuat(k, 0, -k, 0), quat(AxisAngle::RightHandAround(vec3::Down(), Angle::FromDegrees(90)))));
+    CHECK(AreEqual(MakeQuat(k, 0, 0, -k), quat(AxisAngle::RightHandAround(vec3::In(), Angle::FromDegrees(90)))));
 }
 
 TEST_CASE("testMat33")
@@ -55,16 +55,16 @@ TEST_CASE("testConstants")
 
 TEST_CASE("testCombine")
 {
-    CHECK(AreEqual(quat(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(90))),
-                   quat::Combine(quat(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(90))), quat::Identity())));
+    CHECK(AreEqual(quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(90))),
+                   quat::Combine(quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(90))), quat::Identity())));
 
-    CHECK(AreEqual(quat(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(90))),
-                   quat::Combine(quat::Identity(), quat(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(90))))));
+    CHECK(AreEqual(quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(90))),
+                   quat::Combine(quat::Identity(), quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(90))))));
 
-    CHECK(AreEqual(quat::Combine(quat(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(-90))),
-                                 quat(AxisAngle::RightHandAround(vec3::Out(), angle::FromDegrees(90)))),
-                   quat::Combine(quat(AxisAngle::RightHandAround(vec3::Right(), angle::FromDegrees(90))),
-                                 quat(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(-90))))));
+    CHECK(AreEqual(quat::Combine(quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(-90))),
+                                 quat(AxisAngle::RightHandAround(vec3::Out(), Angle::FromDegrees(90)))),
+                   quat::Combine(quat(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90))),
+                                 quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(-90))))));
 }
 
 TEST_CASE("testLocalAxis")
@@ -75,17 +75,17 @@ TEST_CASE("testLocalAxis")
     CHECK(AreEqual(vec3::Up(), q.Up()));
     CHECK(AreEqual(vec3::In(), q.In()));
 
-    q = quat(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(90)));
+    q = quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(90)));
     CHECK(AreEqual(vec3::In(), q.Right()));
     CHECK(AreEqual(vec3::Up(), q.Up()));
     CHECK(AreEqual(vec3::Left(), q.In()));
 
-    q = quat(AxisAngle::RightHandAround(vec3::Right(), angle::FromDegrees(90)));
+    q = quat(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90)));
     CHECK(AreEqual(vec3::Right(), q.Right()));
     CHECK(AreEqual(vec3::Out(), q.Up()));
     CHECK(AreEqual(vec3::Up(), q.In()));
 
-    q = quat(AxisAngle::RightHandAround(vec3::In(), angle::FromDegrees(90)));
+    q = quat(AxisAngle::RightHandAround(vec3::In(), Angle::FromDegrees(90)));
     CHECK(AreEqual(vec3::Down(), q.Right()));
     CHECK(AreEqual(vec3::Right(), q.Up()));
     CHECK(AreEqual(vec3::In(), q.In()));
@@ -98,21 +98,21 @@ TEST_CASE("testVecOp")
 
 TEST_CASE("verifyTestAxisAngle")
 {
-    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(0)), AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(0))));
-    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Right(), angle::FromDegrees(90)), AxisAngle::RightHandAround(vec3::Right(), angle::FromDegrees(90))));
-    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(-45)), AxisAngle::RightHandAround(-vec3::Up(), angle::FromDegrees(45))));
-    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Right(), angle::FromDegrees(90)), AxisAngle::RightHandAround(-vec3::Right(), angle::FromDegrees(-90))));
+    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(0)), AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(0))));
+    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90)), AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90))));
+    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(-45)), AxisAngle::RightHandAround(-vec3::Up(), Angle::FromDegrees(45))));
+    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90)), AxisAngle::RightHandAround(-vec3::Right(), Angle::FromDegrees(-90))));
 }
 
 TEST_CASE("checkAxisAngle")
 {
-    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Right(), angle::FromDegrees(90)), quat(AxisAngle::RightHandAround(vec3::Right(), angle::FromDegrees(90))).AxisAngle()));
-    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(-45)), quat(AxisAngle::RightHandAround(-vec3::Up(), angle::FromDegrees(45))).AxisAngle()));
-    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Right(), angle::FromDegrees(90)), quat(AxisAngle::RightHandAround(-vec3::Right(), angle::FromDegrees(-90))).AxisAngle()));
+    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90)), quat(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90))).AxisAngle()));
+    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(-45)), quat(AxisAngle::RightHandAround(-vec3::Up(), Angle::FromDegrees(45))).AxisAngle()));
+    CHECK(AreEqual(AxisAngle::RightHandAround(vec3::Right(), Angle::FromDegrees(90)), quat(AxisAngle::RightHandAround(-vec3::Right(), Angle::FromDegrees(-90))).AxisAngle()));
 }
 
-quat qa = quat(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(45)));
-quat qb = quat(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(90)));
+quat qa = quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(45)));
+quat qb = quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(90)));
 
 TEST_CASE("testSlerp1")
 {

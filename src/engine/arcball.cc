@@ -27,7 +27,7 @@ namespace SimpleEngine
         vec3 f = transform(from);
         vec3 t = transform(to);
         vec3 axis = vec3::cross(f, t).Normalized();
-        angle angle = vec3::AngleBetween(f, t);
+        Angle angle = vec3::AngleBetween(f, t);
         return quat(AxisAngle::RightHandAround(axis, angle));
     }
 }

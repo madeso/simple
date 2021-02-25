@@ -50,7 +50,7 @@ namespace SimpleEngine
     {
     }
 
-    quat quat::FromYawPitchRoll(const angle& yaw, const angle& pitch, const angle& roll)
+    quat quat::FromYawPitchRoll(const Angle& yaw, const Angle& pitch, const Angle& roll)
     {
         // Abbreviations for the various angular functions
         const auto cy = (yaw * 0.5f).Cos();
@@ -162,8 +162,8 @@ namespace SimpleEngine
             return lerp(a, v, b);
         }
         d = math1::Within(-1, d, 1);
-        angle theta0 = angle::Acos(d);
-        angle theta = theta0 * v;
+        Angle theta0 = Angle::Acos(d);
+        Angle theta = theta0 * v;
 
         quat q = (b - a * d).Normalized();
         return a * theta.Cos() + q * theta.Sin();
@@ -197,17 +197,17 @@ namespace SimpleEngine
     {
         if (isZero(x) && isZero(y) && isZero(z))
         {
-            return AxisAngle::RightHandAround(vec3::In(), angle::FromRadians(0));
+            return AxisAngle::RightHandAround(vec3::In(), Angle::FromRadians(0));
         }
         else
         {
-            return AxisAngle::RightHandAround(vec().Normalized(), angle::Acos(w) * 2);
+            return AxisAngle::RightHandAround(vec().Normalized(), Angle::Acos(w) * 2);
         }
     }
 
     quat::quat(const SimpleEngine::AxisAngle& aa)
     {
-        angle half = aa.angle * 0.5f;
+        Angle half = aa.angle * 0.5f;
         vec(aa.axis * half.Sin());
         w = half.Cos();
         normalize();
@@ -280,8 +280,8 @@ namespace SimpleEngine
 
     quat quat::FpsQuat(const quat& rotation, float dx, float dy)
     {
-        quat rx = quat(AxisAngle::RightHandAround(vec3::Up(), angle::FromDegrees(-dx)));
-        quat ry = quat(AxisAngle::RightHandAround(rotation.Right(), angle::FromDegrees(-dy)));
+        quat rx = quat(AxisAngle::RightHandAround(vec3::Up(), Angle::FromDegrees(-dx)));
+        quat ry = quat(AxisAngle::RightHandAround(rotation.Right(), Angle::FromDegrees(-dy)));
         quat finalq = rx * ry;
         return finalq;
     }

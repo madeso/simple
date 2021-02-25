@@ -93,7 +93,7 @@ namespace SimpleEngine
         float Get360Angular(float min, float value, float max)
         {
             float halfdiff = (max - min) / 2;
-            return min + halfdiff - halfdiff * angle::FromDegrees(value * 360).Cos();
+            return min + halfdiff - halfdiff * Angle::FromDegrees(value * 360).Cos();
         }
 
         float Within(float min, float v, float max)

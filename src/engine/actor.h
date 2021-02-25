@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <map>
 #include <memory>
@@ -17,6 +17,6 @@ namespace SimpleEngine
 
         std::shared_ptr<Animation> GetAnimation(const std::string& name);
 
-        Actor& add(const std::string& name, std::shared_ptr<Animation> an);
+        Actor& AddAnimation(const std::string& name, std::shared_ptr<Animation> an);
     };
 }
