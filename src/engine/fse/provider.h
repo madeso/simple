@@ -45,6 +45,8 @@ namespace SimpleEngine::fse
         std::vector<std::shared_ptr<Command>> commands;
         std::vector<std::shared_ptr<Provider>> providers;
 
+        void OnSize(int width, int height);
+
         const std::string& Id() const;
 
         void Id(const std::string& value);

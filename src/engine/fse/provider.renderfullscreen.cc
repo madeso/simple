@@ -24,11 +24,15 @@ namespace SimpleEngine::fse::Providers
     void RenderFullscreenProvider::doProvide(RenderArgs* ra)
     {
         if (sh != nullptr)
+        {
             Shader::Bind(sh);
+        }
         callCommands();  // lets call the commands
         FullscreenQuad::render(nullptr, target->Width(), target->Height());
         if (sh != nullptr)
+        {
             Shader::Unbind();
+        }
     }
 
     void RenderFullscreenProvider::doLink(Linker* user)

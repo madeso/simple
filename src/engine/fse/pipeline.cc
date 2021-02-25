@@ -35,6 +35,7 @@ namespace SimpleEngine::fse
 
     void Pipeline::render(RenderArgs* ra)
     {
+        OnSize(ra->Width, ra->Height);
         for (auto p : providers)
         {
             p->provide(ra);
@@ -51,6 +52,14 @@ namespace SimpleEngine::fse
         if (std::find(providers.begin(), providers.end(), pr) == providers.end())
         {
             providers.emplace_back(pr);
+        }
+    }
+
+    void Pipeline::OnSize(int width, int height)
+    {
+        for (auto p : providers)
+        {
+            p->OnSize(width, height);
         }
     }
 }

@@ -32,6 +32,11 @@ namespace SimpleEngine::fse
         return id;
     }
 
+    void Provider::OnSize(int width, int height)
+    {
+        target->OnSize(width, height);
+    }
+
     Provider::Provider(std::shared_ptr<Xml::Element> el)
         : targetname(Xml::GetAttributeString(el, "target"))
         , id(Xml::GetAttributeString(el, "id"))
@@ -64,12 +69,13 @@ namespace SimpleEngine::fse
 
     std::string Provider::ToString() const
     {
-        std::vector<std::string> commandnames;
+        std::vector<std::string> command_names;
         for (auto& c : commands)
         {
-            commandnames.emplace_back(c->ToString());
+            command_names.emplace_back(c->ToString());
         }
-        return Id() + "(" + targetname + "): <" + StringSeperator(",", " and ", "").ToString(commandnames) + ">";
+        const auto command_string = StringSeperator(",", " and ", "").ToString(command_names);
+        return fmt::format("{}({}): <{}>", Id(), targetname, command_string);
     }
 
     void Provider::provide(RenderArgs* ra)

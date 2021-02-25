@@ -24,5 +24,7 @@ namespace SimpleEngine::fse
         void render(RenderArgs* ra);
 
         void add(std::shared_ptr<Provider> pr);
+
+        void OnSize(int width, int height);
     };
 }

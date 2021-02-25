@@ -34,4 +34,10 @@ namespace SimpleEngine::fse::Targets
     void FormTarget::link(Linker*)
     {
     }
+
+    void FormTarget::OnSize(int w, int h)
+    {
+        width = w;
+        height = h;
+    }
 }

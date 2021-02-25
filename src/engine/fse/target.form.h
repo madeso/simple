@@ -21,5 +21,7 @@ namespace SimpleEngine::fse::Targets
         int Height() override;
 
         void link(Linker*) override;
+
+        void OnSize(int width, int height) override;
     };
 }

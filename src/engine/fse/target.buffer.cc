@@ -43,4 +43,8 @@ namespace SimpleEngine::fse::Targets
     {
         buffer = createBuffer(Name(), width, height);
     }
+
+    void BufferTarget::OnSize(int w, int h)
+    {
+    }
 }

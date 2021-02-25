@@ -26,6 +26,7 @@ namespace SimpleEngine::fse
         virtual void apply(ApplyFunction a) = 0;
         virtual int Width() = 0;
         virtual int Height() = 0;
+        virtual void OnSize(int width, int height) = 0;
 
         std::string id;
         std::vector<std::shared_ptr<BufferReference>> references;
