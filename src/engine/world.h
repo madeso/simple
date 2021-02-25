@@ -19,6 +19,7 @@ namespace SimpleEngine
         virtual void worldSendTo(RenderList* list) = 0;
         virtual void cameraSendTo(RenderList* list) = 0;
         virtual void addEntity(std::shared_ptr<Entity> ent) = 0;
+        virtual void clearScreen() = 0;
 
         static std::shared_ptr<World> Load(MediaLoader* loader, const std::string& file);
         void render(int width, int height, const Camera& c);

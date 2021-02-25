@@ -16,6 +16,7 @@ namespace SimpleEngine
 
     void World::render(int width, int height, const Camera& c)
     {
+        clearScreen();
         Setup::view3d(width, height);
         {
             PushedMatrix fm;

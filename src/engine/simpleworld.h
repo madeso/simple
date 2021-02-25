@@ -39,5 +39,7 @@ namespace SimpleEngine
         void cameraSendTo(RenderList* list) override;
 
         void addEntity(std::shared_ptr<Entity> ent) override;
+
+        void clearScreen() override;
     };
 }

@@ -12,6 +12,7 @@
 #include "engine/medialoader.h"
 #include "engine/mesh.h"
 #include "engine/meshinstance.h"
+#include "engine/opengl.h"
 #include "engine/quat.h"
 #include "engine/vec3.h"
 #include "engine/world.h"
@@ -123,5 +124,10 @@ namespace SimpleEngine
         {
             add(r);
         }
+    }
+
+    void SimpleWorld::clearScreen()
+    {
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 }
