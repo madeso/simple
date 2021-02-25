@@ -246,20 +246,6 @@ namespace ModelView
         forceRedraw();
     }
 
-#ifdef NOTYET
-    void Viewer::selectMaterialToolStripMenuItem_Click()
-    {
-        ChangeMaterial mat = ChangeMaterial(def);
-        if (mat.ShowDialog() == DialogResult.OK)
-        {
-            def.getMaterialNamed(mat.MaterialName).texture = Path.GetFileName(mat.Texture);
-            FileSystem fs = FileSystem();
-            fs.addRoot(Path.GetDirectoryName(mat.Texture));
-            newMesh(fs);
-        }
-    }
-#endif
-
     void Viewer::step(float dt)
     {
         if (anim == nullptr)

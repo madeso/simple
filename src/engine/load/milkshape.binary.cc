@@ -96,16 +96,6 @@ namespace SimpleEngine::load::MilkshapeBinary
     std::string CropNull(const std::string& input)
     {
         return input;
-#ifdef NOTYET
-        input = input.Trim();
-        if (input.EndsWith(((char)13).ToString()) && input.IndexOf('\0') == -1)
-        {
-            return input.Substring(0, input.Length - 1);
-        }
-        if (input.IndexOf('\0') == -1)
-            return input;
-        return input.Substring(0, input.IndexOf('\0'));
-#endif
     }
 
     std::string AsString(char* c)

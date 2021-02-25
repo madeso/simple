@@ -66,10 +66,6 @@ namespace ModelView
         void updatePose();
         float getMaxAnimation();
 
-#ifdef NOTYET
-        void selectMaterialToolStripMenuItem_Click();
-#endif
-
         void step(float dt);
     };
 }

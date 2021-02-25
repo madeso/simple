@@ -296,10 +296,6 @@ namespace SimpleEngine
                 loaded->mapBones();
                 return loaded;
             }
-#ifdef NOTYET
-            else if (EndsWith(path, ".3ds"))
-                return load::Loader_3ds::Load(fs, path);
-#endif
             else
                 throw UserException(path + " does not use a known fileformat");
         }
