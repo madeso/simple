@@ -32,7 +32,7 @@ namespace SimpleTest
         world = World::Load(&loader, "level01.lvl");
         // world.add(MeshInstance(loader.fetch<Mesh>("basicroad.obj")));
 
-        pipe = fse::Pipeline::Create("basic.xml", &loader, Width, Height);
+        pipe = fse::Pipeline::Create("pipeline_ssao.xml", &loader, Width, Height);
     }
 
     void Demo::Render()
