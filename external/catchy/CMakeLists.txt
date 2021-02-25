@@ -35,4 +35,4 @@ target_include_directories(catchy
     ${CMAKE_CURRENT_SOURCE_DIR}
     external
 )
-
+target_link_libraries(catchy PUBLIC fmt::fmt)
