@@ -162,7 +162,7 @@ IF(SDL2_LIBRARY_TEMP)
   IF(WIN32)
     # https://forums.libsdl.org/viewtopic.php?p=39921
     MESSAGE(STATUS "Including win32 libraries")
-    SET(SDL2_LIBRARY_TEMP ${SDL2_LIBRARY_TEMP} version.lib imm32.lib winmm.lib)
+    SET(SDL2_LIBRARY_TEMP ${SDL2_LIBRARY_TEMP} version.lib imm32.lib winmm.lib Setupapi.lib)
   ENDIF(WIN32)
 
 	# For MinGW library
