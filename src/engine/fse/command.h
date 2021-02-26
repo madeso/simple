@@ -1,11 +1,11 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 #include <string>
 
 #include "engine/xml.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     struct Provider;
     struct Linker;
@@ -17,25 +17,21 @@ namespace SimpleEngine::fse
         std::shared_ptr<Provider> prov;
         std::string id;
 
-        Command(std::shared_ptr<Xml::Element> el, std::shared_ptr<Provider> p);
+        Command(std::shared_ptr<xml::Element> el, std::shared_ptr<Provider> p);
 
-        ~Command();
+        virtual ~Command();
 
         virtual std::string ToString() const;
 
-        std::shared_ptr<BufferReference> createBuffer(std::string name);
+        std::shared_ptr<BufferReference> CreateBuffer(std::string name);
 
-        virtual void apply() = 0;
+        virtual void Apply() = 0;
         // should be called by our provider
 
-        void link(Linker* linker);
+        virtual std::vector<std::shared_ptr<Provider>> GetDependencies() = 0;
 
-        void bind(Binder* b);
+        virtual void Link(Linker* user) = 0;
 
-        virtual std::vector<std::shared_ptr<Provider>> Dependencies() = 0;
-
-        virtual void doLink(Linker* user) = 0;
-
-        virtual void doBind(Binder* bd) = 0;
+        virtual void Bind(Binder* bd) = 0;
     };
 }

@@ -4,13 +4,13 @@
 
 #include "engine/xml.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     struct Command;
     struct Provider;
 }
 
-namespace SimpleEngine::fse::Commands
+namespace simple::fse::commands
 {
-    std::shared_ptr<Command> Create(std::shared_ptr<Xml::Element> el, std::shared_ptr<Provider> pro);
+    std::shared_ptr<Command> Create(std::shared_ptr<xml::Element> el, std::shared_ptr<Provider> pro);
 }

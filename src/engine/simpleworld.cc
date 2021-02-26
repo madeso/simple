@@ -1,4 +1,4 @@
-﻿#include "engine/simpleworld.h"
+#include "engine/simpleworld.h"
 
 #include <functional>
 #include <memory>
@@ -8,7 +8,7 @@
 #include "engine/angle.h"
 #include "engine/cpp.h"
 #include "engine/filesystem.h"
-#include "engine/math1.h"
+#include "engine/math.h"
 #include "engine/medialoader.h"
 #include "engine/mesh.h"
 #include "engine/meshinstance.h"
@@ -17,77 +17,77 @@
 #include "engine/vec3.h"
 #include "engine/world.h"
 
-namespace SimpleEngine
+namespace simple
 {
     namespace
     {
-        float dp(std::shared_ptr<Xml::Element> e, std::string p)
+        float ReadFloat(std::shared_ptr<xml::Element> element, const std::string& attribute_name)
         {
-            std::string val = Xml::GetAttributeString(e, p);
-            return math1::ParseFloat(val);
+            const std::string value = xml::GetAttributeString(element, attribute_name);
+            return math::ParseFloat(value);
         }
 
-        Angle ap(std::shared_ptr<Xml::Element> e, std::string p)
+        Angle ReadAngle(std::shared_ptr<xml::Element> element, const std::string& attribute_name)
         {
-            const auto f = dp(e, p);
+            const auto f = ReadFloat(element, attribute_name);
             return Angle::FromDegrees(f);
         }
 
-        vec3 GetPosition(std::shared_ptr<Xml::Element> e)
+        vec3 GetPosition(std::shared_ptr<xml::Element> e)
         {
-            return vec3(dp(e, "x"), dp(e, "y"), dp(e, "z"));
+            return vec3(ReadFloat(e, "x"), ReadFloat(e, "y"), ReadFloat(e, "z"));
         }
 
-        quat GetRotation(std::shared_ptr<Xml::Element> e)
+        quat GetRotation(std::shared_ptr<xml::Element> e)
         {
-            return quat::FromYawPitchRoll(ap(e, "y"), ap(e, "p"), ap(e, "r"));
+            return quat::FromYawPitchRoll(ReadAngle(e, "y"), ReadAngle(e, "p"), ReadAngle(e, "r"));
         }
 
-        void sendToList(RenderList* target, const std::vector<std::shared_ptr<Renderable>>& container)
+        void SendToList(RenderList* target, const std::vector<std::shared_ptr<Renderable>>& container)
         {
-            for (auto r : container)
+            for (const auto& renderable : container)
             {
-                r->SendToRenderer(target);
+                renderable->SendToRenderer(target);
             }
         }
     }
 
     SimpleWorld::SimpleWorld(MediaLoader* loader, const std::string& file)
     {
-        auto s = loader->FS()->open(file);
-        auto level = Xml::Open(s, "level");
+        auto absolute_path = loader->FS()->Open(file);
+        auto level = xml::Open(absolute_path, "level");
         AddMeshes(loader, level->GetChild("world"), [this](auto x) { this->Add(x); });
         AddMeshes(loader, level->GetChild("camera"), [this](auto x) { this->AddCameraRenderable(x); });
         AddEntities(loader, level->GetChild("entity"));
     }
 
-    void SimpleWorld::AddEntities(MediaLoader* loader, std::shared_ptr<Xml::Element> level)
+    void SimpleWorld::AddEntities(MediaLoader* loader, std::shared_ptr<xml::Element> level)
     {
-        for (std::shared_ptr<Xml::Element> entity : Xml::ElementsNamed(level, "entity"))
+        for (const std::shared_ptr<xml::Element>& entity : xml::ElementsNamed(level, "entity"))
         {
-            std::string t = Xml::GetAttributeString(entity, "type");
-            if (t[0] == '_')
+            auto type = xml::GetAttributeString(entity, "type");
+            if (type[0] == '_')
                 continue;  // ignore for now
-            std::string name = Xml::GetAttributeString(entity, "name");
-            std::string meshpath = t + ".gob";
+            std::string name = xml::GetAttributeString(entity, "name");
+            std::string meshpath = type + ".gob";
             vec3 pos = GetPosition(entity->GetChild("position"));
             quat rot = GetRotation(entity->GetChild("rotation"));
 
-            auto gobstream = loader->FS()->open(meshpath);
-            AddEntity(Entity::Create(loader, name, Xml::Open(gobstream, "object"), pos, rot));
+            auto gobstream = loader->FS()->Open(meshpath);
+            AddEntity(Entity::Create(loader, name, xml::Open(gobstream, "object"), pos, rot));
         }
     }
 
-    void SimpleWorld::AddMeshes(MediaLoader* loader, std::shared_ptr<Xml::Element> level, RenderableAddTarget target)
+    void SimpleWorld::AddMeshes(MediaLoader* loader, std::shared_ptr<xml::Element> level, const RenderableAddTarget& target)
     {
-        for (std::shared_ptr<Xml::Element> entity : Xml::ElementsNamed(level, "mesh"))
+        for (std::shared_ptr<xml::Element> entity : xml::ElementsNamed(level, "mesh"))
         {
             // auto name = Xml::GetAttributeString(entity, "name");
-            auto meshpath = Xml::GetAttributeString(entity, "file");
+            auto meshpath = xml::GetAttributeString(entity, "file");
             // auto meshpath = t + ".mdf";
             auto mesh = std::make_shared<MeshInstance>(loader->GetOrLoad<Mesh>(meshpath));
-            mesh->pos = GetPosition(entity->GetChild("position"));
-            mesh->rot = GetRotation(entity->GetChild("rotation"));
+            mesh->position = GetPosition(entity->GetChild("position"));
+            mesh->rotation = GetRotation(entity->GetChild("rotation"));
             target(mesh);
         }
     }
@@ -97,30 +97,30 @@ namespace SimpleEngine
         world_renderables.push_back(r);
     }
 
-    void SimpleWorld::Remove(std::shared_ptr<Renderable> r)
+    void SimpleWorld::Remove(std::shared_ptr<Renderable> renderable)
     {
-        Erase(world_renderables, [r](std::shared_ptr<Renderable>& o) -> bool { return o == r; });
+        Erase(world_renderables, [renderable](std::shared_ptr<Renderable>& other) -> bool { return other == renderable; });
     }
 
     void SimpleWorld::SendWorldRenderablesToList(RenderList* list)
     {
-        sendToList(list, world_renderables);
+        SendToList(list, world_renderables);
     }
 
-    void SimpleWorld::AddCameraRenderable(std::shared_ptr<Renderable> r)
+    void SimpleWorld::AddCameraRenderable(std::shared_ptr<Renderable> renderable)
     {
-        camera_renderables.push_back(r);
+        camera_renderables.push_back(renderable);
     }
 
     void SimpleWorld::SendCameraRenderablesToList(RenderList* list)
     {
-        sendToList(list, camera_renderables);
+        SendToList(list, camera_renderables);
     }
 
-    void SimpleWorld::AddEntity(std::shared_ptr<Entity> ent)
+    void SimpleWorld::AddEntity(std::shared_ptr<Entity> entity)
     {
-        entities.push_back(ent);
-        for (auto r : ent->renderables)
+        entities.push_back(entity);
+        for (auto r : entity->renderables)
         {
             Add(r);
         }

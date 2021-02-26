@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace SimpleEngine
+namespace simple
 {
     struct Angle;
     struct quat;
@@ -31,11 +31,11 @@ namespace SimpleEngine
 
         float operator()(int index) const;
 
-        vec3 scale(float s) const;
+        vec3 Scale(float s) const;
 
         vec3 Negative() const;
 
-        quat quat() const;
+        quat ToQuat() const;
 
         static vec3 FromTo(const vec3& from, const vec3& to);
 
@@ -43,15 +43,15 @@ namespace SimpleEngine
 
         static float dot(const vec3& lhs, const vec3& rhs);
 
-        static vec3 RotateAroundOrigo(const SimpleEngine::quat& q, const vec3& v);
+        static vec3 RotateAroundOrigo(const simple::quat& q, const vec3& v);
 
-        float Length() const;
+        float GetLength() const;
 
-        float LengthSquared() const;
+        float GetLengthSquared() const;
 
-        void normalize();
+        void Normalize();
 
-        vec3 Normalized() const;
+        vec3 GetNormalized() const;
 
         static vec3 Right();
         static vec3 In();

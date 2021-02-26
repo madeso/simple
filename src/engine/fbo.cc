@@ -6,13 +6,8 @@
 #include "engine/opengl.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    unsigned int RenderBuffer::Buffer() const
-    {
-        return buffer;
-    }
-
     RenderBuffer::RenderBuffer(int internalFormat, int width, int height)
     {
         glGenRenderbuffers(1, &buffer);
@@ -84,10 +79,10 @@ namespace SimpleEngine
         Bind(this);
 
         depth = std::make_shared<RenderBuffer>(GL_DEPTH_COMPONENT, width, height);
-        attach(depth, GL_DEPTH_ATTACHMENT);
+        Attach(depth, GL_DEPTH_ATTACHMENT);
 
         texture = std::make_shared<Texture>(true, width, height, nullptr, mipmap, GL_RGBA);
-        attach(texture, GL_COLOR_ATTACHMENT0);
+        Attach(texture, GL_COLOR_ATTACHMENT0);
 
         int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         if (status != GL_FRAMEBUFFER_COMPLETE)
@@ -98,18 +93,18 @@ namespace SimpleEngine
         Bind(nullptr);
     }
 
-    void Fbo::attach(std::shared_ptr<RenderBuffer> b, int attachmentPoint)
+    void Fbo::Attach(std::shared_ptr<RenderBuffer> b, int attachmentPoint)
     {
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachmentPoint, GL_RENDERBUFFER, b->Buffer());
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachmentPoint, GL_RENDERBUFFER, b->buffer);
     }
 
-    void Fbo::attach(std::shared_ptr<Texture> img, int attachmentPoint)
+    void Fbo::Attach(std::shared_ptr<Texture> texture, int attachment_point)
     {
         const int mipmaplevel = 0;
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentPoint, GL_TEXTURE_2D, img->GetId(), mipmaplevel);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment_point, GL_TEXTURE_2D, texture->id, mipmaplevel);
     }
 
-    void Fbo::updateTexture(std::function<void()> renderer)
+    void Fbo::UpdateTexture(std::function<void()> renderer)
     {
         Bind(this);
         glPushAttrib(GL_VIEWPORT_BIT);
@@ -121,12 +116,12 @@ namespace SimpleEngine
         Bind(nullptr);
     }
 
-    void Fbo::bindTexture()
+    void Fbo::BindTexture()
     {
         texture->Bind();
     }
 
-    void Fbo::bindTexture(int location)
+    void Fbo::BindTexture(int location)
     {
         texture->Bind(location);
     }

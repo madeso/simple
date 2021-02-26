@@ -8,9 +8,9 @@
 #include "engine/fse/bufferreference.h"
 #include "engine/xml.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
-    using namespace SimpleEngine;
+    using namespace simple;
 
     struct Linker;
     struct Provider;
@@ -20,12 +20,12 @@ namespace SimpleEngine::fse
     {
         using ApplyFunction = std::function<void()>;
 
-        Target(std::shared_ptr<Xml::Element> el);
+        Target(std::shared_ptr<xml::Element> el);
 
-        virtual void link(Linker* usr) = 0;
-        virtual void apply(ApplyFunction a) = 0;
-        virtual int Width() = 0;
-        virtual int Height() = 0;
+        virtual void Link(Linker* usr) = 0;
+        virtual void Apply(ApplyFunction a) = 0;
+        virtual int GetWidth() = 0;
+        virtual int GetHeight() = 0;
         virtual void OnSize(int width, int height) = 0;
 
         std::string id;
@@ -33,19 +33,19 @@ namespace SimpleEngine::fse
         std::map<std::string, Size> associations;
         std::shared_ptr<Provider> provider;
 
-        std::string Id() const;
-        void Id(const std::string& value);
+        std::string GetId() const;
+        void SetId(const std::string& value);
 
         virtual std::string ToString() const;
 
-        std::shared_ptr<BufferReference> createBuffer(const std::string& name);
-        std::shared_ptr<BufferReference> createBuffer(const std::string& name, int width, int height);
+        std::shared_ptr<BufferReference> CreateBuffer(const std::string& name);
+        std::shared_ptr<BufferReference> CreateBuffer(const std::string& name, int width, int height);
 
-        void associate(const std::string& name, int width, int height);
+        void SetSize(const std::string& name, int width, int height);
 
-        std::shared_ptr<Provider> Provider();
-        void Provider(std::shared_ptr<fse::Provider> value);
+        std::shared_ptr<Provider> GetProvider();
+        void SetProvider(std::shared_ptr<fse::Provider> value);
 
-        void bind(Binder* binder);
+        void Bind(Binder* binder);
     };
 }

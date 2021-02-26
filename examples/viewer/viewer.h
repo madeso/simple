@@ -5,7 +5,7 @@
 #include "engine/vec2.h"
 #include "engine/window.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct CompiledMesh;
     struct MeshDef;
@@ -14,24 +14,24 @@ namespace SimpleEngine
     struct FileSystem;
 }
 
-namespace ModelView
+namespace viewer
 {
-    struct Viewer : public SimpleEngine::Window
+    struct Viewer : public simple::Window
     {
         std::string current_filename;
         std::string model_information;
-        std::shared_ptr<SimpleEngine::MeshDef> def;
-        std::shared_ptr<SimpleEngine::CompiledMesh> mesh;
-        std::shared_ptr<SimpleEngine::Animation> anim;
-        std::shared_ptr<SimpleEngine::Rotation> rotation;
-        SimpleEngine::vec2 old_mouse;
+        std::shared_ptr<simple::MeshDef> def;
+        std::shared_ptr<simple::CompiledMesh> mesh;
+        std::shared_ptr<simple::Animation> anim;
+        std::shared_ptr<simple::Rotation> rotation;
+        simple::vec2 old_mouse;
         bool down = false;
         int zoom_memory = 0;
         const int kWheelStep = 1;
         float distance = 15;
         float animation_position = 0;
         bool playing_animation = false;
-        std::map<std::string, std::shared_ptr<SimpleEngine::Animation>> animations;
+        std::map<std::string, std::shared_ptr<simple::Animation>> animations;
         std::string animation_information;
         std::string current_animation;
 
@@ -44,7 +44,7 @@ namespace ModelView
 
         void LoadMeshFromFile(const std::string& fileName);
 
-        void newMesh(std::shared_ptr<SimpleEngine::FileSystem> fs);
+        void newMesh(std::shared_ptr<simple::FileSystem> fs);
 
         void OnRender();
 
@@ -60,8 +60,8 @@ namespace ModelView
         void SetArcballCamera();
 
         void selectAnimation(const std::string& fileName);
-        void addAnimation(const std::string& name, std::shared_ptr<SimpleEngine::Animation> anim);
-        void SelectLoadedAnimation(std::shared_ptr<SimpleEngine::Animation> anim, const std::string& name);
+        void addAnimation(const std::string& name, std::shared_ptr<simple::Animation> anim);
+        void SelectLoadedAnimation(std::shared_ptr<simple::Animation> anim, const std::string& name);
         float SafeAnimationPosition();
         void UpdatePose();
         float GetMaxTimeForCurrentAnimation();

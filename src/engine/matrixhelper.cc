@@ -4,46 +4,46 @@
 #include "engine/quat.h"
 #include "engine/vec3.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    MatrixHelper::MatrixHelper(const SimpleEngine::mat44& m)
-        : mat(m)
+    MatrixHelper::MatrixHelper(const simple::mat44& m)
+        : matrix(m)
     {
     }
 
-    MatrixHelper& MatrixHelper::mult(const SimpleEngine::mat44& m)
+    MatrixHelper& MatrixHelper::Multiply(const simple::mat44& m)
     {
-        mat = mat * m;
+        matrix = matrix * m;
         return *this;
     }
 
     MatrixHelper& MatrixHelper::Rotate(const AxisAngle& aa)
     {
-        return mult(mat44::FromAxisAngle(aa));
+        return Multiply(mat44::FromAxisAngle(aa));
     }
 
     MatrixHelper& MatrixHelper::Rotate(const quat& q)
     {
-        return mult(q.Conjugate().GetMatrix33().mat44());
+        return Multiply(q.Conjugate().GetMatrix33().AsMat44());
     }
 
     MatrixHelper& MatrixHelper::Translate(const vec3& t)
     {
-        return mult(mat44::TranslationFor(t));
+        return Multiply(mat44::FromTranslation(t));
     }
 
-    vec3 MatrixHelper::transform(const vec3& v) const
+    vec3 MatrixHelper::GetTransform(const vec3& v) const
     {
-        return mat * v;
+        return matrix * v;
     }
 
-    mat33 MatrixHelper::mat33() const
+    mat33 MatrixHelper::AsMat33() const
     {
-        return mat.mat33();
+        return matrix.AsMat33();
     }
 
-    mat44 MatrixHelper::mat44() const
+    mat44 MatrixHelper::AsMat44() const
     {
-        return mat;
+        return matrix;
     }
 }

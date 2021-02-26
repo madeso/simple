@@ -7,17 +7,17 @@
 #include "engine/renderable.h"
 #include "engine/vec3.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct MeshInstance : Renderable
     {
         std::shared_ptr<Mesh> mesh;
-        vec3 pos = vec3::Zero();
-        quat rot = quat::Identity();
+        vec3 position = vec3::Zero();
+        quat rotation = quat::Identity();
 
-        MeshInstance(std::shared_ptr<Mesh> def);
+        MeshInstance(std::shared_ptr<Mesh> m);
 
-        void SendToRenderer(RenderList* r) override;
+        void SendToRenderer(RenderList* list) override;
 
         void OnRender() override;
     };

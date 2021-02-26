@@ -11,14 +11,14 @@
 #include "engine/userexception.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine
+namespace simple
 {
     std::string MaterialNameFromId(int materialid)
     {
         return fmt::format("m{}", materialid);
     }
 
-    namespace MeshDefFile
+    namespace meshdef_file
     {
         void WriteColor(BinaryWriter& bw, const vec3& mat)
         {
@@ -30,7 +30,7 @@ namespace SimpleEngine
         std::shared_ptr<MeshDef> Load(FileSystem* fs, const std::string& path)
         {
             auto def = std::make_shared<MeshDef>();
-            const auto s = fs->open(path);
+            const auto s = fs->Open(path);
             {
                 auto br = BinaryReader(s);
                 int version = br.ReadInt32();
@@ -73,7 +73,7 @@ namespace SimpleEngine
                 for (int normalid = 0; normalid < normalcount; ++normalid)
                 {
                     vec3 p = vec3(br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
-                    def->AddNomal(p);
+                    def->AddNormal(p);
                 }
 
                 for (int materialid = 0; materialid < materials; ++materialid)
@@ -82,7 +82,7 @@ namespace SimpleEngine
                     int tricount = br.ReadInt32();
                     for (int triid = 0; triid < tricount; ++triid)
                     {
-                        std::array<VertexData, 3> data;
+                        std::array<IndexedVertex, 3> data;
                         for (int i = 0; i < 3; ++i)
                         {
                             data[i].vertex = br.ReadInt32();
@@ -134,8 +134,8 @@ namespace SimpleEngine
                 bw.WriteSingle(v->location.y);
                 bw.WriteSingle(v->location.z);
             }
-            bw.WriteInt32(def->uvs.size());
-            for (vec2 u : def->uvs)
+            bw.WriteInt32(def->texturecoordinates.size());
+            for (vec2 u : def->texturecoordinates)
             {
                 bw.WriteSingle(u.x);
                 bw.WriteSingle(u.y);
@@ -164,7 +164,7 @@ namespace SimpleEngine
         }
     }
 
-    namespace WavefrontObj
+    namespace wavefront_obj
     {
         float floatParse(const std::string& s)
         {
@@ -182,9 +182,9 @@ namespace SimpleEngine
         void LoadMaterialLibrary(std::shared_ptr<MeshDef> mesh, FileSystem* fs, const std::string& path)
         {
             std::shared_ptr<MaterialDefinition> mat;
-            const auto file = fs->open(path);
+            const auto file = fs->Open(path);
             {
-                for (std::string l : FileUtil::LinesIn(file))
+                for (std::string l : file_util::LinesIn(file))
                 {
                     std::string line = Trim(l);
                     if (line.empty() == false && line[0] != '#')
@@ -220,7 +220,7 @@ namespace SimpleEngine
                         }
                         else if (data[0] == "map_Ka" || data[0] == "map_Kd")
                         {
-                            mat->texture = MeshFile::Resolve(path, data[1]);
+                            mat->texture = mesh_file::Resolve(path, data[1]);
                         }
                     }
                 }
@@ -230,9 +230,9 @@ namespace SimpleEngine
         std::shared_ptr<MeshDef> Load(FileSystem* fs, const std::string& path)
         {
             auto mesh = std::make_shared<MeshDef>();
-            const auto file = fs->open(path);
+            const auto file = fs->Open(path);
             {
-                for (const std::string& l : FileUtil::LinesIn(file))
+                for (const std::string& l : file_util::LinesIn(file))
                 {
                     std::string line = Trim(l);
                     if (line.empty() == false && line[0] != '#')
@@ -248,15 +248,15 @@ namespace SimpleEngine
                         }
                         else if (data[0] == "vn")
                         {
-                            mesh->AddNomal(vec3(floatParse(data[1]), floatParse(data[2]), floatParse(data[3])));
+                            mesh->AddNormal(vec3(floatParse(data[1]), floatParse(data[2]), floatParse(data[3])));
                         }
                         else if (data[0] == "f")
                         {
-                            std::vector<VertexData> vd;
+                            std::vector<IndexedVertex> vd;
                             for (int i = 1; i < data.size(); ++i)
                             {
                                 auto ind = Split(data[i], '/');
-                                VertexData v;
+                                IndexedVertex v;
                                 v.vertex = std::stoi(ind[0]) - 1;
                                 v.uv = std::stoi(ind[1]) - 1;
                                 v.normal = ind.size() > 2 ? std::stoi(ind[2]) - 1 : -1;
@@ -275,7 +275,7 @@ namespace SimpleEngine
                         }
                         else if (data[0] == "mtllib")
                         {
-                            LoadMaterialLibrary(mesh, fs, MeshFile::Resolve(path, Trim(data[1])));
+                            LoadMaterialLibrary(mesh, fs, mesh_file::Resolve(path, Trim(data[1])));
                         }
                     }
                 }
@@ -284,16 +284,16 @@ namespace SimpleEngine
         }
     }
 
-    namespace MeshFile
+    namespace mesh_file
     {
         std::shared_ptr<MeshDef> Load(FileSystem* fs, const std::string& path)
         {
             if (EndsWith(path, ".obj"))
-                return WavefrontObj::Load(fs, path);
+                return wavefront_obj::Load(fs, path);
             else if (EndsWith(path, ".mdf"))
             {
-                auto loaded = MeshDefFile::Load(fs, path);
-                loaded->mapBones();
+                auto loaded = meshdef_file::Load(fs, path);
+                loaded->MapBones();
                 return loaded;
             }
             else
@@ -302,7 +302,7 @@ namespace SimpleEngine
 
         void Save(const std::string& s, std::shared_ptr<MeshDef> def)
         {
-            MeshDefFile::Write(s, def);
+            meshdef_file::Write(s, def);
         }
 
         // baseppath = hello:world.png

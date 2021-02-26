@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <map>
 #include <set>
 #include <stdexcept>
@@ -11,36 +11,36 @@
 #include "engine/fileutil.h"
 #include "engine/load/milkshape.ascii.h"
 #include "engine/load/milkshape.binary.h"
-#include "engine/math1.h"
+#include "engine/math.h"
 #include "engine/meshfile.h"
 #include "engine/strings.h"
 #include "engine/xml.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    namespace ActorFile
+    namespace actor_file
     {
-        std::map<std::string, std::string> ParseOverrides(std::shared_ptr<Xml::Element> root)
+        std::map<std::string, std::string> ParseOverrides(std::shared_ptr<xml::Element> root)
         {
             std::map<std::string, std::string> result;
-            for (std::shared_ptr<Xml::Element> e : Xml::ElementsNamed(root, "overrride"))
+            for (std::shared_ptr<xml::Element> e : xml::ElementsNamed(root, "overrride"))
             {
-                const auto f = ToLower(Xml::GetAttributeString(e, "from"));
-                const auto t = ToLower(Xml::GetAttributeString(e, "to"));
+                const auto f = ToLower(xml::GetAttributeString(e, "from"));
+                const auto t = ToLower(xml::GetAttributeString(e, "to"));
                 result.emplace(f, t);
             }
             return result;
         }
 
-        std::vector<AnimationInformation> ParseAnimationInfo(std::shared_ptr<Xml::Element> root)
+        std::vector<AnimationInformation> ParseAnimationInfo(std::shared_ptr<xml::Element> root)
         {
             std::vector<AnimationInformation> animinfo;
-            for (std::shared_ptr<Xml::Element> e : Xml::ElementsNamed(root, "animation"))
+            for (std::shared_ptr<xml::Element> e : xml::ElementsNamed(root, "animation"))
             {
-                const auto ss = Xml::GetTextOfSubElement(e, "start");
-                const auto se = Xml::GetTextOfSubElement(e, "end");
-                const auto name = Xml::GetTextOfSubElement(e, "name");
+                const auto ss = xml::GetTextOfSubElement(e, "start");
+                const auto se = xml::GetTextOfSubElement(e, "end");
+                const auto name = xml::GetTextOfSubElement(e, "name");
                 int start = std::stoi(ss);
                 int end = std::stoi(se);
                 animinfo.push_back(AnimationInformation(start, end, name));
@@ -48,24 +48,24 @@ namespace SimpleEngine
             return animinfo;
         }
 
-        std::set<std::string> ParseIgnoreBone(std::shared_ptr<Xml::Element> root)
+        std::set<std::string> ParseIgnoreBone(std::shared_ptr<xml::Element> root)
         {
             std::set<std::string> bonestoignore;
-            for (std::shared_ptr<Xml::Element> e : Xml::ElementsNamed(root, "ignorebone"))
+            for (std::shared_ptr<xml::Element> e : xml::ElementsNamed(root, "ignorebone"))
             {
-                const auto ss = Xml::GetAttributeString(e, "name");
+                const auto ss = xml::GetAttributeString(e, "name");
                 bonestoignore.emplace(ss);
             }
             return bonestoignore;
         }
 
-        std::map<std::string, std::string> ParseSetTexture(std::shared_ptr<Xml::Element> root)
+        std::map<std::string, std::string> ParseSetTexture(std::shared_ptr<xml::Element> root)
         {
             std::map<std::string, std::string> texmap;
-            for (std::shared_ptr<Xml::Element> e : Xml::ElementsNamed(root, "settex"))
+            for (std::shared_ptr<xml::Element> e : xml::ElementsNamed(root, "settex"))
             {
-                const auto material = Xml::GetAttributeString(e, "material");
-                const auto texture = Xml::GetAttributeString(e, "texture");
+                const auto material = xml::GetAttributeString(e, "material");
+                const auto texture = xml::GetAttributeString(e, "texture");
                 texmap.emplace(material, texture);
             }
             return texmap;
@@ -73,36 +73,36 @@ namespace SimpleEngine
 
         std::shared_ptr<Actor> Load(FileSystem* fs, const std::string& p)
         {
-            const auto full_path = fs->open(p);
-            std::shared_ptr<Xml::Element> xactor = Xml::Open(full_path, "actor");
-            std::shared_ptr<Xml::Element> xmesh = xactor->GetChild("mesh");
+            const auto full_path = fs->Open(p);
+            std::shared_ptr<xml::Element> xactor = xml::Open(full_path, "actor");
+            std::shared_ptr<xml::Element> xmesh = xactor->GetChild("mesh");
 
             const auto animinfo = ParseAnimationInfo(xmesh);
             const auto bonesToIgnore = ParseIgnoreBone(xmesh);
             auto texmap = ParseSetTexture(xmesh);
             const auto overrides = ParseOverrides(xmesh);
 
-            fs->setOverrides(overrides);
+            fs->SetOverrides(overrides);
 
-            const auto meshpath = Xml::GetAttributeString(xmesh, "file");
-            float scale = Xml::GetAttribute<float>(xmesh, "scale", math1::ParseFloat, 1.0f);
+            const auto meshpath = xml::GetAttributeString(xmesh, "file");
+            float scale = xml::GetAttribute<float>(xmesh, "scale", math::ParseFloat, 1.0f);
 
             std::shared_ptr<MeshDef> def;
             std::shared_ptr<Animation> animation;
 
-            std::string ext = FileUtil::GetExtension(meshpath);
+            std::string ext = file_util::GetExtension(meshpath);
             if (ext == ".txt")
             {
-                SimpleEngine::load::MilkshapeAscii::Load(fs, meshpath, &def, &animation, 1);
+                simple::load::milkshape_ascii::Load(fs, meshpath, &def, &animation, 1);
             }
             else if (ext == ".ms3d")
             {
-                SimpleEngine::load::MilkshapeBinary::Load(fs, meshpath, &def, &animation);
+                simple::load::milkshape_binary::Load(fs, meshpath, &def, &animation);
             }
             else if (animinfo.empty())
             {
                 animation = nullptr;
-                def = MeshFile::Load(fs, meshpath);
+                def = mesh_file::Load(fs, meshpath);
             }
             else
             {
@@ -141,7 +141,7 @@ namespace SimpleEngine
 
             def->TranslateTexturePaths(overrides);
 
-            def->mapBones();
+            def->MapBones();
             std::shared_ptr<Actor> actor = std::make_shared<Actor>(def);
 
             if (animation != nullptr)
@@ -153,7 +153,7 @@ namespace SimpleEngine
                 }
             }
 
-            fs->clearOverrides(overrides);
+            fs->ClearOverrides(overrides);
             return actor;
         }
     }

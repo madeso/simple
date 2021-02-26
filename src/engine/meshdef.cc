@@ -1,9 +1,11 @@
-﻿#include "engine/meshdef.h"
+#include "engine/meshdef.h"
 
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
 
+
+#include "engine/strings.h"
 #include "engine/compiledmesh.h"
 #include "engine/filesystem.h"
 #include "engine/mat44.h"
@@ -13,27 +15,27 @@
 #include "engine/vec3.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    PointData::PointData(int bone, const vec3& loc)
-        : bone_id(bone)
-        , location(loc)
+    Point::Point(int b, const vec3& l)
+        : bone_id(b)
+        , location(l)
     {
     }
 
-    std::string PointData::ToString() const
+    std::string Point::ToString() const
     {
         return fmt::format("{0} {1}", bone_id, location.ToString());
     }
 
     std::string Bone::ToString() const
     {
-        if (parentBone == nullptr)
+        if (parent_bone == nullptr)
         {
             return name;
         }
         else
-            return parentBone->ToString() + "->" + name;
+            return parent_bone->ToString() + "->" + name;
     }
 
     bool Bone::HasParent() const
@@ -48,40 +50,37 @@ namespace SimpleEngine
 
     std::string MaterialDefinition::GetTextureOrName() const
     {
-        if (texture == "")
-            return name;
-        else
-            return texture;
+        return Nullstring(texture, name);
     }
 
     std::string MaterialDefinition::ToString() const
     {
-        return name + ": " + texture;
+        return fmt::format("{}: {}", name, Nullstring(texture, "<no_texture>"));
     }
 
-    MatrixPointData::MatrixPointData()
-        : m(mat44::Identity())
+    MatrixAndPoints::MatrixAndPoints()
+        : matrix(mat44::Identity())
     {
     }
 
-    MatrixPointData::MatrixPointData(const mat44& mm)
-        : m(mm)
+    MatrixAndPoints::MatrixAndPoints(const mat44& m)
+        : matrix(m)
     {
     }
 
-    int MeshDef::TriCount() const
+    int MeshDef::GetTriangleCount() const
     {
         int c = 0;
-        for (const auto& d : datas)
+        for (const auto& d : parts)
         {
             c += d.second->size();
         }
         return c;
     }
 
-    MeshDef& MeshDef::mapBones()
+    MeshDef& MeshDef::MapBones()
     {
-        std::map<int, MatrixPointData> bdp;
+        std::map<int, MatrixAndPoints> bone_to_mp;
 
         for (int i = 0; i < bones.size(); ++i)
         {
@@ -89,13 +88,13 @@ namespace SimpleEngine
             bones[i]->index = i;
             if (bones[i]->HasParent())
             {
-                bones[i]->parentBone = bones[parent];
-                bones[i]->parentBone->children.emplace_back(bones[i]);
+                bones[i]->parent_bone = bones[parent];
+                bones[i]->parent_bone->children.emplace_back(bones[i]);
             }
 
             auto& bone = bones[i];
-            mat44 m = MatrixHelper(mat44::Identity()).Translate(-bone->pos).Rotate(-bone->rot).mat44();
-            bdp.emplace(i, MatrixPointData{m});
+            mat44 m = MatrixHelper(mat44::Identity()).Translate(-bone->pos).Rotate(-bone->rot).AsMat44();
+            bone_to_mp.emplace(i, MatrixAndPoints{m});
         }
 
         for (auto& pd : points)
@@ -107,20 +106,20 @@ namespace SimpleEngine
                 throw std::runtime_error(fmt::format("bone id {} greater than bones {}", pd->bone_id, bones.size()));
             }
             const auto bone = bones[pd->bone_id];
-            MatrixPointData& mpd = bdp[pd->bone_id];
-            mpd.pd.emplace_back(pd);
+            auto& mpd = bone_to_mp[pd->bone_id];
+            mpd.points.emplace_back(pd);
         }
 
-        for (auto& k : bdp)
+        for (auto& k : bone_to_mp)
         {
-            auto bone = bones[k.first];
-            mat44 m = mat44::Identity();
-            for (auto b = bone; b != nullptr; b = b->parentBone)
+            const auto current_bone = bones[k.first];
+            auto m = mat44::Identity();
+            for (auto loop_bone = current_bone; loop_bone != nullptr; loop_bone = loop_bone->parent_bone)
             {
-                m = m * bdp[b->index].m;
+                m = m * bone_to_mp[loop_bone->index].matrix;
             }
 
-            for (auto pd : k.second.pd)
+            for (const auto& pd : k.second.points)
             {
                 pd->location = m * pd->location;
             }
@@ -133,11 +132,11 @@ namespace SimpleEngine
     {
         std::vector<std::shared_ptr<Bone>> r;
 
-        for (auto& b : bones)
+        for (const auto& bone : bones)
         {
-            if (b->parentBone == nullptr)
+            if (bone->parent_bone == nullptr)
             {
-                r.emplace_back(b);
+                r.emplace_back(bone);
             }
         }
 
@@ -146,57 +145,56 @@ namespace SimpleEngine
 
     std::vector<Triangle> MeshDef::GetTrianglesFor(const MaterialDefinition& material) const
     {
-        std::vector<Triangle> r;
+        const auto found_part = parts.find(material.name);
 
-        if (auto found = datas.find(material.name); found != datas.end())
+        if (found_part == parts.end())
         {
-            for (const auto& t : *found->second)
-            {
-                r.emplace_back(t);
-            }
+            return {};
         }
-
-        return r;
+        else
+        {
+            return *found_part->second;
+        }
     }
 
     std::vector<std::shared_ptr<MaterialDefinition>> MeshDef::GetMaterials() const
     {
         std::vector<std::shared_ptr<MaterialDefinition>> r;
-        for (auto& k : materials)
+        for (auto& material_pair : materials)
         {
-            r.emplace_back(k.second);
+            r.emplace_back(material_pair.second);
         }
         return r;
     }
 
-    std::vector<Vertex> MeshDef::GetVerticesForTriangle(const Triangle& tri) const
+    std::vector<Vertex> MeshDef::GetVerticesForTriangle(const Triangle& triangle) const
     {
         std::vector<Vertex> v;
-        for (int i = 0; i < 3; ++i)
+        for (int triangle_index = 0; triangle_index < 3; ++triangle_index)
         {
-            Vertex c;
-            c.vertex = points[tri[i].vertex]->location;
-            c.bone = points[tri[i].vertex]->bone_id;
+            Vertex vertex;
+            vertex.vertex = points[triangle[triangle_index].vertex]->location;
+            vertex.bone = points[triangle[triangle_index].vertex]->bone_id;
 
-            if (tri[i].normal != -1)
+            if (triangle[triangle_index].normal != -1)
             {
-                c.normal = normals[tri[i].normal];
+                vertex.normal = normals[triangle[triangle_index].normal];
             }
 
-            c.uv = uvs[tri[i].uv];
-            v.emplace_back(c);
+            vertex.uv = texturecoordinates[triangle[triangle_index].uv];
+            v.emplace_back(vertex);
         }
         return v;
     }
 
-    void MeshDef::AddPoint(const vec3& p, int bone)
+    void MeshDef::AddPoint(const vec3& point, int bone_id)
     {
-        points.emplace_back(std::make_shared<PointData>(bone, p));
+        points.emplace_back(std::make_shared<Point>(bone_id, point));
     }
 
-    void MeshDef::AddUv(const vec2& u)
+    void MeshDef::AddUv(const vec2& uv)
     {
-        uvs.emplace_back(u);
+        texturecoordinates.emplace_back(uv);
     }
 
     std::shared_ptr<MaterialDefinition> MeshDef::AddMaterial(const std::string& name)
@@ -212,36 +210,36 @@ namespace SimpleEngine
         {
             throw std::runtime_error(fmt::format("mesh does not contain a material named {}", name));
         }
-        if (datas.find(name) == datas.end())
+        if (parts.find(name) == parts.end())
         {
-            datas.emplace(name, std::make_shared<TriangleList>());
+            parts.emplace(name, std::make_shared<TriangleList>());
         }
-        current_data = datas[name];
+        current_part = parts[name];
     }
 
     void MeshDef::AddTriangle(const Triangle& t)
     {
-        assert(current_data);
-        current_data->emplace_back(t);
+        assert(current_part);
+        current_part->emplace_back(t);
     }
 
-    void MeshDef::AddNomal(const vec3& v)
+    void MeshDef::AddNormal(const vec3& v)
     {
         normals.emplace_back(v);
     }
 
     std::shared_ptr<CompiledMesh> MeshDef::GetCompiledMesh()
     {
-        if (compiledMesh == nullptr)
+        if (compiled_mesh == nullptr)
         {
             assert(false && "mesh is not compiled");
         }
-        return compiledMesh;
+        return compiled_mesh;
     }
 
     void MeshDef::Compile(MediaLoader* ml)
     {
-        compiledMesh = std::make_shared<CompiledMesh>(ml, this);
+        compiled_mesh = std::make_shared<CompiledMesh>(ml, this);
     }
 
     std::shared_ptr<Bone> MeshDef::CreateNewBone()

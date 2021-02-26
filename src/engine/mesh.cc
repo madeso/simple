@@ -6,11 +6,11 @@
 #include "engine/media.h"
 #include "engine/meshfile.h"
 
-namespace SimpleEngine
+namespace simple
 {
     void Mesh::Load(MediaLoader* ml, FileSystem* fs, const std::string& path)
     {
-        auto mesh = MeshFile::Load(fs, path);
+        auto mesh = mesh_file::Load(fs, path);
         mesh->Compile(ml);
         this->mesh = mesh->GetCompiledMesh();
     }

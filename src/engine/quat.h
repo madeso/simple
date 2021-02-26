@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace SimpleEngine
+namespace simple
 {
     struct vec3;
     struct AxisAngle;
@@ -59,12 +59,12 @@ namespace SimpleEngine
 
         static float dot(const quat& A, const quat& B);
 
-        // forces the interpolatation to go the "short way"
+        // forces the interpolation to go the "short way"
         static quat SlerpShortway(const quat& a, float t, const quat& b);
 
         AxisAngle GetAxisAngle() const;
 
-        quat(const SimpleEngine::AxisAngle& aa);
+        quat(const simple::AxisAngle& aa);
 
         void Normalize();
 
@@ -72,7 +72,7 @@ namespace SimpleEngine
 
         vec3 GetRUI(const vec3& rui) const;
 
-        SimpleEngine::mat33 GetMatrix33() const;
+        simple::mat33 GetMatrix33() const;
 
         float operator()(int index) const;
         float& operator()(int index);

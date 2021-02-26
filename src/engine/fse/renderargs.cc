@@ -5,18 +5,18 @@
 #include "engine/camera.h"
 #include "engine/world.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
-    RenderArgs::RenderArgs(std::shared_ptr<SimpleEngine::World> ww, const Camera& c, int w, int h)
-        : World(ww)
-        , Cam(c)
-        , Width(w)
-        , Height(h)
+    RenderArgs::RenderArgs(std::shared_ptr<simple::World> ww, const Camera& c, int w, int h)
+        : world(ww)
+        , camera(c)
+        , width(w)
+        , height(h)
     {
     }
 
-    void RenderArgs::render()
+    void RenderArgs::Render()
     {
-        World->Render(Width, Height, Cam);
+        world->Render(width, height, camera);
     }
 }

@@ -1,7 +1,7 @@
 #include "catch.hpp"
 #include "engine/angle.h"
 
-using namespace SimpleEngine;
+using namespace simple;
 
 constexpr float fe = 0.0000001f;
 
@@ -15,8 +15,8 @@ TEST_CASE("TestSinCos")
 
 TEST_CASE("TestA")
 {
-    CHECK(Angle::Asin(1).inDegrees() == Approx(90));
-    CHECK(Angle::Acos(0).inDegrees() == Approx(90));
-    CHECK(Angle::Asin(0).inDegrees() == Approx(0));
-    CHECK(Angle::Acos(1).inDegrees() == Approx(0));
+    CHECK(Angle::Asin(1).InDegrees() == Approx(90));
+    CHECK(Angle::Acos(0).InDegrees() == Approx(90));
+    CHECK(Angle::Asin(0).InDegrees() == Approx(0));
+    CHECK(Angle::Acos(1).InDegrees() == Approx(0));
 }

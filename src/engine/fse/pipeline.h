@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -6,24 +6,24 @@
 #include "engine/fse/provider.h"
 #include "engine/fse/renderargs.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct MediaLoader;
 }
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     struct Pipeline
     {
         std::vector<std::shared_ptr<Provider>> providers;
 
-        static std::shared_ptr<Pipeline> Create(const std::string& path, MediaLoader* ml, int width, int height);
+        static std::shared_ptr<Pipeline> LoadFromFile(const std::string& path, MediaLoader* ml, int width, int height);
 
-        void bind(Binder* binder);
+        void Bind(Binder* binder);
 
-        void render(RenderArgs* ra);
+        void Render(RenderArgs* ra);
 
-        void add(std::shared_ptr<Provider> pr);
+        void Add(std::shared_ptr<Provider> pr);
 
         void OnSize(int width, int height);
     };

@@ -1,45 +1,45 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 #include <vector>
 
-#include "engine/ckey.h"
+#include "engine/configurablekey.h"
 #include "engine/vec3.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    struct Key
+    struct Button
     {
-        virtual void run(const Ckey& b, bool s) = 0;
+        virtual void run(const ConfigurableKey& b, bool s) = 0;
         virtual int Value() = 0;
 
-        static void Run(const Ckey& b, bool s, const std::vector<std::shared_ptr<Key>>& keys);
+        static void Run(const ConfigurableKey& b, bool s, const std::vector<std::shared_ptr<Button>>& keys);
 
-        static vec3 Combine(std::shared_ptr<Key> x, std::shared_ptr<Key> y, std::shared_ptr<Key> z);
+        static vec3 Combine(std::shared_ptr<Button> x, std::shared_ptr<Button> y, std::shared_ptr<Button> z);
     };
 
-    struct Hold : public Key
+    struct Hold : public Button
     {
         bool status = false;
-        Ckey b;
+        ConfigurableKey b;
 
-        Hold(const Ckey& k);
+        Hold(const ConfigurableKey& k);
 
-        void run(const Ckey& k, bool s) override;
+        void run(const ConfigurableKey& k, bool s) override;
 
         bool IsDown();
 
         int Value() override;
     };
 
-    struct PlusMinus : public Key
+    struct PlusMinus : public Button
     {
-        std::shared_ptr<Key> plus;
-        std::shared_ptr<Key> minus;
+        std::shared_ptr<Button> plus;
+        std::shared_ptr<Button> minus;
 
-        PlusMinus(std::shared_ptr<Key> p, std::shared_ptr<Key> m);
+        PlusMinus(std::shared_ptr<Button> p, std::shared_ptr<Button> m);
 
-        void run(const Ckey& b, bool s) override;
+        void run(const ConfigurableKey& b, bool s) override;
 
         int Value() override;
     };

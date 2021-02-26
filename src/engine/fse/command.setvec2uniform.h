@@ -7,37 +7,37 @@
 #include "engine/vec2.h"
 #include "engine/xml.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    struct Shader;
+    struct ShaderProgram;
     struct Uniform;
 }
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     struct Binder;
 }
 
-namespace SimpleEngine::fse::Commands
+namespace simple::fse::commands
 {
     struct SetVec2Uniform : public Command
     {
         std::string shaderName;
-        std::shared_ptr<Shader> shader;
+        std::shared_ptr<ShaderProgram> shader;
 
         std::string uniformName;
         std::shared_ptr<Uniform> uniform;
 
         vec2 vec;
 
-        SetVec2Uniform(std::shared_ptr<Xml::Element> el, std::shared_ptr<Provider> p);
+        SetVec2Uniform(std::shared_ptr<xml::Element> el, std::shared_ptr<Provider> p);
 
-        void apply() override;
+        void Apply() override;
 
-        std::vector<std::shared_ptr<Provider>> Dependencies() override;
+        std::vector<std::shared_ptr<Provider>> GetDependencies() override;
 
-        void doLink(Linker* user) override;
+        void Link(Linker* user) override;
 
-        void doBind(Binder* bd) override;
+        void Bind(Binder* bd) override;
     };
 }

@@ -1,25 +1,25 @@
-﻿#include "engine/ckey.h"
+#include "engine/configurablekey.h"
 
 #include <cassert>
 
 #include "fmt/core.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    Ckey::Ckey(SDL_Keycode k)
+    ConfigurableKey::ConfigurableKey(SDL_Keycode k)
         : type(Type::Key)
         , key(k)
     {
         // this.mouse = MouseButtons.None;
     }
 
-    std::string Ckey::ToString() const
+    std::string ConfigurableKey::ToString() const
     {
         assert(type == Type::Key);
         return fmt::format("key: {0}", SDL_GetKeyName(key));
     }
 
-    bool Ckey::operator==(const Ckey& rhs) const
+    bool ConfigurableKey::operator==(const ConfigurableKey& rhs) const
     {
         return type == rhs.type && key == rhs.key;
     }

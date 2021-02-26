@@ -9,9 +9,9 @@
 
 #define LOAD_MODEL "load-model"
 
-namespace ModelView
+namespace viewer
 {
-    struct App : public SimpleEngine::App
+    struct App : public simple::App
     {
         Viewer viewer;
         imgui_addons::ImGuiFileBrowser file_dialog;
@@ -19,7 +19,7 @@ namespace ModelView
 
         App()
         {
-            SimpleEngine::Setup::Setup();
+            simple::setup::Setup();
         }
 
         void OnStep(float dt) override
@@ -138,7 +138,7 @@ namespace ModelView
         {
             viewer.Width = w;
             viewer.Height = h;
-            SimpleEngine::Setup::BeforeRender(w, h);
+            simple::setup::BeforeRender(w, h);
             viewer.OnRender();
         }
     };
@@ -146,7 +146,7 @@ namespace ModelView
 
 int main(int argc, char* argv[])
 {
-    SimpleEngine::RunMain([] { return std::make_shared<ModelView::App>(); });
+    simple::RunMain([] { return std::make_shared<viewer::App>(); });
 
     return 0;
 }

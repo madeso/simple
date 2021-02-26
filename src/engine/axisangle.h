@@ -5,7 +5,7 @@
 #include "engine/angle.h"
 #include "engine/vec3.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct AxisAngle
     {
@@ -18,7 +18,7 @@ namespace SimpleEngine
         AxisAngle Negative() const;
 
         vec3 axis;
-        SimpleEngine::Angle angle;
+        simple::Angle angle;
     };
 
     AxisAngle operator-(const AxisAngle& me);

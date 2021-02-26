@@ -13,19 +13,19 @@
 #include "engine/shader.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
-    Target::Target(std::shared_ptr<Xml::Element> el)
-        : id(Xml::GetAttributeString(el, "id"))
+    Target::Target(std::shared_ptr<xml::Element> el)
+        : id(xml::GetAttributeString(el, "id"))
     {
     }
 
-    std::string Target::Id() const
+    std::string Target::GetId() const
     {
         return id;
     }
 
-    void Target::Id(const std::string& value)
+    void Target::SetId(const std::string& value)
     {
         if (id.empty())
             id = value;
@@ -38,30 +38,30 @@ namespace SimpleEngine::fse
         return id;
     }
 
-    std::shared_ptr<BufferReference> Target::createBuffer(const std::string& name)
+    std::shared_ptr<BufferReference> Target::CreateBuffer(const std::string& name)
     {
         auto r = std::make_shared<BufferReference>(name);
         references.emplace_back(r);
         return r;
     }
 
-    std::shared_ptr<BufferReference> Target::createBuffer(const std::string& name, int width, int height)
+    std::shared_ptr<BufferReference> Target::CreateBuffer(const std::string& name, int width, int height)
     {
-        associate(name, width, height);
-        return createBuffer(name);
+        SetSize(name, width, height);
+        return CreateBuffer(name);
     }
 
-    void Target::associate(const std::string& name, int width, int height)
+    void Target::SetSize(const std::string& name, int width, int height)
     {
         associations.emplace(name, Size{width, height});
     }
 
-    std::shared_ptr<Provider> Target::Provider()
+    std::shared_ptr<Provider> Target::GetProvider()
     {
         return provider;
     }
 
-    void Target::Provider(std::shared_ptr<fse::Provider> value)
+    void Target::SetProvider(std::shared_ptr<fse::Provider> value)
     {
         if (value == nullptr)
             throw std::runtime_error("Provider is null");
@@ -77,15 +77,15 @@ namespace SimpleEngine::fse
         }
     }
 
-    void Target::bind(Binder* binder)
+    void Target::Bind(Binder* binder)
     {
         for (auto br : references)
         {
-            binder->reference(br);
+            binder->AddReference(br);
         }
         for (auto k : associations)
         {
-            binder->associate(k.first, k.second);
+            binder->SetSize(k.first, k.second);
         }
     }
 }

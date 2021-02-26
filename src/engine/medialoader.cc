@@ -1,6 +1,6 @@
 ﻿#include "engine/medialoader.h"
 
-namespace SimpleEngine
+namespace simple
 {
     std::shared_ptr<FileSystem> MediaLoader::FS()
     {

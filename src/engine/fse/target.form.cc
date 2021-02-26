@@ -2,9 +2,9 @@
 
 #include "fmt/core.h"
 
-namespace SimpleEngine::fse::Targets
+namespace simple::fse::targets
 {
-    FormTarget::FormTarget(std::shared_ptr<Xml::Element> x, int w, int h)
+    FormTarget::FormTarget(std::shared_ptr<xml::Element> x, int w, int h)
         : Target(x)
         , width(w)
         , height(h)
@@ -16,22 +16,22 @@ namespace SimpleEngine::fse::Targets
         return fmt::format("{} targeting a form", Target::ToString());
     }
 
-    void FormTarget::apply(Target::ApplyFunction a)
+    void FormTarget::Apply(Target::ApplyFunction a)
     {
         a();
     }
 
-    int FormTarget::Width()
+    int FormTarget::GetWidth()
     {
         return width;
     }
 
-    int FormTarget::Height()
+    int FormTarget::GetHeight()
     {
         return height;
     }
 
-    void FormTarget::link(Linker*)
+    void FormTarget::Link(Linker*)
     {
     }
 

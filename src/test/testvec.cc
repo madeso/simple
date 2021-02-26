@@ -2,7 +2,7 @@
 #include "engine/vec3.h"
 #include "test.h"
 
-using namespace SimpleEngine;
+using namespace simple;
 
 TEST_CASE("testX")
 {

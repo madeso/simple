@@ -2,16 +2,16 @@
 
 #include "engine/compiledmesh.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    MeshInstance::MeshInstance(std::shared_ptr<Mesh> def)
-        : mesh(def)
+    MeshInstance::MeshInstance(std::shared_ptr<Mesh> m)
+        : mesh(m)
     {
     }
 
-    void MeshInstance::SendToRenderer(RenderList* r)
+    void MeshInstance::SendToRenderer(RenderList* list)
     {
-        mesh->mesh->SendToRenderer(r, pos, rot);
+        mesh->mesh->SendToRenderer(list, position, rotation);
     }
 
     void MeshInstance::OnRender()

@@ -6,14 +6,14 @@
 #include "engine/fse/target.form.h"
 #include "fmt/format.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     struct Target;
 }
 
-namespace SimpleEngine::fse::Targets
+namespace simple::fse::targets
 {
-    std::shared_ptr<Target> Create(std::shared_ptr<Xml::Element> x, int width, int height)
+    std::shared_ptr<Target> Create(std::shared_ptr<xml::Element> x, int width, int height)
     {
         const auto name = x->GetName();
 

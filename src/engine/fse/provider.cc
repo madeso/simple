@@ -1,4 +1,4 @@
-﻿#include "engine/fse/provider.h"
+#include "engine/fse/provider.h"
 
 #include <stdexcept>
 
@@ -10,24 +10,9 @@
 #include "engine/stringseperator.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
-    Link::Link(const std::string& n)
-        : name(n)
-    {
-    }
-
-    void Link::provide(RenderArgs* ra)
-    {
-        prov->doProvide(ra);
-    }
-
-    void Link::sortout(Linker* usr)
-    {
-        prov = usr->getProvider(name);
-    }
-
-    const std::string& Provider::Id() const
+    const std::string& Provider::GetId() const
     {
         return id;
     }
@@ -37,17 +22,17 @@ namespace SimpleEngine::fse
         target->OnSize(width, height);
     }
 
-    Provider::Provider(std::shared_ptr<Xml::Element> el)
-        : targetname(Xml::GetAttributeString(el, "target"))
-        , id(Xml::GetAttributeString(el, "id"))
+    Provider::Provider(std::shared_ptr<xml::Element> el)
+        : target_name(xml::GetAttributeString(el, "target"))
+        , id(xml::GetAttributeString(el, "id"))
     {
     }
 
-    void Provider::PostLoad(std::shared_ptr<Provider> provider, std::shared_ptr<Xml::Element> el)
+    void Provider::PostLoad(std::shared_ptr<Provider> provider, std::shared_ptr<xml::Element> el)
     {
-        for (std::shared_ptr<Xml::Element> e : Xml::Elements(el))
+        for (std::shared_ptr<xml::Element> e : xml::Elements(el))
         {
-            provider->commands.emplace_back(Commands::Create(e, provider));
+            provider->commands.emplace_back(commands::Create(e, provider));
         }
     }
 
@@ -55,7 +40,7 @@ namespace SimpleEngine::fse
     {
     }
 
-    void Provider::Id(const std::string& value)
+    void Provider::SetId(const std::string& value)
     {
         if (id.empty())
         {
@@ -75,70 +60,71 @@ namespace SimpleEngine::fse
             command_names.emplace_back(c->ToString());
         }
         const auto command_string = StringSeperator(",", " and ", "").ToString(command_names);
-        return fmt::format("{}({}): <{}>", Id(), targetname, command_string);
+        return fmt::format("{}({}): <{}>", GetId(), target_name, command_string);
     }
 
-    void Provider::provide(RenderArgs* ra)
+    void Provider::Provide(RenderArgs* ra)
     {
-        if (autocallCommands)
+        if (autocall_commands)
         {
-            callCommands();
+            CallCommands();
         }
 
-        target->apply([this, ra]() { doProvide(ra); });
+        target->Apply([this, ra]() { PostProvide(ra); });
     }
 
-    void Provider::denyAutocallOfCommands()
+    void Provider::DenyAutocallOfCommands()
     {
-        autocallCommands = false;
+        autocall_commands = false;
     }
 
-    void Provider::callCommands()
+    void Provider::CallCommands()
     {
         for (auto c : commands)
         {
-            c->apply();
+            c->Apply();
         }
     }
 
-    std::shared_ptr<BufferReference> Provider::createBuffer(const std::string& name)
+    std::shared_ptr<BufferReference> Provider::CreateBuffer(const std::string& name)
     {
         return std::make_shared<BufferReference>(name);
     }
 
-    void Provider::link(std::shared_ptr<Provider> provider, Linker* linker)
+    void Provider::Link(std::shared_ptr<Provider> provider, Linker* linker)
     {
-        if (provider->targetname != "")
+        if (provider->target_name != "")
         {
-            provider->target = linker->getTarget(provider->targetname);
-            provider->target->Provider(provider);
+            provider->target = linker->GetTarget(provider->target_name);
+            provider->target->SetProvider(provider);
         }
 
         for (auto c : provider->commands)
         {
-            c->link(linker);
+            c->Link(linker);
         }
 
-        provider->doLink(linker);
+        provider->PostLink(linker);
     }
 
-    void Provider::bind(Binder* bd)
+    void Provider::Bind(Binder* bd)
     {
-        doBind(bd);
+        PreBind(bd);
 
         for (auto c : commands)
         {
-            c->bind(bd);
+            c->Bind(bd);
         }
     }
 
-    void Provider::postlink(Linker* linker)
+    void Provider::OnLinkCompleted(Linker* linker)
     {
         for (auto c : commands)
         {
-            c->link(linker);
+            // why call link twice?
+            c->Link(linker);
 
-            for (auto p : c->Dependencies())
+            for (auto p : c->GetDependencies())
             {
                 if (p == nullptr)
                 {

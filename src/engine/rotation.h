@@ -1,8 +1,8 @@
-﻿#pragma once
+#pragma once
 
 #include "engine/quat.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct vec2;
     struct Window;
@@ -11,17 +11,17 @@ namespace SimpleEngine
     {
         virtual ~Rotation() = default;
 
-        virtual void sendMouse(const vec2& mouse, const vec2& oldmouse) = 0;
-        virtual void rotateGl() = 0;
+        virtual void SendMouse(const vec2& mouse, const vec2& oldmouse) = 0;
+        virtual void RotateOpenGl() = 0;
 
-        float sens = 0.25f;
+        float sensitivity = 0.25f;
     };
 
-    struct QuatRot : public Rotation
+    struct QuatRotation : public Rotation
     {
         quat rotation = quat::Identity();
 
-        void rotateGl() override;
+        void RotateOpenGl() override;
     };
 
     struct EasyRotation : public Rotation
@@ -29,27 +29,22 @@ namespace SimpleEngine
         float rx = 0;
         float ry = 0;
 
-        void sendMouse(const vec2& mouse, const vec2& oldmouse) override;
+        void SendMouse(const vec2& mouse, const vec2& oldmouse) override;
 
-        void rotateGl() override;
+        void RotateOpenGl() override;
     };
 
-    struct BasicQuatRot : public QuatRot
+    struct BasicQuatRotation : public QuatRotation
     {
-        void sendMouse(const vec2& current, const vec2& oldmouse) override;
+        void SendMouse(const vec2& current, const vec2& oldmouse) override;
     };
 
-    struct ArcBallRotation : QuatRot
+    struct ArcBallRotation : QuatRotation
     {
         Window* ba;
 
         ArcBallRotation(Window* owner);
 
-        float Width();
-        float Height();
-
-        vec2 tranform(const vec2& v);
-
-        void sendMouse(const vec2& current, const vec2& oldmouse) override;
+        void SendMouse(const vec2& current, const vec2& old_mouse) override;
     };
 }

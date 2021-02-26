@@ -5,7 +5,7 @@
 
 #include "engine/renderlist.h"
 
-namespace SimpleEngine
+namespace simple
 {
     CompiledMesh::CompiledMesh(MediaLoader* ml, MeshDef* def)
     {

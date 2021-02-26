@@ -1,43 +1,43 @@
 #include "engine/stringseperator.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    StringSeperator::StringSeperator(const std::string& aSeperator, const std::string& aFinalSeperator, const std::string& empty)
-        : mSeperator(aSeperator)
-        , mFinalSeperator(aFinalSeperator)
-        , mEmpty(empty)
+    StringSeperator::StringSeperator(const std::string& s, const std::string& fs, const std::string& e)
+        : seperator(s)
+        , final_seperator(fs)
+        , empty(e)
     {
     }
 
-    StringSeperator::StringSeperator(const std::string& aSeperator, const std::string& aFinalSeperator)
-        : mSeperator(aSeperator)
-        , mFinalSeperator(aFinalSeperator)
-        , mEmpty("")
+    StringSeperator::StringSeperator(const std::string& s, const std::string& fs)
+        : seperator(s)
+        , final_seperator(fs)
+        , empty("")
     {
     }
 
-    StringSeperator::StringSeperator(const std::string& aSeperator)
-        : mSeperator(aSeperator)
-        , mFinalSeperator(aSeperator)
+    StringSeperator::StringSeperator(const std::string& s)
+        : seperator(s)
+        , final_seperator(s)
     {
     }
 
-    std::string StringSeperator::ToString(const std::vector<std::string>& mstrings) const
+    std::string StringSeperator::ToString(const std::vector<std::string>& strings) const
     {
-        if (mstrings.empty())
-            return mEmpty;
+        if (strings.empty())
+            return empty;
 
         std::ostringstream builder;
-        for (int index = 0; index < mstrings.size(); ++index)
+        for (int index = 0; index < strings.size(); ++index)
         {
-            const std::string& value = mstrings[index];
+            const std::string& value = strings[index];
             builder << value;
 
-            if (mstrings.size() != index + 1)  // if this item isnt the last one: the list
+            if (strings.size() != index + 1)  // if this item isnt the last one: the list
             {
                 const std::string seperator =
-                    (mstrings.size() == index + 2) ? mFinalSeperator
-                                                   : mSeperator;
+                    (strings.size() == index + 2) ? final_seperator
+                                                   : seperator;
                 builder << seperator;
             }
         }

@@ -7,7 +7,7 @@
 #include "engine/quat.h"
 #include "engine/vec3.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct MeshDef;
     struct Bone;

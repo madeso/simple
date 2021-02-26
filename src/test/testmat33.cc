@@ -1,9 +1,9 @@
-﻿#include "catch.hpp"
+#include "catch.hpp"
 #include "engine/mat33.h"
 #include "engine/mat44.h"
 #include "test.h"
 
-using namespace SimpleEngine;
+using namespace simple;
 
 TEST_CASE("TestColumnMajor")
 {
@@ -39,5 +39,5 @@ TEST_CASE("TestRowMajor")
 
 TEST_CASE("TestFromToMat44")
 {
-    CHECK(AreEqual(mat33::Identity().mat44().mat33(), mat33::Identity()));
+    CHECK(AreEqual(mat33::Identity().AsMat44().AsMat33(), mat33::Identity()));
 }

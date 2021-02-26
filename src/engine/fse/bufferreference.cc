@@ -1,20 +1,15 @@
-﻿#include "engine/fse/bufferreference.h"
+#include "engine/fse/bufferreference.h"
 
 #include <stdexcept>
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     BufferReference::BufferReference(const std::string& name)
         : name(name)
     {
     }
 
-    std::string BufferReference::Name() const
-    {
-        return name;
-    }
-
-    void BufferReference::setBuffer(std::shared_ptr<Fbo> fbo)
+    void BufferReference::SetBuffer(std::shared_ptr<Fbo> fbo)
     {
         if (buffer == nullptr)
         {
@@ -26,22 +21,22 @@ namespace SimpleEngine::fse
         }
     }
 
-    void BufferReference::bindTexture(int location)
+    void BufferReference::BindTexture(int location)
     {
-        buffer->bindTexture(location);
+        buffer->BindTexture(location);
     }
 
-    void BufferReference::updateTexture(std::function<void()> a)
+    void BufferReference::UpdateTexture(std::function<void()> a)
     {
-        buffer->updateTexture(std::move(a));
+        buffer->UpdateTexture(std::move(a));
     }
 
-    int BufferReference::Width() const
+    int BufferReference::GetWidth() const
     {
         return buffer->Width();
     }
 
-    int BufferReference::Height() const
+    int BufferReference::GetHeight() const
     {
         return buffer->Height();
     }

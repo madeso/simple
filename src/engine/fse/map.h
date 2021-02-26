@@ -1,18 +1,18 @@
-﻿#pragma once
+#pragma once
 
 #include <functional>
 #include <map>
 #include <string>
 #include <vector>
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     template <typename T>
     struct Map
     {
         using TGenerator = std::function<T(std::string)>;
 
-        std::map<std::string, T> m;
+        std::map<std::string, T> already_created;
         TGenerator generator;
 
         Map(TGenerator&& g)
@@ -20,28 +20,28 @@ namespace SimpleEngine::fse
         {
         }
 
-        T get(const std::string& var)
+        T GetOrCreate(const std::string& name)
         {
-            auto found = m.find(var);
-            if (found != m.end())
+            auto found = already_created.find(name);
+            if (found != already_created.end())
             {
                 return found->second;
             }
 
-            T t = generator(var);
-            add(var, t);
+            T t = generator(name);
+            Set(name, t);
             return t;
         }
 
-        void add(const std::string& name, T t)
+        void Set(const std::string& name, T t)
         {
-            m.emplace(name, t);
+            already_created.emplace(name, t);
         }
 
-        std::vector<T> Data()
+        std::vector<T> GetCreatedValues()
         {
             std::vector<T> r;
-            for (auto& kv : m)
+            for (auto& kv : already_created)
             {
                 r.emplace_back(kv.second);
             }

@@ -1,10 +1,10 @@
-﻿#pragma once
+#pragma once
 
 #include <map>
 #include <string>
 #include <vector>
 
-namespace SimpleEngine
+namespace simple
 {
     struct FileSystem
     {
@@ -13,19 +13,19 @@ namespace SimpleEngine
 
         FileSystem();
 
-        void addRoot(const std::string& root);
+        void AddRoot(const std::string& root);
 
-        void addDefaultRoots(const std::string& app, const std::string& game);
+        void AddDefaultRoots(const std::string& app, const std::string& game);
 
-        std::string doOpen(const std::string& path) const;
+        std::string OpenExactPath(const std::string& path) const;
 
-        std::string open(const std::string& path) const;
+        std::string Open(const std::string& path) const;
 
-        std::vector<std::string> readLines(std::string path) const;
+        std::vector<std::string> ReadLines(std::string path) const;
 
-        void setOverrides(const std::map<std::string, std::string>& new_overrides);
+        void SetOverrides(const std::map<std::string, std::string>& new_overrides);
 
-        void clearOverrides(const std::map<std::string, std::string>& new_overrides);
+        void ClearOverrides(const std::map<std::string, std::string>& new_overrides);
 
         static std::string MapFile(const std::map<std::string, std::string>& overrides, const std::string& path);
     };

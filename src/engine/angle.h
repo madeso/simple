@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace SimpleEngine
+namespace simple
 {
     struct Angle
     {
@@ -10,9 +10,9 @@ namespace SimpleEngine
 
         static Angle Zero();
 
-        float inRadians() const;
+        float InRadians() const;
 
-        float inDegrees() const;
+        float InDegrees() const;
 
         static Angle FromRadians(float r);
 
@@ -35,7 +35,7 @@ namespace SimpleEngine
         static Angle Atan(float v);
 
     private:
-        float rad;
+        float radians;
 
         Angle(float r);
     };

@@ -1,9 +1,9 @@
-﻿#pragma once
+#pragma once
 
 #include <functional>
 #include <vector>
 
-namespace SimpleEngine
+namespace simple
 {
     template <typename T>
     struct Pool
@@ -16,7 +16,7 @@ namespace SimpleEngine
         {
         }
 
-        T get()
+        T Create()
         {
             if (pool.size() == 0)
                 return creator();
@@ -28,7 +28,7 @@ namespace SimpleEngine
             }
         }
 
-        void release(T t)
+        void Destroy(T t)
         {
             pool.emplace_back(t);
         }

@@ -2,7 +2,7 @@
 
 #include "engine/opengl.h"
 
-namespace SimpleEngine
+namespace simple
 {
     PushedMatrix::PushedMatrix()
     {

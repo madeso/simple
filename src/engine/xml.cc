@@ -6,7 +6,7 @@
 #include "fmt/core.h"
 #include "tinyxml2/tinyxml2.h"
 
-namespace SimpleEngine::Xml
+namespace simple::xml
 {
     Element::Element(std::shared_ptr<tinyxml2::XMLDocument> d, tinyxml2::XMLElement* e)
         : document(d)

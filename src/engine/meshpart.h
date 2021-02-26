@@ -7,7 +7,7 @@
 #include "engine/meshdef.h"
 #include "engine/poseable.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct MediaLoader;
     struct MaterialDefinition;
@@ -28,6 +28,6 @@ namespace SimpleEngine
 
         int CalculateId() const;
 
-        void OnRender(const vec3& p, const quat& rot) const;
+        void OnRender(const vec3& position, const quat& rotation) const;
     };
 }

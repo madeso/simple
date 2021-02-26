@@ -19,9 +19,9 @@
 #include "engine/window.h"
 #include "fmt/core.h"
 
-using namespace SimpleEngine;
+using namespace simple;
 
-namespace ModelView
+namespace viewer
 {
     Viewer::Viewer()
     {
@@ -34,17 +34,17 @@ namespace ModelView
 
     void Viewer::LoadMeshFromFile(const std::string& fileName)
     {
-        auto [basefile, filename] = FileUtil::Split(fileName);
+        auto [basefile, filename] = file_util::Split(fileName);
 
         std::shared_ptr<FileSystem> fs = std::make_shared<FileSystem>();
-        fs->addRoot(basefile);
+        fs->AddRoot(basefile);
 
-        std::string extent = FileUtil::GetExtension(filename);
+        std::string extent = file_util::GetExtension(filename);
         if (extent == ".act")
         {
             anim = nullptr;
 
-            auto act = ActorFile::Load(fs.get(), filename);
+            auto act = actor_file::Load(fs.get(), filename);
             def = act->mesh;
             mesh = nullptr;
 
@@ -55,7 +55,7 @@ namespace ModelView
         }
         else
         {
-            def = MeshFile::Load(fs.get(), filename);
+            def = mesh_file::Load(fs.get(), filename);
             anim = nullptr;
         }
 
@@ -64,7 +64,7 @@ namespace ModelView
 
         current_filename = filename;
         model_information = fmt::format("{0} points, {1} texcoords {2} tris, {3}/{4} bones",
-                                        def->points.size(), def->uvs.size(), def->TriCount(), def->bones.size(), def->GetRootBones().size());
+                                        def->points.size(), def->texturecoordinates.size(), def->GetTriangleCount(), def->bones.size(), def->GetRootBones().size());
 
         forceRedraw();
     }
@@ -81,7 +81,7 @@ namespace ModelView
     {
         vec3 c = vec3::In() * distance;
         glTranslatef(c.x, c.y, c.z);
-        rotation->rotateGl();
+        rotation->RotateOpenGl();
 
         RenderList list;
 
@@ -101,7 +101,7 @@ namespace ModelView
         if (down)
         {
             vec2 current = vec2(mx, my);
-            rotation->sendMouse(current, old_mouse);
+            rotation->SendMouse(current, old_mouse);
             old_mouse = current;
         }
         forceRedraw();
@@ -164,7 +164,7 @@ namespace ModelView
     {
         ClearCamera();
         using_basic_camera = true;
-        rotation = std::make_shared<BasicQuatRot>();
+        rotation = std::make_shared<BasicQuatRotation>();
     }
 
     void Viewer::SetArcballCamera()
@@ -176,11 +176,11 @@ namespace ModelView
 
     void Viewer::selectAnimation(const std::string& fileName)
     {
-        auto [basefile, filename] = FileUtil::Split(fileName);
+        auto [basefile, filename] = file_util::Split(fileName);
 
         FileSystem fs = FileSystem();
-        fs.addRoot(basefile);
-        addAnimation(FileUtil::GetFileNameWithoutExtension(filename), AnimationFile::Load(&fs, filename));
+        fs.AddRoot(basefile);
+        addAnimation(file_util::GetFileNameWithoutExtension(filename), animation_file::Load(&fs, filename));
     }
 
     void Viewer::addAnimation(const std::string& name, std::shared_ptr<Animation> anim)

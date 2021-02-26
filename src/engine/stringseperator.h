@@ -4,20 +4,20 @@
 #include <string>
 #include <vector>
 
-namespace SimpleEngine
+namespace simple
 {
     struct StringSeperator
     {
-        StringSeperator(const std::string& aSeperator, const std::string& aFinalSeperator, const std::string& empty);
+        StringSeperator(const std::string& s, const std::string& fs, const std::string& e);
 
-        StringSeperator(const std::string& aSeperator, const std::string& aFinalSeperator);
+        StringSeperator(const std::string& s, const std::string& fs);
 
-        StringSeperator(const std::string& aSeperator);
+        StringSeperator(const std::string& s);
 
-        std::string ToString(const std::vector<std::string>& mstrings) const;
+        std::string ToString(const std::vector<std::string>& strings) const;
 
-        std::string mSeperator;
-        std::string mFinalSeperator;
-        std::string mEmpty;
+        std::string seperator;
+        std::string final_seperator;
+        std::string empty;
     };
 }

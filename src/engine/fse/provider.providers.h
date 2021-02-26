@@ -2,12 +2,12 @@
 
 #include "engine/xml.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     struct Provider;
 }
 
-namespace SimpleEngine::fse::Providers
+namespace simple::fse::providers
 {
-    std::shared_ptr<Provider> Create(std::shared_ptr<Xml::Element> x);
+    std::shared_ptr<Provider> Create(std::shared_ptr<xml::Element> x);
 }

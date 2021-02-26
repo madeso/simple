@@ -9,7 +9,7 @@
 #include "imgui_impl_opengl2.h"
 #include "imgui_impl_sdl.h"
 
-namespace SimpleEngine
+namespace simple
 {
     void RunMain(std::function<std::shared_ptr<App>()>&& make_app)
     {

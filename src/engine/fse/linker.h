@@ -1,16 +1,16 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 #include <string>
 
 #include "engine/fse/map.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct MediaLoader;
 }
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     struct Provider;
     struct Target;
@@ -23,16 +23,16 @@ namespace SimpleEngine::fse
 
         Linker();
 
-        std::shared_ptr<Provider> getProvider(const std::string& name);
-        void addProvider(std::shared_ptr<Provider> prov);
+        std::shared_ptr<Provider> GetProvider(const std::string& name);
+        void AddProvider(std::shared_ptr<Provider> prov);
 
-        void addTarget(std::shared_ptr<Target> targ);
-        std::shared_ptr<Target> getTarget(const std::string& name);
+        void AddTarget(std::shared_ptr<Target> targ);
+        std::shared_ptr<Target> GetTarget(const std::string& name);
 
-        std::shared_ptr<Pipeline> getPipeline(std::shared_ptr<Target> target);
+        std::shared_ptr<Pipeline> GetPipeline(std::shared_ptr<Target> target);
 
-        void link();
+        void Link();
 
-        std::string read(const std::string& path, MediaLoader* ml, int width, int height);
+        std::string ReadPipelineFromFile(const std::string& path, MediaLoader* ml, int width, int height);
     };
 }

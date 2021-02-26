@@ -1,11 +1,11 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 #include <string>
 
 #include "engine/fse/command.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     struct Binder;
     struct BufferReference;
@@ -13,25 +13,25 @@ namespace SimpleEngine::fse
     struct Target;
 }
 
-namespace SimpleEngine::fse::Commands
+namespace simple::fse::commands
 {
     struct BindBufferCommand : public Command
     {
         std::shared_ptr<BufferReference> buffer;
-        std::shared_ptr<Target> targ;
+        std::shared_ptr<Target> target;
         int location;
         std::string name;
 
         std::string ToString() const override;
 
-        BindBufferCommand(std::shared_ptr<Xml::Element> el, std::shared_ptr<Provider> prov);
+        BindBufferCommand(std::shared_ptr<xml::Element> el, std::shared_ptr<Provider> prov);
 
-        void apply() override;
+        void Apply() override;
 
-        void doLink(Linker* user) override;
+        void Link(Linker* user) override;
 
-        void doBind(Binder* bd) override;
+        void Bind(Binder* bd) override;
 
-        std::vector<std::shared_ptr<Provider>> Dependencies() override;
+        std::vector<std::shared_ptr<Provider>> GetDependencies() override;
     };
 }

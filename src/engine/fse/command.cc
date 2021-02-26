@@ -1,12 +1,12 @@
-﻿#include "engine/fse/command.h"
+#include "engine/fse/command.h"
 
 #include "engine/fse/provider.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
-    Command::Command(std::shared_ptr<Xml::Element> el, std::shared_ptr<Provider> p)
+    Command::Command(std::shared_ptr<xml::Element> el, std::shared_ptr<Provider> p)
         : prov(p)
-        , id(Xml::GetAttributeString(el, "id"))
+        , id(xml::GetAttributeString(el, "id"))
     {
     }
 
@@ -19,18 +19,8 @@ namespace SimpleEngine::fse
         return id;
     }
 
-    std::shared_ptr<BufferReference> Command::createBuffer(std::string name)
+    std::shared_ptr<BufferReference> Command::CreateBuffer(std::string name)
     {
-        return prov->createBuffer(name);
-    }
-
-    void Command::link(Linker* linker)
-    {
-        doLink(linker);
-    }
-
-    void Command::bind(Binder* b)
-    {
-        doBind(b);
+        return prov->CreateBuffer(name);
     }
 }

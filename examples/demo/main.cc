@@ -5,25 +5,25 @@
 #include "demo/demo.h"
 #include "engine/setup.h"
 
-namespace SimpleTest
+namespace demo
 {
-    struct App : public SimpleEngine::App
+    struct App : public simple::App
     {
         std::shared_ptr<Demo> demo;
-        SimpleEngine::vec2 mouse_delta = SimpleEngine::vec2(0, 0);
+        simple::vec2 mouse_delta = simple::vec2(0, 0);
         bool tab = false;
         bool last_tab = false;
 
         App()
         {
-            SimpleEngine::Setup::Setup();
+            simple::setup::Setup();
             demo = std::make_shared<Demo>();
         }
 
         void OnStep(float dt) override
         {
             demo->OnFrame(dt, mouse_delta);
-            mouse_delta = SimpleEngine::vec2(0, 0);
+            mouse_delta = simple::vec2(0, 0);
         }
 
         void OnEvent(const SDL_Event& e) override
@@ -35,7 +35,7 @@ namespace SimpleTest
                 case SDL_MOUSEMOTION:
                     if (use_imgui == false)
                     {
-                        mouse_delta = mouse_delta + SimpleEngine::vec2(e.motion.xrel, e.motion.yrel);
+                        mouse_delta = mouse_delta + simple::vec2(e.motion.xrel, e.motion.yrel);
                     }
                     break;
                 }
@@ -47,7 +47,7 @@ namespace SimpleTest
                 {
                 case SDL_KEYDOWN:
                 case SDL_KEYUP:
-                    demo->OnButton(SimpleEngine::Ckey(e.key.keysym.sym), e.type == SDL_KEYDOWN);
+                    demo->OnButton(simple::ConfigurableKey(e.key.keysym.sym), e.type == SDL_KEYDOWN);
                     if (e.key.keysym.sym == SDLK_TAB)
                     {
                         tab = e.type == SDL_KEYDOWN;
@@ -75,6 +75,6 @@ namespace SimpleTest
 
 int main(int argc, char* argv[])
 {
-    SimpleEngine::RunMain([] { return std::make_shared<SimpleTest::App>(); });
+    simple::RunMain([] { return std::make_shared<demo::App>(); });
     return 0;
 }

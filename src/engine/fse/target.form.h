@@ -1,26 +1,26 @@
-﻿#pragma once
+#pragma once
 
 #include "engine/fse/target.h"
 #include "engine/xml.h"
 
-namespace SimpleEngine::fse::Targets
+namespace simple::fse::targets
 {
     struct FormTarget : public Target
     {
         int width;
         int height;
 
-        FormTarget(std::shared_ptr<Xml::Element> x, int w, int h);
+        FormTarget(std::shared_ptr<xml::Element> x, int w, int h);
 
         std::string ToString() const override;
 
-        void apply(Target::ApplyFunction a) override;
+        void Apply(Target::ApplyFunction a) override;
 
-        int Width() override;
+        int GetWidth() override;
 
-        int Height() override;
+        int GetHeight() override;
 
-        void link(Linker*) override;
+        void Link(Linker*) override;
 
         void OnSize(int width, int height) override;
     };

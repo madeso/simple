@@ -1,14 +1,15 @@
-﻿#include "engine/renderlist.h"
+#include "engine/renderlist.h"
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "engine/meshpart.h"
 #include "engine/quat.h"
 #include "engine/renderable.h"
 #include "engine/vec3.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct RenderMeshPart : public RenderDta
     {
@@ -48,13 +49,13 @@ namespace SimpleEngine
         return x->GetId() < y->GetId();
     }
 
-    void RenderList::Add(std::shared_ptr<MeshPart> part, const vec3& pos, const quat& rot)
+    void RenderList::Add(std::shared_ptr<MeshPart> part, const vec3& position, const quat& rotation)
     {
-        auto d = std::make_shared<RenderMeshPart>();
-        d->part = part;
-        d->pos = pos;
-        d->rot = rot;
-        datas.emplace_back(d);
+        auto rmp = std::make_shared<RenderMeshPart>();
+        rmp->part = std::move(part);
+        rmp->pos = position;
+        rmp->rot = rotation;
+        datas.emplace_back(rmp);
     }
 
     void RenderList::Add(Renderable* r, int id)

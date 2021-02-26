@@ -5,7 +5,7 @@
 #include <functional>
 #include <memory>
 
-namespace SimpleEngine
+namespace simple
 {
     struct App
     {

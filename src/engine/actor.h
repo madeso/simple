@@ -6,7 +6,7 @@
 #include "engine/animation.h"
 #include "engine/meshdef.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct Actor
     {

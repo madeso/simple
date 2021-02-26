@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 #include <string>
@@ -7,26 +7,26 @@
 #include "engine/shader.h"
 #include "engine/xml.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    struct Shader;
+    struct ShaderProgram;
 }
 
-namespace SimpleEngine::fse::Providers
+namespace simple::fse::providers
 {
     struct RenderFullscreenProvider : Provider
     {
-        std::shared_ptr<Shader> sh;
-        std::string shadername;
+        std::shared_ptr<ShaderProgram> shader;
+        std::string name_of_shader;
 
         std::string ToString() const override;
 
-        RenderFullscreenProvider(std::shared_ptr<Xml::Element> el);
+        RenderFullscreenProvider(std::shared_ptr<xml::Element> el);
 
-        void doProvide(RenderArgs* ra) override;
+        void PostProvide(RenderArgs* ra) override;
 
-        void doLink(Linker* user) override;
+        void PostLink(Linker* user) override;
 
-        void doBind(Binder* bd) override;
+        void PreBind(Binder* bd) override;
     };
 }

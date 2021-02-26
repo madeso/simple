@@ -1,16 +1,16 @@
-﻿#pragma once
+#pragma once
 
 #include <map>
 #include <string>
 
-namespace SimpleEngine
+namespace simple
 {
     struct StringCounter
     {
         std::map<std::string, int> counts;
 
-        void add(const std::string& s);
+        void Add(const std::string& s);
 
-        int countsOf(const std::string& s) const;
+        int GetCountsOf(const std::string& s) const;
     };
 }

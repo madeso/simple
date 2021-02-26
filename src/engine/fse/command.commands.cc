@@ -8,9 +8,9 @@
 #include "engine/xml.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine::fse::Commands
+namespace simple::fse::commands
 {
-    std::shared_ptr<Command> Create(std::shared_ptr<Xml::Element> el, std::shared_ptr<Provider> pro)
+    std::shared_ptr<Command> Create(std::shared_ptr<xml::Element> el, std::shared_ptr<Provider> pro)
     {
         std::string name = el->GetName();
         if (name == "bindbuffer")

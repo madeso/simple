@@ -7,46 +7,46 @@
 #include "engine/fse/target.h"
 #include "engine/medialoader.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
-    std::shared_ptr<Pipeline> Pipeline::Create(const std::string& path, MediaLoader* ml, int width, int height)
+    std::shared_ptr<Pipeline> Pipeline::LoadFromFile(const std::string& path, MediaLoader* ml, int width, int height)
     {
         Linker linker;
-        std::string t = linker.read(path, ml, width, height);
-        linker.link();
-        auto pp = linker.getPipeline(linker.getTarget(t));
+        std::string t = linker.ReadPipelineFromFile(path, ml, width, height);
+        linker.Link();
+        auto pp = linker.GetPipeline(linker.GetTarget(t));
         auto bind = Binder(ml->FS());
-        pp->bind(&bind);
-        bind.createBuffers();
+        pp->Bind(&bind);
+        bind.CreateBuffers();
         return pp;
     }
 
-    void Pipeline::bind(Binder* binder)
+    void Pipeline::Bind(Binder* binder)
     {
         for (auto p : providers)
         {
-            p->bind(binder);
+            p->Bind(binder);
             if (p->target != nullptr)
             {
-                p->target->bind(binder);
+                p->target->Bind(binder);
             }
         }
     }
 
-    void Pipeline::render(RenderArgs* ra)
+    void Pipeline::Render(RenderArgs* ra)
     {
-        OnSize(ra->Width, ra->Height);
+        OnSize(ra->width, ra->height);
         for (auto p : providers)
         {
-            p->provide(ra);
+            p->Provide(ra);
         }
     }
 
-    void Pipeline::add(std::shared_ptr<Provider> pr)
+    void Pipeline::Add(std::shared_ptr<Provider> pr)
     {
         for (auto p : pr->providers)
         {
-            add(p);
+            Add(p);
         }
 
         if (std::find(providers.begin(), providers.end(), pr) == providers.end())

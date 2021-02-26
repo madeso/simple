@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SimpleEngine
+namespace simple
 {
     struct Window
     {

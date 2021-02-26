@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace SimpleEngine
+namespace simple
 {
     struct UserException : public std::runtime_error
     {

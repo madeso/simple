@@ -5,15 +5,15 @@
 #include "engine/setup.h"
 #include "engine/texture.h"
 
-namespace SimpleEngine
+namespace simple
 {
     void RenderFullscreenQuad(std::shared_ptr<Fbo> texture, int Width, int Height)
     {
-        Setup::View2d(Width, Height);
+        setup::View2d(Width, Height);
 
         if (texture != nullptr)
         {
-            texture->bindTexture();
+            texture->BindTexture();
         }
 
         glBegin(GL_QUADS);

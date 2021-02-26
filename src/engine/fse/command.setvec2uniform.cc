@@ -1,39 +1,39 @@
 ﻿#include "engine/fse/command.setvec2uniform.h"
 
 #include "engine/fse/binder.h"
-#include "engine/math1.h"
+#include "engine/math.h"
 #include "engine/shader.h"
 
-namespace SimpleEngine::fse::Commands
+namespace simple::fse::commands
 {
-    SetVec2Uniform::SetVec2Uniform(std::shared_ptr<Xml::Element> el, std::shared_ptr<Provider> p)
+    SetVec2Uniform::SetVec2Uniform(std::shared_ptr<xml::Element> el, std::shared_ptr<Provider> p)
         : Command(el, p)
     {
-        shaderName = Xml::GetAttributeString(el, "shader");
-        uniformName = Xml::GetAttributeString(el, "uniform");
-        float x = Xml::GetAttribute<float>(el, "x", math1::ParseFloat, 0);
-        float y = Xml::GetAttribute<float>(el, "y", math1::ParseFloat, 0);
+        shaderName = xml::GetAttributeString(el, "shader");
+        uniformName = xml::GetAttributeString(el, "uniform");
+        float x = xml::GetAttribute<float>(el, "x", math::ParseFloat, 0);
+        float y = xml::GetAttribute<float>(el, "y", math::ParseFloat, 0);
 
         vec = vec2(x, y);
     }
 
-    void SetVec2Uniform::apply()
+    void SetVec2Uniform::Apply()
     {
-        uniform->BindUniform(vec);
+        uniform->Set(vec);
     }
 
-    std::vector<std::shared_ptr<Provider>> SetVec2Uniform::Dependencies()
+    std::vector<std::shared_ptr<Provider>> SetVec2Uniform::GetDependencies()
     {
         return {};
     }
 
-    void SetVec2Uniform::doLink(Linker* user)
+    void SetVec2Uniform::Link(Linker* user)
     {
     }
 
-    void SetVec2Uniform::doBind(Binder* bd)
+    void SetVec2Uniform::Bind(Binder* bd)
     {
-        shader = bd->getShader(shaderName);
+        shader = bd->GetShader(shaderName);
         uniform = shader->GetUniformFromName(uniformName);
     }
 }

@@ -1,21 +1,21 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 
 #include "engine/camera.h"
 #include "engine/world.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     struct RenderArgs
     {
         RenderArgs(std::shared_ptr<World> ww, const Camera& c, int w, int h);
 
-        std::shared_ptr<World> World;
-        Camera Cam;
-        int Width;
-        int Height;
+        std::shared_ptr<World> world;
+        Camera camera;
+        int width;
+        int height;
 
-        void render();
+        void Render();
     };
 }

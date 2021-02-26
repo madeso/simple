@@ -10,18 +10,18 @@
 #include "engine/vec2.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    ShaderSource::ShaderSource(const std::string& name, const std::string& source, ShaderType type)
+    Shader::Shader(const std::string& name, const std::string& source, ShaderType type)
     {
-        shader_id = glCreateShader(type);
+        id = glCreateShader(type);
         int length = source.length();
-        std::vector<char> str;
-        str.resize(source.length()+1, 0);
-        strcpy(str.data(), source.c_str());
-        char* sstr = str.data();
-        glShaderSource(GetId(), 1, &sstr, &length);
-        glCompileShader(shader_id);
+        std::vector<char> string_source;
+        string_source.resize(source.length()+1, 0);
+        strcpy(string_source.data(), source.c_str());
+        char* cstyle_source = string_source.data();
+        glShaderSource(id, 1, &cstyle_source, &length);
+        glCompileShader(id);
 
         if (false == GetCompileStatus())
         {
@@ -29,162 +29,138 @@ namespace SimpleEngine
         }
     }
 
-    std::string ShaderSource::GetInfoLog()
+    std::string Shader::GetInfoLog()
     {
         int size;
-        glGetShaderiv(GetId(), GL_INFO_LOG_LENGTH, &size);
+        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &size);
 
         std::vector<char> log;
         log.resize(size + 1, 0);
         int length;
-        glGetShaderInfoLog(GetId(), size, &length, &log[0]);
+        glGetShaderInfoLog(id, size, &length, &log[0]);
 
         return &log[0];
     }
 
-    bool ShaderSource::GetCompileStatus()
+    bool Shader::GetCompileStatus()
     {
         int status;
-        glGetShaderiv(GetId(), GL_COMPILE_STATUS, &status);
+        glGetShaderiv(id, GL_COMPILE_STATUS, &status);
         return status == GL_TRUE;
     }
 
-    int ShaderSource::GetId()
+    Uniform::Uniform(ShaderProgram* program, const std::string& name)
     {
-        return shader_id;
-    }
-
-    Uniform::Uniform(Shader* s, const std::string& name)
-    {
-        var = glGetUniformLocation(s->GetProgramId(), name.c_str());
-        if (var == -1)
+        id = glGetUniformLocation(program->id, name.c_str());
+        if (id == -1)
             throw std::runtime_error(fmt::format("{} is not a recognized uniform", name));
     }
 
-    void Uniform::BindUniform(int location)
+    void Uniform::SetTexture(int location)
     {
-        glUniform1i(var, location);
+        glUniform1i(id, location);
     }
 
-    void Uniform::BindUniform(float value)
+    void Uniform::Set(float value)
     {
-        glUniform1f(var, value);
+        glUniform1f(id, value);
     }
 
-    void Uniform::BindUniform(const vec2& v)
+    void Uniform::Set(const vec2& value)
     {
-        glUniform2f(var, v.x, v.y);
+        glUniform2f(id, value.x, value.y);
     }
 
-    StaticUniformSamplerBind::StaticUniformSamplerBind(std::shared_ptr<Xml::Element> root, Shader* shader)
+    StaticUniformSamplerBind::StaticUniformSamplerBind(std::shared_ptr<xml::Element> root, ShaderProgram* program)
     {
-        std::string varname = Xml::GetAttributeString(root, "id");
-        location = Xml::GetAttribute<int>(
+        std::string var_name = xml::GetAttributeString(root, "id");
+        location = xml::GetAttribute<int>(
             root, "location", [](const std::string& s) -> int { return std::stoi(s); }, -1);
-        var = shader->GetUniformFromName(varname);
+        uniform = program->GetUniformFromName(var_name);
     }
 
     void StaticUniformSamplerBind::Bind()
     {
-        var->BindUniform(location);
+        uniform->SetTexture(location);
     }
 
-    Shader::Shader(FileSystem* sys, const std::string& path)
+    ShaderProgram::ShaderProgram(FileSystem* fs, const std::string& path)
     {
-        if (false == IsShadersSupported())
-            throw std::runtime_error("shaders not supported on your card, sorry");
-
-        std::shared_ptr<Xml::Element> shader = Xml::Open(sys->open(path), "shader");
-        LoadFrom(path, shader);
+        std::shared_ptr<xml::Element> shader_root = xml::Open(fs->Open(path), "shader");
+        LoadFrom(path, shader_root);
     }
 
-    Shader::Shader(const std::string& path, std::shared_ptr<Xml::Element> shader)
+    ShaderProgram::ShaderProgram(const std::string& path, std::shared_ptr<xml::Element> shader_root)
     {
-        if (false == IsShadersSupported())
-            throw std::runtime_error("shaders not supported on your card, sorry");
-        LoadFrom(path, shader);
+        LoadFrom(path, shader_root);
     }
 
-    void Shader::LoadFrom(const std::string& path, std::shared_ptr<Xml::Element> shader)
+    void ShaderProgram::LoadFrom(const std::string& path, std::shared_ptr<xml::Element> shader_root)
     {
-        std::string vertexsource = Trim(Xml::GetTextOfSubElement(shader, "vertex"));
-        std::string fragmentsource = Trim(Xml::GetTextOfSubElement(shader, "fragment"));
+        std::string vertex_source = Trim(xml::GetTextOfSubElement(shader_root, "vertex"));
+        std::string fragment_source = Trim(xml::GetTextOfSubElement(shader_root, "fragment"));
 
-        program_id = glCreateProgram();
+        id = glCreateProgram();
 
-        vertex = std::make_shared<ShaderSource>(path + " (vert)", vertexsource, ShaderSource::Vertex);
-        fragment = std::make_shared<ShaderSource>(path + " (frag)", fragmentsource, ShaderSource::Fragment);
+        vertex_shader = std::make_shared<Shader>(path + " (vert)", vertex_source, Shader::Vertex);
+        fragment_shader = std::make_shared<Shader>(path + " (frag)", fragment_source, Shader::Fragment);
 
-        Attach(vertex);
-        Attach(fragment);
-        auto prog = GetProgramId();
-        auto func = glLinkProgram;
-        glLinkProgram(prog);
+        Attach(vertex_shader);
+        Attach(fragment_shader);
+        glLinkProgram(id);
 
         if (false == GetLinkStatus())
         {
             throw std::runtime_error("Link error for " + path + ": " + GetInfoLog());
         }
 
-        for (auto b : Xml::Elements(shader->GetChild("bind")))
+        for (auto bind_root : xml::Elements(shader_root->GetChild("bind")))
         {
-            binds.emplace_back(std::make_shared<StaticUniformSamplerBind>(b, this));
+            binds.emplace_back(std::make_shared<StaticUniformSamplerBind>(bind_root, this));
         }
     }
 
-    std::string Shader::GetInfoLog()
+    std::string ShaderProgram::GetInfoLog() const
     {
-        int size;
-        glGetProgramiv(GetProgramId(), GL_INFO_LOG_LENGTH, &size);
+        int length;
+        glGetProgramiv(id, GL_INFO_LOG_LENGTH, &length);
 
         std::vector<char> log;
-        log.resize(size + 1, 0);
-        int length;
-        glGetProgramInfoLog(GetProgramId(), size, &length, &log[0]);
+        log.resize(length + 1, 0);
+        int junk_length;
+        glGetProgramInfoLog(id, length, &junk_length, &log[0]);
 
         return &log[0];
     }
 
-    void Shader::Attach(std::shared_ptr<ShaderSource> src)
+    void ShaderProgram::Attach(std::shared_ptr<Shader> shader)
     {
-        glAttachShader(GetProgramId(), src->GetId());
+        glAttachShader(id, shader->id);
     }
 
-    bool Shader::GetLinkStatus()
+    bool ShaderProgram::GetLinkStatus()
     {
         int result;
-        glGetProgramiv(GetProgramId(), GL_LINK_STATUS, &result);
+        glGetProgramiv(id, GL_LINK_STATUS, &result);
         return result == GL_TRUE;
     }
 
-    int Shader::GetProgramId()
+    void ShaderProgram::Bind(std::shared_ptr<ShaderProgram> program)
     {
-        return program_id;
-    }
-
-    bool Shader::IsShadersSupported()
-    {
-        bool hasVertex = true;    // IsExtensionSupported("GL_ARB_vertex_shader");
-        bool hasFragment = true;  // IsExtensionSupported("GL_ARB_fragment_shader");
-        return hasVertex && hasFragment;
-    }
-
-    void Shader::Bind(std::shared_ptr<Shader> shader)
-    {
-        glUseProgram(shader->GetProgramId());
-        for (auto sb : shader->binds)
+        glUseProgram(program->id);
+        for (auto sb : program->binds)
         {
             sb->Bind();
         }
     }
 
-    void Shader::Unbind()
+    void ShaderProgram::Unbind()
     {
         glUseProgram(0);
     }
 
-    std::shared_ptr<Uniform> Shader::GetUniformFromName(const std::string& varname)
+    std::shared_ptr<Uniform> ShaderProgram::GetUniformFromName(const std::string& name)
     {
-        return std::make_shared<Uniform>(this, varname);
+        return std::make_shared<Uniform>(this, name);
     }
 }

@@ -7,11 +7,11 @@
 #include "engine/axisangle.h"
 #include "engine/fileutil.h"
 #include "engine/mat33.h"
-#include "engine/math1.h"
+#include "engine/math.h"
 #include "engine/vec3.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine
+namespace simple
 {
     std::string quat::ToString() const
     {
@@ -161,7 +161,7 @@ namespace SimpleEngine
         {
             return lerp(a, v, b);
         }
-        d = math1::Within(-1, d, 1);
+        d = math::Within(-1, d, 1);
         Angle theta0 = Angle::Acos(d);
         Angle theta = theta0 * v;
 
@@ -201,11 +201,11 @@ namespace SimpleEngine
         }
         else
         {
-            return AxisAngle::RightHandAround(GetVec().Normalized(), Angle::Acos(w) * 2);
+            return AxisAngle::RightHandAround(GetVec().GetNormalized(), Angle::Acos(w) * 2);
         }
     }
 
-    quat::quat(const SimpleEngine::AxisAngle& aa)
+    quat::quat(const simple::AxisAngle& aa)
     {
         Angle half = aa.angle * 0.5f;
         SetVec(aa.axis * half.Sin());
@@ -236,9 +236,9 @@ namespace SimpleEngine
 
     mat33 quat::GetMatrix33() const
     {
-        float tXX = 2 * math1::Square(x);
-        float tYY = 2 * math1::Square(y);
-        float tZZ = 2 * math1::Square(z);
+        float tXX = 2 * math::Square(x);
+        float tYY = 2 * math::Square(y);
+        float tZZ = 2 * math::Square(z);
         float tXY = 2 * x * y;
         float tYZ = 2 * y * z;
         float tZW = 2 * z * w;

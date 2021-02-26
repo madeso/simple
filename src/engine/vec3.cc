@@ -5,11 +5,11 @@
 
 #include "engine/angle.h"
 #include "engine/fileutil.h"
-#include "engine/math1.h"
+#include "engine/math.h"
 #include "engine/quat.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine
+namespace simple
 {
     std::string vec3::ToString() const
     {
@@ -65,7 +65,7 @@ namespace SimpleEngine
         }
     }
 
-    vec3 vec3::scale(float s) const
+    vec3 vec3::Scale(float s) const
     {
         return vec3(x * s, y * s, z * s);
     }
@@ -75,9 +75,9 @@ namespace SimpleEngine
         return vec3(-x, -y, -z);
     }
 
-    SimpleEngine::quat vec3::quat() const
+    simple::quat vec3::ToQuat() const
     {
-        return SimpleEngine::quat(*this, 0);
+        return simple::quat(*this, 0);
     }
 
     vec3 vec3::FromTo(const vec3& from, const vec3& to)
@@ -99,36 +99,36 @@ namespace SimpleEngine
         return A.x * B.x + A.y * B.y + A.z * B.z;
     }
 
-    vec3 vec3::RotateAroundOrigo(const SimpleEngine::quat& q, const vec3& v)
+    vec3 vec3::RotateAroundOrigo(const simple::quat& q, const vec3& v)
     {
-        SimpleEngine::quat r = q * v.quat() * q.Conjugate();
+        simple::quat r = q * v.ToQuat() * q.Conjugate();
         return r.GetVec();
     }
 
-    float vec3::Length() const
+    float vec3::GetLength() const
     {
-        return (float)std::sqrt(LengthSquared());
+        return (float)std::sqrt(GetLengthSquared());
     }
 
-    float vec3::LengthSquared() const
+    float vec3::GetLengthSquared() const
     {
         return x * x + y * y + z * z;
     }
 
-    void vec3::normalize()
+    void vec3::Normalize()
     {
-        float l = Length();
-        if (math1::IsZero(l))
+        float l = GetLength();
+        if (math::IsZero(l))
             return;
         x /= l;
         y /= l;
         z /= l;
     }
 
-    vec3 vec3::Normalized() const
+    vec3 vec3::GetNormalized() const
     {
         vec3 copy = *this;
-        copy.normalize();
+        copy.Normalize();
         return copy;
     }
 
@@ -160,7 +160,7 @@ namespace SimpleEngine
 
     vec3 vec3::Curve(const vec3& target, const vec3& old, float smoothing)
     {
-        return vec3(math1::Curve(target.x, old.x, smoothing), math1::Curve(target.y, old.y, smoothing), math1::Curve(target.z, old.z, smoothing));
+        return vec3(math::Curve(target.x, old.x, smoothing), math::Curve(target.y, old.y, smoothing), math::Curve(target.z, old.z, smoothing));
     }
 
     Angle vec3::AngleBetween(const vec3& f, const vec3& t)
@@ -183,7 +183,7 @@ namespace SimpleEngine
     }
     vec3 operator*(const vec3& lhs, float rhs)
     {
-        return lhs.scale(rhs);
+        return lhs.Scale(rhs);
     }
 
     vec3 operator-(const vec3& me)

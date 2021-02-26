@@ -1,16 +1,16 @@
-﻿#include "engine/mat33.h"
+#include "engine/mat33.h"
 
 #include "engine/mat44.h"
-#include "engine/math1.h"
+#include "engine/math.h"
 #include "engine/quat.h"
 #include "engine/vec3.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine
+namespace simple
 {
     std::string mat33::ToString() const
     {
-        const auto& m = dataColumnMajor;
+        const auto& m = column_major;
 
         return fmt::format(
             "\n| {0} {3} {6} |"
@@ -19,22 +19,22 @@ namespace SimpleEngine
             m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8]);
     }
 
-    float* mat33::DataArray()
+    float* mat33::AsColmnMajorArray()
     {
-        return &dataColumnMajor[0];
+        return &column_major[0];
     }
 
     float mat33::operator()(int row, int column) const
     {
-        return dataColumnMajor[row + column * kSize];
+        return column_major[row + column * kSize];
     }
     float& mat33::operator()(int row, int column)
     {
-        return dataColumnMajor[row + column * kSize];
+        return column_major[row + column * kSize];
     }
 
     mat33::mat33(FA data)
-        : dataColumnMajor(data)
+        : column_major(data)
     {
     }
 
@@ -51,25 +51,25 @@ namespace SimpleEngine
             data[2], data[5], data[8]});
     }
 
-    vec3 mat33::XAxis() const
+    vec3 mat33::GetXAxis() const
     {
         const auto& self = *this;
         return vec3(self(0, 0), self(1, 0), self(2, 0));
     }
 
-    vec3 mat33::YAxis() const
+    vec3 mat33::GetYAxis() const
     {
         const auto& self = *this;
         return vec3(self(0, 1), self(1, 1), self(2, 1));
     }
 
-    vec3 mat33::ZAxis() const
+    vec3 mat33::GetZAxis() const
     {
         const auto& self = *this;
         return -vec3(self(0, 2), self(1, 2), self(2, 2));
     }
 
-    mat44 mat33::mat44() const
+    mat44 mat33::AsMat44() const
     {
         const auto& self = *this;
         return mat44::FromRowMajor(mat44::FA{
@@ -95,7 +95,7 @@ namespace SimpleEngine
             0, 0, scale.z});
     }
 
-    quat mat33::quat() const
+    quat mat33::AsQuat() const
     {
         const auto& self = *this;
 
@@ -103,10 +103,10 @@ namespace SimpleEngine
         float tr = self(0, 0) + self(1, 1) + self(2, 2);
         if (tr > 0.0f)
         {
-            float s = math1::Sqrt(tr + 1.0f);
+            float s = math::Sqrt(tr + 1.0f);
             float t = 0.5f / s;
 
-            return SimpleEngine::quat(
+            return simple::quat(
                 s * 0.5f,
                 vec3((self(1, 2) - self(2, 1)) * t,
                      (self(2, 0) - self(0, 2)) * t,
@@ -115,7 +115,7 @@ namespace SimpleEngine
         else
         {
             std::array<int, 3> NXT = {1, 2, 0};
-            SimpleEngine::quat q = SimpleEngine::quat::Identity();
+            simple::quat q = simple::quat::Identity();
             // diagonal is negative
             // get biggest diagonal element
             int i = 0;
@@ -127,11 +127,11 @@ namespace SimpleEngine
             int j = NXT[i];
             int k = NXT[j];
 
-            float s = math1::Sqrt((self(i, i) - (self(j, j) + self(k, k))) + 1.0f);
+            float s = math::Sqrt((self(i, i) - (self(j, j) + self(k, k))) + 1.0f);
 
             q(i) = s * 0.5f;
 
-            if (math1::IsZero(s) == false)
+            if (math::IsZero(s) == false)
                 s = 0.5f / s;
 
             q(j) = (self(i, j) + self(j, i)) * s;

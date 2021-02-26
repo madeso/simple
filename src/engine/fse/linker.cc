@@ -13,7 +13,7 @@
 #include "engine/xml.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     Linker::Linker()
         : providers([](const std::string& name) -> std::shared_ptr<Provider> {
@@ -25,66 +25,66 @@ namespace SimpleEngine::fse
     {
     }
 
-    std::shared_ptr<Provider> Linker::getProvider(const std::string& name)
+    std::shared_ptr<Provider> Linker::GetProvider(const std::string& name)
     {
-        return providers.get(name);
+        return providers.GetOrCreate(name);
     }
-    void Linker::addProvider(std::shared_ptr<Provider> prov)
+    void Linker::AddProvider(std::shared_ptr<Provider> prov)
     {
-        providers.add(prov->Id(), prov);
-    }
-
-    void Linker::addTarget(std::shared_ptr<Target> targ)
-    {
-        targets.add(targ->Id(), targ);
-    }
-    std::shared_ptr<Target> Linker::getTarget(const std::string& name)
-    {
-        return targets.get(name);
+        providers.Set(prov->GetId(), prov);
     }
 
-    std::shared_ptr<Pipeline> Linker::getPipeline(std::shared_ptr<Target> target)
+    void Linker::AddTarget(std::shared_ptr<Target> targ)
+    {
+        targets.Set(targ->GetId(), targ);
+    }
+    std::shared_ptr<Target> Linker::GetTarget(const std::string& name)
+    {
+        return targets.GetOrCreate(name);
+    }
+
+    std::shared_ptr<Pipeline> Linker::GetPipeline(std::shared_ptr<Target> target)
     {
         auto pl = std::make_shared<Pipeline>();
 
-        pl->add(target->Provider());
+        pl->Add(target->GetProvider());
 
         return pl;
     }
 
-    void Linker::link()
+    void Linker::Link()
     {
-        for (auto p : providers.Data())
+        for (auto p : providers.GetCreatedValues())
         {
-            Provider::link(p, this);
+            Provider::Link(p, this);
         }
 
-        for (auto t : targets.Data())
+        for (auto t : targets.GetCreatedValues())
         {
-            t->link(this);
-            if (t->Provider() == nullptr)
+            t->Link(this);
+            if (t->GetProvider() == nullptr)
                 throw std::runtime_error(fmt::format("{} is missing a provider", t->ToString()));
         }
 
-        for (auto p : providers.Data())
+        for (auto p : providers.GetCreatedValues())
         {
-            p->postlink(this);
+            p->OnLinkCompleted(this);
         }
     }
 
-    std::string Linker::read(const std::string& path, MediaLoader* ml, int width, int height)
+    std::string Linker::ReadPipelineFromFile(const std::string& path, MediaLoader* ml, int width, int height)
     {
-        std::shared_ptr<Xml::Element> root = Xml::Open(ml->FS()->open(path), "pipeline");
-        std::string t = Xml::GetAttributeString(root, "target");
-        for (std::shared_ptr<Xml::Element> targetElement : Xml::Elements(root->GetChild("targets")))
+        std::shared_ptr<xml::Element> root = xml::Open(ml->FS()->Open(path), "pipeline");
+        std::string t = xml::GetAttributeString(root, "target");
+        for (std::shared_ptr<xml::Element> targetElement : xml::Elements(root->GetChild("targets")))
         {
-            auto target = Targets::Create(targetElement, width, height);
-            addTarget(target);
+            auto target = targets::Create(targetElement, width, height);
+            AddTarget(target);
         }
-        for (std::shared_ptr<Xml::Element> providerElement : Xml::Elements(root->GetChild("providers")))
+        for (std::shared_ptr<xml::Element> providerElement : xml::Elements(root->GetChild("providers")))
         {
-            auto provider = Providers::Create(providerElement);
-            addProvider(provider);
+            auto provider = providers::Create(providerElement);
+            AddProvider(provider);
         }
 
         return t;

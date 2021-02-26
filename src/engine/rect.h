@@ -1,14 +1,14 @@
-﻿#pragma once
+#pragma once
 
-namespace SimpleEngine
+namespace simple
 {
     struct Rect
     {
         static Rect FromLTWH(int l, int t, int w, int h);
 
-        int Left;
-        int Top;
-        int Width;
-        int Height;
+        int left;
+        int top;
+        int width;
+        int height;
     };
 }

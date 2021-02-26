@@ -2,27 +2,27 @@
 
 #include <cmath>
 
-#include "engine/math1.h"
+#include "engine/math.h"
 #include "fmt/core.h"
 
 namespace
 {
     float rad2deg(float rad)
     {
-        return (float)(180 / SimpleEngine::math1::pi) * rad;
+        return (float)(180 / simple::math::pi) * rad;
     }
 
     float deg2rad(float deg)
     {
-        return (float)SimpleEngine::math1::pi / 180 * deg;
+        return (float)simple::math::pi / 180 * deg;
     }
 }
 
-namespace SimpleEngine
+namespace simple
 {
     std::string Angle::ToString() const
     {
-        return fmt::format("{}", inDegrees());
+        return fmt::format("{}", InDegrees());
     }
 
     Angle Angle::Zero()
@@ -30,14 +30,14 @@ namespace SimpleEngine
         return Angle::FromRadians(0);
     }
 
-    float Angle::inRadians() const
+    float Angle::InRadians() const
     {
-        return rad;
+        return radians;
     }
 
-    float Angle::inDegrees() const
+    float Angle::InDegrees() const
     {
-        return rad2deg(rad);
+        return rad2deg(radians);
     }
 
     Angle Angle::FromRadians(float r)
@@ -52,7 +52,7 @@ namespace SimpleEngine
 
     Angle Angle::FromPercentOf360(float percent)
     {
-        return Angle::FromRadians((float)(percent * math1::pi * 2));
+        return Angle::FromRadians((float)(percent * math::pi * 2));
     }
 
     Angle Angle::operator-() const
@@ -62,22 +62,22 @@ namespace SimpleEngine
 
     Angle Angle::Negative() const
     {
-        return Angle{-rad};
+        return Angle{-radians};
     }
 
     float Angle::Sin() const
     {
-        return (float)std::sin(inRadians());
+        return (float)std::sin(InRadians());
     }
 
     float Angle::Cos() const
     {
-        return (float)std::cos(inRadians());
+        return (float)std::cos(InRadians());
     }
 
     float Angle::Tan()
     {
-        return (float)std::tan(inRadians());
+        return (float)std::tan(InRadians());
     }
 
     Angle Angle::Asin(float v)
@@ -96,22 +96,22 @@ namespace SimpleEngine
     }
 
     Angle::Angle(float r)
-        : rad(r)
+        : radians(r)
     {
     }
 
     Angle operator+(Angle l, Angle r)
     {
-        return Angle::FromRadians(l.inRadians() + r.inRadians());
+        return Angle::FromRadians(l.InRadians() + r.InRadians());
     }
 
     Angle operator-(Angle l, Angle r)
     {
-        return Angle::FromRadians(l.inRadians() - r.inRadians());
+        return Angle::FromRadians(l.InRadians() - r.InRadians());
     }
 
     Angle operator*(Angle l, float r)
     {
-        return Angle::FromRadians(l.inRadians() * r);
+        return Angle::FromRadians(l.InRadians() * r);
     }
 }

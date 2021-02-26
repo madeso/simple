@@ -12,9 +12,9 @@ namespace tinyxml2
     class XMLElement;
 }
 
-namespace SimpleEngine
+namespace simple
 {
-    namespace Xml
+    namespace xml
     {
         struct Element
         {

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace SimpleEngine
+namespace simple
 {
     struct BinaryReader
     {
@@ -27,7 +27,7 @@ namespace SimpleEngine
         void WriteString(const std::string& str);
     };
 
-    namespace FileUtil
+    namespace file_util
     {
         std::vector<std::string> LinesIn(const std::string& path);
 

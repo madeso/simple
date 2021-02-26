@@ -1,14 +1,14 @@
-﻿#include "engine/animationfile.h"
+#include "engine/animationfile.h"
 
 #include "engine/animation.h"
 #include "engine/filesystem.h"
 #include "engine/fileutil.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    namespace AnimationFile
+    namespace animation_file
     {
-        namespace Binary
+        namespace binary
         {
             void Write(std::shared_ptr<Animation> an, const std::string& s)
             {
@@ -35,7 +35,7 @@ namespace SimpleEngine
             std::shared_ptr<Animation> Load(FileSystem* fs, const std::string& path)
             {
                 std::vector<AnimationForBone> afb;
-                auto s = fs->open(path);
+                auto s = fs->Open(path);
                 {
                     BinaryReader br = BinaryReader(s);
                     int version = br.ReadInt32();
@@ -67,12 +67,12 @@ namespace SimpleEngine
 
         std::shared_ptr<Animation> Load(FileSystem* fs, const std::string& path)
         {
-            return Binary::Load(fs, path);
+            return binary::Load(fs, path);
         }
 
         void Write(std::shared_ptr<Animation> an, const std::string& s)
         {
-            Binary::Write(an, s);
+            binary::Write(an, s);
         }
     }
 }

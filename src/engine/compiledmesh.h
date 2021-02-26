@@ -6,7 +6,7 @@
 #include "engine/meshpart.h"
 #include "engine/poseable.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct MediaLoader;
     struct RenderList;

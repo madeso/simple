@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace SimpleEngine
+namespace simple
 {
     struct MediaLoader;
     struct FileSystem;

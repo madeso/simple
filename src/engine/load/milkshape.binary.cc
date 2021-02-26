@@ -9,7 +9,7 @@
 
 #define packed
 
-namespace SimpleEngine::load::MilkshapeBinary
+namespace simple::load::milkshape_binary
 {
     using byte = unsigned char;
 
@@ -89,8 +89,8 @@ namespace SimpleEngine::load::MilkshapeBinary
     struct Joint
     {
         MS3DJoint joint;
-        std::vector<MS3DKeyframe> rotations = std::vector<MS3DKeyframe>();
-        std::vector<MS3DKeyframe> translations = std::vector<MS3DKeyframe>();
+        std::vector<MS3DKeyframe> rotations;
+        std::vector<MS3DKeyframe> translations;
     };
 
     std::string CropNull(const std::string& input)
@@ -245,12 +245,12 @@ namespace SimpleEngine::load::MilkshapeBinary
     std::shared_ptr<Model> ExtractModel(Runner& run)
     {
         auto model = std::make_shared<Model>();
-        model->framecount = run.framecount;
-        model->currentFrame = run.current;
+        model->frame_count = run.framecount;
+        model->current_frame = run.current;
 
         for (MS3DMaterial s : run.materials)
         {
-            auto mat = model->newMaterial();
+            auto mat = model->NewMaterial();
             mat->name = AsString(s.name);
             copyToColor(mat->ambient, s.ambient);
             copyToColor(mat->diffuse, s.diffuse);
@@ -258,13 +258,13 @@ namespace SimpleEngine::load::MilkshapeBinary
             copyToColor(mat->emissive, s.emissive);
             mat->shininess = s.shininess;
             mat->transperency = s.transparency;
-            mat->diffuseTexture = AsString(s.texture);
-            mat->alphatexture = AsString(s.alphamap);
+            mat->diffuse_texture = AsString(s.texture);
+            mat->alpha_texture = AsString(s.alphamap);
         }
 
         for (MeshGroup g : run.groups)
         {
-            auto m = model->newMesh();
+            auto m = model->NewMesh();
             m->materialId = g.material;
             for (int tr : g.tri)
             {
@@ -277,22 +277,22 @@ namespace SimpleEngine::load::MilkshapeBinary
                     vid[i] = m->vertices.size();
                     nid[i] = m->normals.size();
 
-                    auto norm = m->newNormal();
-                    norm->x(tri.vertexNormals[i + 0]);
-                    norm->y(tri.vertexNormals[i + 1]);
-                    norm->z(tri.vertexNormals[i + 2]);
+                    auto norm = m->NewNormal();
+                    norm->SetX(tri.vertexNormals[i + 0]);
+                    norm->SetY(tri.vertexNormals[i + 1]);
+                    norm->SetZ(tri.vertexNormals[i + 2]);
 
                     MS3DVertex v = run.vertices[tri.vertexIndices[i]];
-                    auto ver = m->newVertex();
+                    auto ver = m->NewVertex();
                     ver->bone = v.boneID;
-                    ver->u(tri.s[i]);
-                    ver->v(tri.t[i]);
-                    ver->x(v.vertex[0]);
-                    ver->y(v.vertex[1]);
-                    ver->z(v.vertex[2]);
+                    ver->SetU(tri.s[i]);
+                    ver->SetV(tri.t[i]);
+                    ver->SetX(v.vertex[0]);
+                    ver->SetY(v.vertex[1]);
+                    ver->SetZ(v.vertex[2]);
                 }
 
-                auto t = m->newTri();
+                auto t = m->NewTriangle();
                 t->n1 = nid[0];
                 t->n2 = nid[1];
                 t->n3 = nid[2];
@@ -304,8 +304,8 @@ namespace SimpleEngine::load::MilkshapeBinary
 
         for (Joint j : run.joints)
         {
-            auto b = model->newBone();
-            b->parentName = AsString(j.joint.parentName);
+            auto b = model->NewBone();
+            b->parent_name = AsString(j.joint.parentName);
             b->name = AsString(j.joint.name);
             b->rx = j.joint.rotation[0];
             b->ry = j.joint.rotation[1];
@@ -316,7 +316,7 @@ namespace SimpleEngine::load::MilkshapeBinary
 
             for (MS3DKeyframe r : j.rotations)
             {
-                auto k = b->newRotationKey();
+                auto k = b->NewRotationKey();
                 k->time = r.time * run.animfps;
                 k->x = r.parameter[0];
                 k->y = r.parameter[1];
@@ -325,7 +325,7 @@ namespace SimpleEngine::load::MilkshapeBinary
 
             for (MS3DKeyframe t : j.translations)
             {
-                auto k = b->newPositionKey();
+                auto k = b->NewPositionKey();
                 k->time = t.time * run.animfps;
                 k->x = t.parameter[0];
                 k->y = t.parameter[1];
@@ -333,19 +333,19 @@ namespace SimpleEngine::load::MilkshapeBinary
             }
         }
 
-        model->mapBonesToId();
+        model->MapBonesToId();
         return model;
     }
 
     void Load(FileSystem* fs, const std::string& meshpath, std::shared_ptr<MeshDef>* def, std::shared_ptr<Animation>* animation)
     {
-        const auto s = fs->open(meshpath);
+        const auto s = fs->Open(meshpath);
         Runner run = Runner(s);
         run.run();
 
         auto model = ExtractModel(run);
-        *def = MilkshapeCommon::ExtractMeshDefinition(model);
-        *animation = MilkshapeCommon::ExtractAnimation(model);
+        *def = milkshape_common::ExtractMeshDefinition(model);
+        *animation = milkshape_common::ExtractAnimation(model);
     }
 
 }

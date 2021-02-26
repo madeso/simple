@@ -1,39 +1,39 @@
-﻿#include "engine/load/milkshape.common.h"
+#include "engine/load/milkshape.common.h"
 
 #include <cmath>
 #include <stdexcept>
 
 #include "engine/axisangle.h"
 #include "engine/fileutil.h"
-#include "engine/math1.h"
+#include "engine/math.h"
 #include "engine/meshfile.h"
 #include "engine/strings.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine::load
+namespace simple::load
 {
-    std::shared_ptr<Mesh> Model::newMesh()
+    std::shared_ptr<Mesh> Model::NewMesh()
     {
         auto m = std::make_shared<Mesh>();
         meshes.emplace_back(m);
         return m;
     }
 
-    std::shared_ptr<Material> Model::newMaterial()
+    std::shared_ptr<Material> Model::NewMaterial()
     {
         auto mat = std::make_shared<Material>();
         materials.emplace_back(mat);
         return mat;
     }
 
-    std::shared_ptr<Bone> Model::newBone()
+    std::shared_ptr<Bone> Model::NewBone()
     {
         auto b = std::make_shared<Bone>();
         bones.emplace_back(b);
         return b;
     }
 
-    int Model::boneId(const std::string& bone)
+    int Model::GetIdForBone(const std::string& bone)
     {
         if (bone == "")
             return -1;
@@ -45,174 +45,164 @@ namespace SimpleEngine::load
         throw std::runtime_error(fmt::format("Failed to find a match for bone '{}'", bone));
     }
 
-    void Model::mapBonesToId()
+    void Model::MapBonesToId()
     {
         for (auto b : bones)
         {
-            b->parentId = boneId(b->parentName);
+            b->parent_id = GetIdForBone(b->parent_name);
         }
     }
 
-    std::shared_ptr<Vertex> Mesh::newVertex()
+    std::shared_ptr<Vertex> Mesh::NewVertex()
     {
         auto v = std::make_shared<Vertex>();
         vertices.emplace_back(v);
         return v;
     }
 
-    std::shared_ptr<Normal> Mesh::newNormal()
+    std::shared_ptr<Normal> Mesh::NewNormal()
     {
         auto n = std::make_shared<Normal>();
         normals.emplace_back(n);
         return n;
     }
 
-    std::shared_ptr<Tri> Mesh::newTri()
+    std::shared_ptr<Triangle> Mesh::NewTriangle()
     {
-        auto t = std::make_shared<Tri>();
-        tris.emplace_back(t);
+        auto t = std::make_shared<Triangle>();
+        triangles.emplace_back(t);
         return t;
     }
 
-    void Vertex::x(float value)
+    void Vertex::SetX(float value)
     {
-        pos.x = value;
+        position.x = value;
     }
 
-    float Vertex::x() const
+    float Vertex::GetX() const
     {
-        return pos.x;
+        return position.x;
     }
 
-    void Vertex::y(float value)
+    void Vertex::SetY(float value)
     {
-        pos.y = value;
+        position.y = value;
     }
 
-    float Vertex::y() const
+    float Vertex::GetY() const
     {
-        return pos.y;
+        return position.y;
     }
 
-    void Vertex::z(float value)
+    void Vertex::SetZ(float value)
     {
-        pos.z = value;
+        position.z = value;
     }
 
-    float Vertex::z() const
+    float Vertex::GetZ() const
     {
-        return pos.z;
+        return position.z;
     }
 
-    void Vertex::u(float value)
+    void Vertex::SetU(float value)
     {
         uv.x = value;
     }
 
-    float Vertex::u() const
+    float Vertex::GetU() const
     {
         return uv.x;
     }
 
-    void Vertex::v(float value)
+    void Vertex::SetV(float value)
     {
         uv.y = value;
     }
 
-    float Vertex::v() const
+    float Vertex::GetV() const
     {
         return uv.y;
     }
 
     std::string Vertex::ToString() const
     {
-        return fmt::format("{0} {1} / {2}", bone, pos.ToString(), uv.ToString());
+        return fmt::format("{0} {1} / {2}", bone, position.ToString(), uv.ToString());
     }
 
-    void Normal::x(float value)
+    void Normal::SetX(float value)
     {
-        norm.x = value;
+        normal.x = value;
     }
 
-    float Normal::x() const
+    float Normal::GetX() const
     {
-        return norm.x;
+        return normal.x;
     }
 
-    void Normal::y(float value)
+    void Normal::SetY(float value)
     {
-        norm.y = value;
+        normal.y = value;
     }
 
-    float Normal::y() const
+    float Normal::GetY() const
     {
-        return norm.y;
+        return normal.y;
     }
 
-    void Normal::z(float value)
+    void Normal::SetZ(float value)
     {
-        norm.z = value;
+        normal.z = value;
     }
 
-    float Normal::z() const
+    float Normal::GetZ() const
     {
-        return norm.z;
+        return normal.z;
     }
 
-    void Normal::normalize()
+    void Normal::Normalize()
     {
-        norm.normalize();
+        normal.Normalize();
     }
 
-    void Tri::buildNormal(const Mesh& mesh)
+    void Triangle::BuildNormal(const Mesh& mesh)
     {
         // not needed?
     }
 
-    void Color::parse(const std::string& p)
+    void Color::Parse(const std::string& p)
     {
         auto data = Split(p);
-        r = math1::ParseFloat(data[0]);
-        g = math1::ParseFloat(data[1]);
-        b = math1::ParseFloat(data[2]);
-        a = math1::ParseFloat(data[3]);
+        r = math::ParseFloat(data[0]);
+        g = math::ParseFloat(data[1]);
+        b = math::ParseFloat(data[2]);
+        a = math::ParseFloat(data[3]);
     }
 
-    std::string RotatonKey::ToString() const
+    std::string RotationKey::ToString() const
     {
-        return fmt::format("{0} {1}", time, MilkshapeCommon::makeQuat(vec3(x, y, z)).GetAxisAngle().ToString());
+        return fmt::format("{0} {1}", time, milkshape_common::MakeQuat(vec3(x, y, z)).GetAxisAngle().ToString());
     }
 
     std::string Bone::ToString() const
     {
-        return name + ": " + parentName;
+        return name + ": " + parent_name;
     }
 
-    std::vector<std::shared_ptr<PositionKey>>& Bone::PositionKeys()
+    std::shared_ptr<RotationKey> Bone::NewRotationKey()
     {
-        return positions;
-    }
-
-    std::vector<std::shared_ptr<RotatonKey>>& Bone::RotationKeys()
-    {
-        return rotations;
-    }
-
-    std::shared_ptr<RotatonKey> Bone::newRotationKey()
-    {
-        auto key = std::make_shared<RotatonKey>();
+        auto key = std::make_shared<RotationKey>();
         rotations.emplace_back(key);
         return key;
     }
 
-    std::shared_ptr<PositionKey> Bone::newPositionKey()
+    std::shared_ptr<PositionKey> Bone::NewPositionKey()
     {
         auto key = std::make_shared<PositionKey>();
         positions.emplace_back(key);
         return key;
     }
 
-    namespace MilkshapeCommon
+    namespace milkshape_common
     {
         std::shared_ptr<Animation> ExtractAnimation(std::shared_ptr<Model> model)
         {
@@ -224,14 +214,14 @@ namespace SimpleEngine::load
             {
                 AnimationForBone a = AnimationForBone();
 
-                for (const auto& pk : b->PositionKeys())
+                for (const auto& pk : b->positions)
                 {
                     a.AddPositon(pk->time, vec3(pk->x, pk->y, pk->z));
                     added = true;
                 }
-                for (const auto& rk : b->RotationKeys())
+                for (const auto& rk : b->rotations)
                 {
-                    a.AddRotation(rk->time, makeQuat(vec3(rk->x, rk->y, rk->z)));
+                    a.AddRotation(rk->time, MakeQuat(vec3(rk->x, rk->y, rk->z)));
                     added = true;
                 }
 
@@ -251,7 +241,7 @@ namespace SimpleEngine::load
             for (auto mat : model->materials)
             {
                 auto smat = def->AddMaterial(MaterialNameFromId(id));
-                smat->texture = SmartTexture(mat->diffuseTexture);
+                smat->texture = SmartTexture(mat->diffuse_texture);
                 ++id;
             }
 
@@ -259,8 +249,8 @@ namespace SimpleEngine::load
             {
                 auto bn = def->CreateNewBone();
                 bn->pos = vec3(b->x, b->y, b->z);
-                bn->rot = makeQuat(vec3(b->rx, b->ry, b->rz));
-                bn->parent = b->parentId;
+                bn->rot = MakeQuat(vec3(b->rx, b->ry, b->rz));
+                bn->parent = b->parent_id;
                 bn->name = b->name;
             }
 
@@ -278,20 +268,20 @@ namespace SimpleEngine::load
                 def->SelectCurrentMaterial(MaterialNameFromId(me->materialId));
                 for (auto v : me->vertices)
                 {
-                    def->AddPoint(v->pos, v->bone);
-                    def->AddUv(vec2(v->u(), 1 - v->v()));
+                    def->AddPoint(v->position, v->bone);
+                    def->AddUv(vec2(v->GetU(), 1 - v->GetV()));
                     ++vadded;
                 }
 
                 for (auto n : me->normals)
                 {
-                    def->AddNomal(n->norm);
+                    def->AddNormal(n->normal);
                     ++nadded;
                 }
 
-                for (auto tr : me->tris)
+                for (auto tr : me->triangles)
                 {
-                    SimpleEngine::Triangle data;
+                    simple::Triangle data;
                     data[0].uv = data[0].vertex = vbase + tr->v1;
                     data[1].uv = data[1].vertex = vbase + tr->v2;
                     data[2].uv = data[2].vertex = vbase + tr->v3;
@@ -305,17 +295,17 @@ namespace SimpleEngine::load
             return def;
         }
 
-        float sin(float s)
+        float Sin(float s)
         {
             return std::sin(s);
         }
 
-        float cos(float s)
+        float Cos(float s)
         {
             return std::cos(s);
         }
 
-        quat makeQuat(const vec3& angles)
+        quat MakeQuat(const vec3& angles)
         {
             float ang;
             float sr, sp, sy, cr, cp, cy;
@@ -323,14 +313,14 @@ namespace SimpleEngine::load
             // FIXME: rescale the inputs to 1/2 angle
             float ascale = 0.5f;
             ang = angles(2) * ascale;
-            sy = sin(ang);
-            cy = cos(ang);
+            sy = Sin(ang);
+            cy = Cos(ang);
             ang = angles(1) * ascale;
-            sp = sin(ang);
-            cp = cos(ang);
+            sp = Sin(ang);
+            cp = Cos(ang);
             ang = angles(0) * ascale;
-            sr = sin(ang);
-            cr = cos(ang);
+            sr = Sin(ang);
+            cr = Cos(ang);
 
             float x = sr * cp * cy - cr * sp * sy;  // X
             float y = cr * sp * cy + sr * cp * sy;  // Y
@@ -342,7 +332,7 @@ namespace SimpleEngine::load
 
         std::string SmartTexture(std::string p)
         {
-            return FileUtil::GetFileName(p);
+            return file_util::GetFileName(p);
         }
     }
 }

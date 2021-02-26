@@ -1,4 +1,4 @@
-﻿#include "engine/meshpart.h"
+#include "engine/meshpart.h"
 
 #include <memory>
 #include <vector>
@@ -10,7 +10,7 @@
 #include "engine/pushedmatrix.h"
 #include "engine/texture.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct Poseable;
 
@@ -36,27 +36,27 @@ namespace SimpleEngine
         return 0;
     }
 
-    void MeshPart::OnRender(const vec3& p, const quat& rot) const
+    void MeshPart::OnRender(const vec3& position, const quat& rotation) const
     {
-        PushedMatrix dnum;
+        PushedMatrix pushed_matrix;
 
         material->Apply();
-        glTranslatef(p.x, p.y, p.z);
-        AxisAngle aa = rot.GetAxisAngle();
+        glTranslatef(position.x, position.y, position.z);
+        AxisAngle aa = rotation.GetAxisAngle();
         // apply rotation
-        glRotatef(aa.angle.inDegrees(), aa.axis.x, aa.axis.y, aa.axis.z);
+        glRotatef(aa.angle.InDegrees(), aa.axis.x, aa.axis.y, aa.axis.z);
         glBegin(GL_TRIANGLES);
-        for (auto& face : faces)
+        for (const auto& face : faces)
         {
-            for (int i = 0; i < 3; ++i)
+            for (auto i = 0; i < 3; ++i)
             {
-                Vertex v = face[i];
-                vec3 vert = (poseable->GetPose() != nullptr)
-                                ? poseable->GetPose()->transforms[v.bone] * v.vertex
-                                : v.vertex;
+                auto v = face[i];
+                const auto vertex = (poseable->GetPose() != nullptr)
+                                      ? poseable->GetPose()->transforms[v.bone] * v.vertex
+                                      : v.vertex;
                 glNormal3f(v.normal.x, v.normal.y, v.normal.z);
                 glTexCoord2f(v.uv.x, v.uv.y);
-                glVertex3f(vert.x, vert.y, vert.z);
+                glVertex3f(vertex.x, vertex.y, vertex.z);
             }
         }
         glEnd();

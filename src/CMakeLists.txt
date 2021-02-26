@@ -6,7 +6,7 @@ set(src_math
     engine/mat33.cc engine/mat33.h
     engine/mat44.cc engine/mat44.h
     engine/matrixhelper.cc engine/matrixhelper.h
-    engine/math1.cc engine/math1.h
+    engine/math.cc engine/math.h
     engine/quat.cc engine/quat.h
     engine/arcball.cc engine/arcball.h
     engine/rect.cc engine/rect.h
@@ -22,7 +22,7 @@ set(src_math
     engine/xml.cc engine/xml.h
     engine/userexception.cc engine/userexception.h
     engine/fileutil.cc engine/fileutil.h
-    engine/ckey.cc engine/ckey.h
+    engine/configurablekey.cc engine/configurablekey.h
     engine/stringseperator.cc engine/stringseperator.h
     engine/pool.cc engine/pool.h
     engine/key.cc engine/key.h

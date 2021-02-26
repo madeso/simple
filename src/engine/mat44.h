@@ -1,9 +1,9 @@
-﻿#pragma once
+#pragma once
 
 #include <array>
 #include <string>
 
-namespace SimpleEngine
+namespace simple
 {
     struct MatrixHelper;
     struct quat;
@@ -25,8 +25,8 @@ namespace SimpleEngine
          *     | 3 7 11 15 |
          */
 
-        FA dataColumnMajor;
-        float* DataArray();
+        FA column_major;
+        float* AsColumnMajor();
 
         float operator()(int row, int column) const;
         float& operator()(int row, int column);
@@ -38,11 +38,11 @@ namespace SimpleEngine
 
         static mat44 FromRowMajor(FA data);
 
-        static mat44 TranslationFor(const vec3& v);
+        static mat44 FromTranslation(const vec3& v);
 
-        SimpleEngine::mat33 mat33() const;
+        simple::mat33 AsMat33() const;
 
-        vec3 Location() const;
+        vec3 GetLocation() const;
 
         MatrixHelper Help() const;
 

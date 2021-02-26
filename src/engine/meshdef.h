@@ -10,29 +10,29 @@
 #include "engine/vec2.h"
 #include "engine/vec3.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct CompiledMesh;
     struct MediaLoader;
 
-    struct PointData
+    struct Point
     {
         int bone_id;
         vec3 location;
 
-        PointData(int bone, const vec3& loc);
+        Point(int b, const vec3& l);
 
         std::string ToString() const;
     };
 
-    struct VertexData
+    struct IndexedVertex
     {
         int vertex;
         int normal;
         int uv;
     };
 
-    using Triangle = std::array<VertexData, 3>;
+    using Triangle = std::array<IndexedVertex, 3>;
     using TriangleList = std::vector<Triangle>;
 
     struct Vertex
@@ -51,7 +51,7 @@ namespace SimpleEngine
         quat rot;
 
         int index = 0;
-        std::shared_ptr<Bone> parentBone;
+        std::shared_ptr<Bone> parent_bone;
 
         std::string ToString() const;
 
@@ -80,33 +80,39 @@ namespace SimpleEngine
         std::string ToString() const;
     };
 
-    struct MatrixPointData
+    struct MatrixAndPoints
     {
-        MatrixPointData();
+        MatrixAndPoints();
 
-        MatrixPointData(const mat44& mm);
+        MatrixAndPoints(const mat44& m);
 
-        mat44 m;
-        std::vector<std::shared_ptr<PointData>> pd;
+        mat44 matrix;
+        std::vector<std::shared_ptr<Point>> points;
     };
 
+    // split to a builder and a definition
+    // use builder to load mesh from various files
+    // use def for to actually prepare to render (and faster loading)
+    // meshbuilder for building mesh
+    // mesdef for a optimized mesh
+    // compiledmesh on gpu for rendering
     struct MeshDef
     {
-        std::vector<std::shared_ptr<PointData>> points;
-        std::vector<vec2> uvs;
+        std::vector<std::shared_ptr<Point>> points;
+        std::vector<vec2> texturecoordinates;
         std::vector<vec3> normals;
         std::vector<std::shared_ptr<Bone>> bones;
 
-        std::map<std::string, std::shared_ptr<TriangleList>> datas;
-        std::shared_ptr<TriangleList> current_data;
+        std::map<std::string, std::shared_ptr<TriangleList>> parts;
+        std::shared_ptr<TriangleList> current_part;
 
         std::map<std::string, std::shared_ptr<MaterialDefinition>> materials;
 
-        std::shared_ptr<CompiledMesh> compiledMesh;
+        std::shared_ptr<CompiledMesh> compiled_mesh;
 
-        int TriCount() const;
+        int GetTriangleCount() const;
 
-        MeshDef& mapBones();
+        MeshDef& MapBones();
 
         std::vector<std::shared_ptr<Bone>> GetRootBones() const;
 
@@ -114,17 +120,17 @@ namespace SimpleEngine
 
         std::vector<std::shared_ptr<MaterialDefinition>> GetMaterials() const;
 
-        std::vector<Vertex> GetVerticesForTriangle(const Triangle& tri) const;
+        std::vector<Vertex> GetVerticesForTriangle(const Triangle& triangle) const;
 
-        void AddPoint(const vec3& p, int bone);
-        void AddUv(const vec2& u);
+        void AddPoint(const vec3& point, int bone_id);
+        void AddUv(const vec2& uv);
         std::shared_ptr<MaterialDefinition> AddMaterial(const std::string& name);
 
         void SelectCurrentMaterial(const std::string& name);
 
         void AddTriangle(const Triangle& t);
 
-        void AddNomal(const vec3& v);
+        void AddNormal(const vec3& v);
 
         std::shared_ptr<CompiledMesh> GetCompiledMesh();
 

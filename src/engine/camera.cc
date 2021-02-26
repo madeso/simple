@@ -3,7 +3,7 @@
 #include "engine/axisangle.h"
 #include "engine/opengl.h"
 
-namespace SimpleEngine
+namespace simple
 {
     void Camera::SendRotationAndPosition() const
     {
@@ -21,7 +21,7 @@ namespace SimpleEngine
     {
         // -rotatation
         const auto aa = rotation.GetAxisAngle();
-        glRotatef(-aa.angle.inDegrees(), aa.axis.x, aa.axis.y, aa.axis.z);
+        glRotatef(-aa.angle.InDegrees(), aa.axis.x, aa.axis.y, aa.axis.z);
     }
 
     void Camera::Rotate(const quat& q)

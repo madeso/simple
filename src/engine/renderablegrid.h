@@ -5,7 +5,7 @@
 #include "engine/renderable.h"
 #include "engine/vec3.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct Line
     {
@@ -20,13 +20,13 @@ namespace SimpleEngine
     struct RenderableGrid : public Renderable
     {
         vec3 origin = vec3::Zero();
-        vec3 xdir = vec3::Right();
-        vec3 ydir = vec3::In();
-        float halflength = 100;
+        vec3 first_direction = vec3::Right();
+        vec3 second_direction = vec3::In();
+        float half_length = 100;
         float spacing = 2;
         vec3 c = vec3{0.8f, 0.8f, 0.8f};  // light gray
 
-        void SendToRenderer(RenderList* r) override;
+        void SendToRenderer(RenderList* list) override;
 
         void OnRender() override;
     };

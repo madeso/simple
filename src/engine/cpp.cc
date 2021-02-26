@@ -1,9 +1,5 @@
 #include "engine/cpp.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    std::string Nullstring(const std::string& str, const std::string& empty)
-    {
-        return str.empty() ? empty : str;
-    }
 }

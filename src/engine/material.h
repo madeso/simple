@@ -3,7 +3,7 @@
 #include "engine/texture.h"
 #include "engine/vec3.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct Material
     {
@@ -13,6 +13,6 @@ namespace SimpleEngine
         void Apply();
 
         vec3 color;
-        std::shared_ptr<TextureMedia> tex;
+        std::shared_ptr<TextureMedia> texture;
     };
 }

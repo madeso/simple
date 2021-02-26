@@ -54,7 +54,7 @@ namespace detail
     }
 }
 
-namespace SimpleEngine
+namespace simple
 {
     std::string ToLower(const std::string& s)
     {
@@ -64,16 +64,9 @@ namespace SimpleEngine
         return data;
     }
 
-    std::string Nullstring(const std::string& nullorvalue, const std::string& valid)
+    std::string Nullstring(const std::string& str, const std::string& empty)
     {
-        if (nullorvalue.empty())
-        {
-            return valid;
-        }
-        else
-        {
-            return nullorvalue;
-        }
+        return str.empty()==false ? str : empty;
     }
 
     std::string Trim(const std::string& str)

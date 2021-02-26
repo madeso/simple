@@ -8,12 +8,12 @@
 #include "engine/xml.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    struct Shader;
+    struct ShaderProgram;
     struct FileSystem;
 
-    struct ShaderSource
+    struct Shader
     {
         enum ShaderType
         {
@@ -21,27 +21,25 @@ namespace SimpleEngine
             Fragment = GL_FRAGMENT_SHADER
         };
 
-        ShaderSource(const std::string& name, const std::string& source, ShaderType type);
+        Shader(const std::string& name, const std::string& source, ShaderType type);
 
         std::string GetInfoLog();
 
-        int shader_id;
+        int id;
 
         bool GetCompileStatus();
-
-        int GetId();
     };
 
     struct Uniform
     {
-        int var;
+        int id;
 
-        Uniform(Shader* s, const std::string& name);
+        Uniform(ShaderProgram* program, const std::string& name);
 
-        void BindUniform(int location);
-        void BindUniform(float value);
+        void SetTexture(int location);
+        void Set(float value);
 
-        void BindUniform(const vec2& v);
+        void Set(const vec2& value);
     };
 
     struct ShaderBind
@@ -53,42 +51,38 @@ namespace SimpleEngine
     struct StaticUniformSamplerBind : public ShaderBind
     {
         int location;
-        std::shared_ptr<Uniform> var;
+        std::shared_ptr<Uniform> uniform;
 
-        StaticUniformSamplerBind(std::shared_ptr<Xml::Element> root, Shader* shader);
+        StaticUniformSamplerBind(std::shared_ptr<xml::Element> root, ShaderProgram* program);
 
         void Bind() override;
     };
 
-    struct Shader
+    struct ShaderProgram
     {
-        std::shared_ptr<ShaderSource> vertex;
-        std::shared_ptr<ShaderSource> fragment;
+        std::shared_ptr<Shader> vertex_shader;
+        std::shared_ptr<Shader> fragment_shader;
 
         std::vector<std::shared_ptr<ShaderBind>> binds;
 
-        Shader(FileSystem* sys, const std::string& path);
+        ShaderProgram(FileSystem* fs, const std::string& path);
 
-        Shader(const std::string& path, std::shared_ptr<Xml::Element> shader);
+        ShaderProgram(const std::string& path, std::shared_ptr<xml::Element> shader_root);
 
-        void LoadFrom(const std::string& path, std::shared_ptr<Xml::Element> shader);
+        void LoadFrom(const std::string& path, std::shared_ptr<xml::Element> shader_root);
 
-        std::string GetInfoLog();
+        std::string GetInfoLog() const;
 
-        void Attach(std::shared_ptr<ShaderSource> src);
+        void Attach(std::shared_ptr<Shader> shader);
 
         bool GetLinkStatus();
 
-        int GetProgramId();
+        int id;
 
-        static bool IsShadersSupported();
-
-        int program_id;
-
-        static void Bind(std::shared_ptr<Shader> shader);
+        static void Bind(std::shared_ptr<ShaderProgram> program);
 
         static void Unbind();
 
-        std::shared_ptr<Uniform> GetUniformFromName(const std::string& varname);
+        std::shared_ptr<Uniform> GetUniformFromName(const std::string& name);
     };
 }

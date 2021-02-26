@@ -1,9 +1,9 @@
-﻿#pragma once
+#pragma once
 
 #include <array>
 #include <string>
 
-namespace SimpleEngine
+namespace simple
 {
     struct vec3;
     struct mat44;
@@ -23,9 +23,9 @@ namespace SimpleEngine
          *     | 2 5 8 |
          */
 
-        FA dataColumnMajor;
+        FA column_major;
 
-        float* DataArray();
+        float* AsColmnMajorArray();
 
         float operator()(int row, int column) const;
         float& operator()(int row, int column);
@@ -36,13 +36,13 @@ namespace SimpleEngine
 
         static mat33 FromRowMajor(FA data);
 
-        vec3 XAxis() const;
+        vec3 GetXAxis() const;
 
-        vec3 YAxis() const;
+        vec3 GetYAxis() const;
 
-        vec3 ZAxis() const;
+        vec3 GetZAxis() const;
 
-        SimpleEngine::mat44 mat44() const;
+        mat44 AsMat44() const;
 
         /*mat33 Transposed
         {
@@ -56,6 +56,6 @@ namespace SimpleEngine
 
         static mat33 Scale(const vec3& scale);
 
-        SimpleEngine::quat quat() const;
+        quat AsQuat() const;
     };
 }

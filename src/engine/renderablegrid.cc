@@ -1,9 +1,9 @@
-﻿#include "engine/renderablegrid.h"
+#include "engine/renderablegrid.h"
 
 #include "engine/opengl.h"
 #include "engine/renderlist.h"
 
-namespace SimpleEngine
+namespace simple
 {
     Line::Line(const vec3& s, const vec3& e)
         : start(s)
@@ -17,34 +17,34 @@ namespace SimpleEngine
         glVertex3f(end.x, end.y, end.z);
     }
 
-    void RenderableGrid::SendToRenderer(RenderList* r)
+    void RenderableGrid::SendToRenderer(RenderList* list)
     {
-        r->Add(this, 0);
+        list->Add(this, 0);
     }
 
     void RenderableGrid::OnRender()
     {
-        std::vector<Line> lines = std::vector<Line>();
-        int count = (int)(halflength / spacing);
-        for (int i = 0; i < count; ++i)
+        auto lines = std::vector<Line>();
+        const auto count = static_cast<int>(half_length / spacing);
+        for (auto i = 0; i < count; ++i)
         {
-            vec3 b = origin + ydir * spacing * (i + 1);
-            lines.emplace_back(Line(b - xdir * halflength, b + xdir * halflength));
+            auto b = origin + second_direction * spacing * static_cast<float>(i + 1);
+            lines.emplace_back(Line(b - first_direction * half_length, b + first_direction * half_length));
 
-            b = origin - ydir * spacing * i;
-            lines.emplace_back(Line(b - xdir * halflength, b + xdir * halflength));
+            b = origin - second_direction * spacing * i;
+            lines.emplace_back(Line(b - first_direction * half_length, b + first_direction * half_length));
 
-            b = origin + xdir * spacing * (i + 1);
-            lines.emplace_back(Line(b - ydir * halflength, b + ydir * halflength));
+            b = origin + first_direction * spacing * (i + 1);
+            lines.emplace_back(Line(b - second_direction * half_length, b + second_direction * half_length));
 
-            b = origin - xdir * spacing * i;
-            lines.emplace_back(Line(b - ydir * halflength, b + ydir * halflength));
+            b = origin - first_direction * spacing * i;
+            lines.emplace_back(Line(b - second_direction * half_length, b + second_direction * half_length));
         }
 
         glDisable(GL_TEXTURE_2D);
         glColor3f(c.x, c.y, c.z);
         glBegin(GL_LINES);
-        for (Line l : lines)
+        for (const auto& l : lines)
             l.OnRender();
         glEnd();
         glEnable(GL_TEXTURE_2D);

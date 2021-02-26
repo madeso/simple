@@ -8,7 +8,7 @@
 #include "engine/vec3.h"
 #include "test.h"
 
-using namespace SimpleEngine;
+using namespace simple;
 
 quat MakeQuat(float w, float x, float y, float z)
 {
@@ -41,7 +41,7 @@ TEST_CASE("TestCommonRotations")
 
 TEST_CASE("testMat33")
 {
-    CHECK(AreEqual(quat::Identity().GetMatrix33().quat(), quat::Identity()));
+    CHECK(AreEqual(quat::Identity().GetMatrix33().AsQuat(), quat::Identity()));
 }
 
 TEST_CASE("testConstants")

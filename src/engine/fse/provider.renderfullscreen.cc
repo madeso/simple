@@ -1,47 +1,47 @@
 #include "engine/fse/provider.renderfullscreen.h"
 
-#include "engine/cpp.h"
+#include "engine/strings.h"
 #include "engine/fse/binder.h"
 #include "engine/fse/target.h"
 #include "engine/fullscreenquad.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine::fse::Providers
+namespace simple::fse::providers
 {
     std::string RenderFullscreenProvider::ToString() const
     {
-        const auto shader_loaded = (sh != nullptr) ? "loaded" : "";
-        return fmt::format("{} renders fullscreen with {}{}", Provider::ToString(), Nullstring(shadername, "no shader"),
+        const auto shader_loaded = (shader != nullptr) ? "loaded" : "";
+        return fmt::format("{} renders fullscreen with {}{}", Provider::ToString(), Nullstring(name_of_shader, "no shader"),
                            shader_loaded);
     }
 
-    RenderFullscreenProvider::RenderFullscreenProvider(std::shared_ptr<Xml::Element> el)
+    RenderFullscreenProvider::RenderFullscreenProvider(std::shared_ptr<xml::Element> el)
         : Provider(el)
-        , shadername(Xml::GetAttributeString(el, "shader"))
+        , name_of_shader(xml::GetAttributeString(el, "shader"))
     {
     }
 
-    void RenderFullscreenProvider::doProvide(RenderArgs* ra)
+    void RenderFullscreenProvider::PostProvide(RenderArgs* ra)
     {
-        if (sh != nullptr)
+        if (shader != nullptr)
         {
-            Shader::Bind(sh);
+            ShaderProgram::Bind(shader);
         }
-        callCommands();  // lets call the commands
-        RenderFullscreenQuad(nullptr, target->Width(), target->Height());
-        if (sh != nullptr)
+        CallCommands();  // lets call the commands
+        RenderFullscreenQuad(nullptr, target->GetWidth(), target->GetHeight());
+        if (shader != nullptr)
         {
-            Shader::Unbind();
+            ShaderProgram::Unbind();
         }
     }
 
-    void RenderFullscreenProvider::doLink(Linker* user)
+    void RenderFullscreenProvider::PostLink(Linker* user)
     {
-        denyAutocallOfCommands();  // call the commands outself
+        DenyAutocallOfCommands();  // call the commands outself
     }
 
-    void RenderFullscreenProvider::doBind(Binder* bd)
+    void RenderFullscreenProvider::PreBind(Binder* bd)
     {
-        sh = bd->getShaderOrNull(shadername);
+        shader = bd->GetShaderOrNull(name_of_shader);
     }
 }

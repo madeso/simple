@@ -1,8 +1,8 @@
-﻿#pragma once
+#pragma once
 
 #include "engine/mat44.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct AxisAngle;
     struct vec3;
@@ -11,18 +11,18 @@ namespace SimpleEngine
 
     struct MatrixHelper
     {
-        mat44 mat;
+        mat44 matrix;
 
         MatrixHelper(const mat44& m);
 
-        MatrixHelper& mult(const mat44& m);
+        MatrixHelper& Multiply(const mat44& m);
 
         MatrixHelper& Rotate(const AxisAngle& aa);
         MatrixHelper& Rotate(const quat& q);
         MatrixHelper& Translate(const vec3& t);
 
-        vec3 transform(const vec3& v) const;
-        mat33 mat33() const;
-        mat44 mat44() const;
+        vec3 GetTransform(const vec3& v) const;
+        mat33 AsMat33() const;
+        mat44 AsMat44() const;
     };
 }

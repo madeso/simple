@@ -1,6 +1,6 @@
 #include "engine/actor.h"
 
-namespace SimpleEngine
+namespace simple
 {
     Actor::Actor(std::shared_ptr<MeshDef> m)
         : mesh(m)

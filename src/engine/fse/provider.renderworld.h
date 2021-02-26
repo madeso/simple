@@ -1,30 +1,30 @@
-﻿#pragma once
+#pragma once
 
 #include <string>
 
 #include "engine/fse/provider.h"
 #include "engine/xml.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    struct Shader;
+    struct ShaderProgram;
 }
 
-namespace SimpleEngine::fse::Providers
+namespace simple::fse::providers
 {
     struct RenderWorldProvider : public Provider
     {
-        std::shared_ptr<Shader> shader;
-        std::string shadername;
+        std::shared_ptr<ShaderProgram> shader;
+        std::string name_of_shader;
 
-        RenderWorldProvider(std::shared_ptr<Xml::Element> e);
+        RenderWorldProvider(std::shared_ptr<xml::Element> e);
 
         std::string ToString() const override;
 
-        void doProvide(RenderArgs* ra) override;
+        void PostProvide(RenderArgs* ra) override;
 
-        void doLink(Linker* user) override;
+        void PostLink(Linker* user) override;
 
-        void doBind(Binder* bd) override;
+        void PreBind(Binder* bd) override;
     };
 }

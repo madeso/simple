@@ -2,7 +2,7 @@
 
 #include "engine/opengl.h"
 
-namespace SimpleEngine
+namespace simple
 {
     Material::Material()
         : color(vec3(1, 1, 1))
@@ -11,13 +11,13 @@ namespace SimpleEngine
 
     Material::Material(const vec3& c, std::shared_ptr<TextureMedia> t)
         : color(c)
-        , tex(t)
+        , texture(t)
     {
     }
 
     void Material::Apply()
     {
         glColor3f(color.x, color.y, color.z);
-        tex->Bind();
+        texture->Bind();
     }
 }

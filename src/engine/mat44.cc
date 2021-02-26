@@ -7,7 +7,7 @@
 #include "engine/vec3.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine
+namespace simple
 {
     namespace
     {
@@ -24,7 +24,7 @@ namespace SimpleEngine
 
     std::string mat44::ToString() const
     {
-        const auto& m = dataColumnMajor;
+        const auto& m = column_major;
         return fmt::format(
             "\n| {0} {4} {8} {12} |"
             "\n| {1} {5} {9} {13} |"
@@ -33,22 +33,22 @@ namespace SimpleEngine
             m[0], m[1], m[2], m[3], m[4], m[5], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15]);
     }
 
-    float* mat44::DataArray()
+    float* mat44::AsColumnMajor()
     {
-        return &dataColumnMajor[0];
+        return &column_major[0];
     }
 
     float mat44::operator()(int row, int column) const
     {
-        return dataColumnMajor[row + column * kSize];
+        return column_major[row + column * kSize];
     }
     float& mat44::operator()(int row, int column)
     {
-        return dataColumnMajor[row + column * kSize];
+        return column_major[row + column * kSize];
     }
 
     mat44::mat44()
-        : dataColumnMajor(FA{
+        : column_major(FA{
               1, 0, 0, 0,
               0, 1, 0, 0,
               0, 0, 1, 0,
@@ -57,7 +57,7 @@ namespace SimpleEngine
     }
 
     mat44::mat44(mat44::FA d)
-        : dataColumnMajor(d)
+        : column_major(d)
     {
     }
 
@@ -74,7 +74,7 @@ namespace SimpleEngine
                       data[3], data[7], data[11], data[15]});
     }
 
-    mat44 mat44::TranslationFor(const vec3& v)
+    mat44 mat44::FromTranslation(const vec3& v)
     {
         return FromRowMajor(FA{
             1, 0, 0, v.x,
@@ -83,15 +83,15 @@ namespace SimpleEngine
             0, 0, 0, 1});
     }
 
-    SimpleEngine::mat33 mat44::mat33() const
+    simple::mat33 mat44::AsMat33() const
     {
         const auto& self = *this;
-        return SimpleEngine::mat33::FromRowMajor({self(0, 0), self(0, 1), self(0, 2),
+        return simple::mat33::FromRowMajor({self(0, 0), self(0, 1), self(0, 2),
                                                   self(1, 0), self(1, 1), self(1, 2),
                                                   self(2, 0), self(2, 1), self(2, 2)});
     }
 
-    vec3 mat44::Location() const
+    vec3 mat44::GetLocation() const
     {
         const auto& self = *this;
         return vec3(self(0, 3), self(1, 3), self(2, 3));

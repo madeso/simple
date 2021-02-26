@@ -5,7 +5,7 @@
 #include "engine/compiledmesh.h"
 #include "engine/media.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct Mesh : public Media
     {

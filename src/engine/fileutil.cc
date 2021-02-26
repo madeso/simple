@@ -7,7 +7,7 @@
 
 namespace fs = std::filesystem;
 
-namespace SimpleEngine
+namespace simple
 {
     BinaryReader::BinaryReader(const std::string& path)
         : handle(path.c_str(), std::ios::binary)
@@ -56,7 +56,7 @@ namespace SimpleEngine
         handle << static_cast<char>(0);
     }
 
-    namespace FileUtil
+    namespace file_util
     {
         std::vector<std::string> LinesIn(const std::string& path)
         {

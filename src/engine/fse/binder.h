@@ -8,7 +8,7 @@
 #include "engine/pool.h"
 #include "engine/shader.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     struct FboCreator
     {
@@ -19,12 +19,12 @@ namespace SimpleEngine::fse
 
         std::shared_ptr<Fbo> create(const std::string& name);
 
-        void release(std::shared_ptr<Fbo> fbo);
+        void Destroy(std::shared_ptr<Fbo> fbo);
     };
 
     struct Binder
     {
-        Map<std::shared_ptr<Shader>> shaders;
+        Map<std::shared_ptr<ShaderProgram>> shaders;
         std::vector<std::shared_ptr<BufferReference>> references;
         std::map<std::string, Size> associations;
         std::map<Size, std::shared_ptr<FboCreator>> creators;
@@ -33,25 +33,25 @@ namespace SimpleEngine::fse
 
         Binder(std::shared_ptr<FileSystem> sys);
 
-        std::shared_ptr<Shader> getShader(const std::string& shadername);
+        std::shared_ptr<ShaderProgram> GetShader(const std::string& shadername);
 
-        std::shared_ptr<Shader> getShaderOrNull(const std::string& shadername);
+        std::shared_ptr<ShaderProgram> GetShaderOrNull(const std::string& shadername);
 
-        void reference(std::shared_ptr<BufferReference> br);
+        void AddReference(std::shared_ptr<BufferReference> br);
 
         //Pool<Fbo> cbs = Pool<Fbo>(delegate() { return Fbo(512, 512, false); });
         //Map<Fbo> buffers = Map<Fbo>(delegate(std::string n) { return allocate(n); });
 
-        std::shared_ptr<Fbo> allocate(const std::string& name);
+        std::shared_ptr<Fbo> CreateFbo(const std::string& name);
 
-        std::shared_ptr<FboCreator> getCreator(const std::string& name);
+        std::shared_ptr<FboCreator> GetCreator(const std::string& name);
 
-        void release(std::shared_ptr<Fbo> buff);
+        void DestroyFbo(std::shared_ptr<Fbo> buff);
 
-        Size sizeOf(const std::string& name);
+        Size GetSize(const std::string& name);
 
-        void createBuffers();
+        void CreateBuffers();
 
-        void associate(std::string p, Size size);
+        void SetSize(std::string p, Size size);
     };
 }

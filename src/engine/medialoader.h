@@ -6,7 +6,7 @@
 
 #include "engine/media.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct FileSystem;
     struct Media;

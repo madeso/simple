@@ -10,7 +10,7 @@
 #include "engine/vec3.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine
+namespace simple
 {
     namespace
     {
@@ -34,7 +34,7 @@ namespace SimpleEngine
         }
         bool IsClose(const AxisAngle& a, const AxisAngle& b)
         {
-            return IsClose(a.axis, b.axis) && IsClose(a.angle.inDegrees(), b.angle.inDegrees());
+            return IsClose(a.axis, b.axis) && IsClose(a.angle.InDegrees(), b.angle.InDegrees());
         }
         bool IsClose(const mat33& a, const mat33& b)
         {
@@ -74,7 +74,7 @@ namespace SimpleEngine
 
         bool Matches(const AxisAngle& a, const AxisAngle& act)
         {
-            if (IsClose(act.angle.inDegrees(), 0) && IsClose(a.angle.inDegrees(), 0))
+            if (IsClose(act.angle.InDegrees(), 0) && IsClose(a.angle.InDegrees(), 0))
                 return true;
             return IsClose(act, a) || IsClose(-act, a);
         }

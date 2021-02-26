@@ -1,15 +1,15 @@
-﻿#include "engine/load/milkshape.ascii.h"
+#include "engine/load/milkshape.ascii.h"
 
 #include <vector>
 
 #include "engine/animation.h"
 #include "engine/filesystem.h"
 #include "engine/load/milkshape.common.h"
-#include "engine/math1.h"
+#include "engine/math.h"
 #include "engine/meshdef.h"
 #include "engine/strings.h"
 
-namespace SimpleEngine::load::MilkshapeAscii
+namespace simple::load::milkshape_ascii
 {
     // removes " at start and end
     std::string Cleanup(const std::string& p)
@@ -61,7 +61,7 @@ namespace SimpleEngine::load::MilkshapeAscii
                     readBones(cmd);
                 }
             }
-            model->mapBonesToId();
+            model->MapBonesToId();
         }
 
         void readBones(const std::vector<std::string>& cmd)
@@ -69,18 +69,18 @@ namespace SimpleEngine::load::MilkshapeAscii
             int bonecount = std::stoi(cmd[1]);
             for (int boneId = 0; boneId < bonecount; ++boneId)
             {
-                auto bone = model->newBone();
+                auto bone = model->NewBone();
                 bone->name = Cleanup(readLine());
-                bone->parentName = Cleanup(readLine());
+                bone->parent_name = Cleanup(readLine());
 
                 const auto data = Split(readLine());
                 bone->flags = std::stoi(data[0]);
-                bone->x = math1::ParseFloat(data[1]) * scale;
-                bone->y = math1::ParseFloat(data[2]) * scale;
-                bone->z = math1::ParseFloat(data[3]) * scale;
-                bone->rx = math1::ParseFloat(data[4]);
-                bone->ry = math1::ParseFloat(data[5]);
-                bone->rz = math1::ParseFloat(data[6]);
+                bone->x = math::ParseFloat(data[1]) * scale;
+                bone->y = math::ParseFloat(data[2]) * scale;
+                bone->z = math::ParseFloat(data[3]) * scale;
+                bone->rx = math::ParseFloat(data[4]);
+                bone->ry = math::ParseFloat(data[5]);
+                bone->rz = math::ParseFloat(data[6]);
 
                 readPositionFrames(bone);
                 readRotationFrame(bone);
@@ -94,11 +94,11 @@ namespace SimpleEngine::load::MilkshapeAscii
             for (int frameId = 0; frameId < count; ++frameId)
             {
                 auto data = Split(readLine());
-                auto key = bone->newRotationKey();
-                key->time = math1::ParseFloat(data[0]);
-                key->x = math1::ParseFloat(data[1]);
-                key->y = math1::ParseFloat(data[2]);
-                key->z = math1::ParseFloat(data[3]);
+                auto key = bone->NewRotationKey();
+                key->time = math::ParseFloat(data[0]);
+                key->x = math::ParseFloat(data[1]);
+                key->y = math::ParseFloat(data[2]);
+                key->z = math::ParseFloat(data[3]);
             }
         }
 
@@ -109,11 +109,11 @@ namespace SimpleEngine::load::MilkshapeAscii
             for (int frameId = 0; frameId < count; ++frameId)
             {
                 auto data = Split(readLine());
-                auto key = bone->newPositionKey();
-                key->time = math1::ParseFloat(data[0]);
-                key->x = math1::ParseFloat(data[1]) * scale;
-                key->y = math1::ParseFloat(data[2]) * scale;
-                key->z = math1::ParseFloat(data[3]) * scale;
+                auto key = bone->NewPositionKey();
+                key->time = math::ParseFloat(data[0]);
+                key->x = math::ParseFloat(data[1]) * scale;
+                key->y = math::ParseFloat(data[2]) * scale;
+                key->z = math::ParseFloat(data[3]) * scale;
             }
         }
 
@@ -128,16 +128,16 @@ namespace SimpleEngine::load::MilkshapeAscii
 
         void readSingleMaterial()
         {
-            auto mat = model->newMaterial();
+            auto mat = model->NewMaterial();
             mat->name = Cleanup(readLine());
-            mat->ambient.parse(readLine());
-            mat->diffuse.parse(readLine());
-            mat->specular.parse(readLine());
-            mat->emissive.parse(readLine());
-            mat->shininess = math1::ParseFloat(readLine());
-            mat->transperency = math1::ParseFloat(readLine());
-            mat->diffuseTexture = Cleanup(readLine());
-            mat->alphatexture = Cleanup(readLine());
+            mat->ambient.Parse(readLine());
+            mat->diffuse.Parse(readLine());
+            mat->specular.Parse(readLine());
+            mat->emissive.Parse(readLine());
+            mat->shininess = math::ParseFloat(readLine());
+            mat->transperency = math::ParseFloat(readLine());
+            mat->diffuse_texture = Cleanup(readLine());
+            mat->alpha_texture = Cleanup(readLine());
         }
 
         void readMeshes(std::vector<std::string> cmd)
@@ -154,7 +154,7 @@ namespace SimpleEngine::load::MilkshapeAscii
         {
             std::string meshline = readLine();
             const auto meshdata = Split(meshline);
-            auto mesh = model->newMesh();
+            auto mesh = model->NewMesh();
             mesh->name = Cleanup(meshdata[0]);
             mesh->flags = std::stoi(meshdata[1]);
             mesh->materialId = std::stoi(meshdata[2]);
@@ -185,7 +185,7 @@ namespace SimpleEngine::load::MilkshapeAscii
         {
             std::string triline = readLine();
             auto tricmd = Split(triline);
-            auto tri = mesh->newTri();
+            auto tri = mesh->NewTriangle();
             tri->flags = std::stoi(tricmd[0]);
             tri->v1 = std::stoi(tricmd[1]);
             tri->v2 = std::stoi(tricmd[2]);
@@ -194,31 +194,31 @@ namespace SimpleEngine::load::MilkshapeAscii
             tri->n2 = std::stoi(tricmd[5]);
             tri->n3 = std::stoi(tricmd[6]);
             tri->smoothingGroup = std::stoi(tricmd[7]);
-            tri->buildNormal(*mesh);
+            tri->BuildNormal(*mesh);
         }
 
         void readSingleNormal(std::shared_ptr<Mesh> mesh)
         {
             std::string normalline = readLine();
             auto normalcmd = Split(normalline);
-            auto n = mesh->newNormal();
-            n->x(math1::ParseFloat(normalcmd[0]));
-            n->y(math1::ParseFloat(normalcmd[1]));
-            n->z(math1::ParseFloat(normalcmd[2]));
-            n->normalize();
+            auto n = mesh->NewNormal();
+            n->SetX(math::ParseFloat(normalcmd[0]));
+            n->SetY(math::ParseFloat(normalcmd[1]));
+            n->SetZ(math::ParseFloat(normalcmd[2]));
+            n->Normalize();
         }
 
         void readSingleVertex(std::shared_ptr<Mesh> mesh)
         {
             std::string vertexline = readLine();
             auto vertexcmd = Split(vertexline);
-            auto v = mesh->newVertex();
+            auto v = mesh->NewVertex();
             v->flags = std::stoi(vertexcmd[0]);
-            v->x(math1::ParseFloat(vertexcmd[1]) * scale);
-            v->y(math1::ParseFloat(vertexcmd[2]) * scale);
-            v->z(math1::ParseFloat(vertexcmd[3]) * scale);
-            v->u(math1::ParseFloat(vertexcmd[4]));
-            v->v(math1::ParseFloat(vertexcmd[5]));
+            v->SetX(math::ParseFloat(vertexcmd[1]) * scale);
+            v->SetY(math::ParseFloat(vertexcmd[2]) * scale);
+            v->SetZ(math::ParseFloat(vertexcmd[3]) * scale);
+            v->SetU(math::ParseFloat(vertexcmd[4]));
+            v->SetV(math::ParseFloat(vertexcmd[5]));
             v->bone = std::stoi(vertexcmd[6]);
         }
 
@@ -231,20 +231,20 @@ namespace SimpleEngine::load::MilkshapeAscii
 
         void readCurrentFrame(const std::vector<std::string>& cmd)
         {
-            model->currentFrame = std::stoi(cmd[1]);
+            model->current_frame = std::stoi(cmd[1]);
         }
 
         void readFrameCount(const std::vector<std::string>& cmd)
         {
-            model->framecount = std::stoi(cmd[1]);
+            model->frame_count = std::stoi(cmd[1]);
         }
     };
 
     void Load(FileSystem* fs, const std::string& path, std::shared_ptr<MeshDef>* def, std::shared_ptr<Animation>* animation, float scale)
     {
         Runner runner = Runner();
-        runner.run(fs->readLines(path), scale);
-        *def = MilkshapeCommon::ExtractMeshDefinition(runner.model);
-        *animation = MilkshapeCommon::ExtractAnimation(runner.model);
+        runner.run(fs->ReadLines(path), scale);
+        *def = milkshape_common::ExtractMeshDefinition(runner.model);
+        *animation = milkshape_common::ExtractAnimation(runner.model);
     }
 }

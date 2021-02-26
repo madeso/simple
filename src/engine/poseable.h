@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace SimpleEngine
+namespace simple
 {
     struct CompiledPose;
 

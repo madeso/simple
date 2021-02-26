@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-namespace SimpleEngine
+namespace simple
 {
     struct Renderable;
     struct Entity;
@@ -22,6 +22,6 @@ namespace SimpleEngine
         virtual void ClearScreen() = 0;
 
         static std::shared_ptr<World> Load(MediaLoader* loader, const std::string& file);
-        void Render(int width, int height, const Camera& c);
+        void Render(int width, int height, const Camera& camera);
     };
 }

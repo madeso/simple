@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace SimpleEngine
+namespace simple
 {
     UserException::UserException(const std::string& message)
         : std::runtime_error(message){};

@@ -4,13 +4,11 @@
 
 #include "engine/texture.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct RenderBuffer
     {
         unsigned int buffer;
-
-        unsigned int Buffer() const;
 
         RenderBuffer(int internalFormat, int width, int height);
 
@@ -50,15 +48,15 @@ namespace SimpleEngine
 
         Fbo(int width, int height, bool mipmap);
 
-        void attach(std::shared_ptr<RenderBuffer> b, int attachmentPoint);
+        void Attach(std::shared_ptr<RenderBuffer> b, int attachmentPoint);
 
-        void attach(std::shared_ptr<Texture> img, int attachmentPoint);
+        void Attach(std::shared_ptr<Texture> texture, int attachment_point);
 
-        void updateTexture(std::function<void()> renderer);
+        void UpdateTexture(std::function<void()> renderer);
 
-        void bindTexture();
+        void BindTexture();
 
-        void bindTexture(int location);
+        void BindTexture(int location);
     };
 
     void Bind(Fbo* a);

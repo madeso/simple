@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "math1.h"
+#include "math.h"
 #include "engine/opengl.h"
 #include "engine/rect.h"
 
@@ -39,7 +39,7 @@ namespace
     {
         float ymax, xmax;
         float temp, temp2, temp3, temp4;
-        ymax = znear * tanf(fovyInDegrees * SimpleEngine::math1::pi / 360.0);
+        ymax = znear * tanf(fovyInDegrees * simple::math::pi / 360.0);
         // ymin = -ymax;
         // xmin = -ymax * aspectRatio;
         xmax = ymax * aspectRatio;
@@ -55,9 +55,9 @@ namespace
     }
 }
 
-namespace SimpleEngine
+namespace simple
 {
-    namespace Setup
+    namespace setup
     {
         void Setup()
         {
@@ -107,7 +107,7 @@ namespace SimpleEngine
 
         void Viewport(const Rect &rect)
         {
-            glViewport(rect.Left, rect.Top, rect.Width, rect.Height);
+            glViewport(rect.left, rect.top, rect.width, rect.height);
         }
 
         void View2d(int Width, int Height)

@@ -1,8 +1,8 @@
-﻿#pragma once
+#pragma once
 
 #include <string>
 
-namespace SimpleEngine
+namespace simple
 {
     struct vec2
     {
@@ -14,7 +14,7 @@ namespace SimpleEngine
 
         std::string ToString() const;
 
-        vec2 scale(float s) const;
+        vec2 GetScaled(float s) const;
 
         static vec2 FromTo(const vec2& from, const vec2& to);
 

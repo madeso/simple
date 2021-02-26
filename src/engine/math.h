@@ -1,11 +1,11 @@
 #include <string>
 
-namespace SimpleEngine
+namespace simple
 {
-    namespace math1
+    namespace math
     {
-        // larger smoothing values result in a smoother but less resposive path
-        float Curve(float newValue, float oldValue, float smoothingValue);
+        // larger smoothing values result in a smoother but less responsive path
+        float Curve(float new_value, float old_value, float smoothing_value);
         float ParseFloat(const std::string& text);
         bool IsZero(float l);
 
@@ -22,8 +22,8 @@ namespace SimpleEngine
 
         float Limmit(float min, float value, float max);
 
-        float To01(float L, float v, float R);
-        float From01(float L, float v, float R);
+        float To01(float min, float v, float max);
+        float From01(float min, float v, float max);
         float Remap(float ol, float oor, float v, float nl, float nr);
 
         float Get360Angular(float min, float value, float max);
@@ -41,7 +41,7 @@ namespace SimpleEngine
 
         bool IsBetween(int start, float p, int end);
 
-        bool isSame(float length, float last);
+        bool IsSame(float lhs, float rhs);
 
         float ZeroOrValue(float mark);
 

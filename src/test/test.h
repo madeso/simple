@@ -2,7 +2,7 @@
 
 #include "catchy/falsestring.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct quat;
     struct vec3;

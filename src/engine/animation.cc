@@ -4,21 +4,21 @@
 #include <vector>
 
 #include "engine/axisangle.h"
-#include "engine/math1.h"
+#include "engine/math.h"
 #include "engine/matrixhelper.h"
 #include "engine/meshdef.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    namespace Timed
+    namespace timed
     {
         template <typename T>
         int Get(const std::vector<T>& da, float current)
         {
             for (int i = 1; i < da.size(); ++i)
             {
-                if (math1::IsWithin(da[i - 1].time, current, da[i].time))
+                if (math::IsWithin(da[i - 1].time, current, da[i].time))
                 {
                     return i;
                 }
@@ -37,8 +37,8 @@ namespace SimpleEngine
 
     vec3 FramePosition::Interpolate(const FramePosition& from, float current, const FramePosition& to)
     {
-        float scale = math1::To01(from.time, current, to.time);
-        if (math1::IsWithin(0, scale, 1) == false)
+        float scale = math::To01(from.time, current, to.time);
+        if (math::IsWithin(0, scale, 1) == false)
             throw std::runtime_error("invalid scale");
         return vec3::Interpolate(from.location, scale, to.location);
     }
@@ -56,8 +56,8 @@ namespace SimpleEngine
 
     quat FrameRotation::Interpolate(FrameRotation from, float current, FrameRotation to)
     {
-        float scale = math1::To01(from.time, current, to.time);
-        if (math1::IsWithin(0, scale, 1) == false)
+        float scale = math::To01(from.time, current, to.time);
+        if (math::IsWithin(0, scale, 1) == false)
             throw std::runtime_error("invalid scale");
         return quat::SlerpShortway(from.rotation, scale, to.rotation);
     }
@@ -111,7 +111,7 @@ namespace SimpleEngine
 
     quat AnimationForBone::Interpolate(float time, const std::vector<FrameRotation>& fr)
     {
-        int fri = Timed::Get<FrameRotation>(fr, time);
+        int fri = timed::Get<FrameRotation>(fr, time);
         if (fri == -1)
             return quat::Identity();
         quat r = FrameRotation::Interpolate(fr[fri - 1], time, fr[fri]);
@@ -120,7 +120,7 @@ namespace SimpleEngine
 
     vec3 AnimationForBone::Interpolate(float time, const std::vector<FramePosition>& fp)
     {
-        int fpi = Timed::Get<FramePosition>(fp, time);
+        int fpi = timed::Get<FramePosition>(fp, time);
         if (fpi == -1)
             return vec3::Zero();
         vec3 res = FramePosition::Interpolate(fp[fpi - 1], time, fp[fpi]);
@@ -136,20 +136,20 @@ namespace SimpleEngine
 
         for (auto& fp : this->fp)
         {
-            if (math1::IsBetween(start, fp.time, end))
+            if (math::IsBetween(start, fp.time, end))
             {
                 float mark = fp.time - start;
-                if (first && math1::IsZero(mark) == false)
+                if (first && math::IsZero(mark) == false)
                 {
                     ab.AddPositon(0, Interpolate(start, this->fp));
                 }
-                mark = math1::ZeroOrValue(mark);
+                mark = math::ZeroOrValue(mark);
                 first = false;
                 ab.AddPositon(mark, fp.location);
                 last = mark;
             }
         }
-        if (math1::isSame(length, last) == false)
+        if (math::IsSame(length, last) == false)
         {
             ab.AddPositon(length, Interpolate(end, this->fp));
         }
@@ -159,20 +159,20 @@ namespace SimpleEngine
 
         for (auto& fr : this->fr)
         {
-            if (math1::IsBetween(start, fr.time, end))
+            if (math::IsBetween(start, fr.time, end))
             {
                 float mark = fr.time - start;
-                if (first && math1::IsZero(mark) == false)
+                if (first && math::IsZero(mark) == false)
                 {
                     ab.AddRotation(0, Interpolate(start, this->fr));
                 }
-                mark = math1::ZeroOrValue(mark);
+                mark = math::ZeroOrValue(mark);
                 first = false;
                 ab.AddRotation(mark, fr.rotation);
                 last = mark;
             }
         }
-        if (math1::isSame(length, last) == false)
+        if (math::IsSame(length, last) == false)
         {
             ab.AddRotation(length, Interpolate(end, this->fr));
         }
@@ -234,11 +234,11 @@ namespace SimpleEngine
     void CompiledPose::UpdateMatrix(std::vector<mat44>* result, std::shared_ptr<Bone> bone, const Pose& pose, const std::vector<std::shared_ptr<Bone>>& list)
     {
         mat44 parent =
-            bone->parentBone == nullptr ? mat44::Identity() : (*result)[bone->parent];
+            bone->parent_bone == nullptr ? mat44::Identity() : (*result)[bone->parent];
         vec3 loc = pose.bones[bone->index].location;
         quat rot = pose.bones[bone->index].rotation;
         // bone->pos Rotate(-bone->rot).
-        (*result)[bone->index] = MatrixHelper(parent).Rotate(bone->rot).Translate(bone->pos).Translate(loc).Rotate(-rot).mat44();
+        (*result)[bone->index] = MatrixHelper(parent).Rotate(bone->rot).Translate(bone->pos).Translate(loc).Rotate(-rot).AsMat44();
         for (auto& b : bone->children)
         {
             UpdateMatrix(result, b, pose, list);
@@ -258,7 +258,7 @@ namespace SimpleEngine
     {
         for (auto& ab : bones)
         {
-            length = math1::Max(length, ab.GetLength());
+            length = math::Max(length, ab.GetLength());
         }
     }
 

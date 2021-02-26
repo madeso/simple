@@ -1,4 +1,4 @@
-﻿#include <memory>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -8,92 +8,92 @@
 #include "engine/vec2.h"
 #include "engine/vec3.h"
 
-namespace SimpleEngine::load
+namespace simple::load
 {
     struct Model;
     struct Mesh;
     struct Vertex;
     struct Normal;
-    struct Tri;
+    struct Triangle;
     struct Color;
     struct Material;
     struct PositionKey;
-    struct RotatonKey;
+    struct RotationKey;
     struct Bone;
 
     struct Model
     {
-        int framecount = 0;
-        float currentFrame = 0;
+        int frame_count = 0;
+        float current_frame = 0;
 
         std::vector<std::shared_ptr<Mesh>> meshes;
         std::vector<std::shared_ptr<Material>> materials;
         std::vector<std::shared_ptr<Bone>> bones;
 
-        std::shared_ptr<Mesh> newMesh();
-        std::shared_ptr<Material> newMaterial();
-        std::shared_ptr<Bone> newBone();
-        int boneId(const std::string& bone);
-        void mapBonesToId();
+        std::shared_ptr<Mesh> NewMesh();
+        std::shared_ptr<Material> NewMaterial();
+        std::shared_ptr<Bone> NewBone();
+        int GetIdForBone(const std::string& bone);
+        void MapBonesToId();
     };
 
     struct Mesh
     {
-        std::string name = "";
+        std::string name;
         int flags = 0;
         int materialId = 0;
 
         std::vector<std::shared_ptr<Vertex>> vertices;
         std::vector<std::shared_ptr<Normal>> normals;
-        std::vector<std::shared_ptr<Tri>> tris;
+        std::vector<std::shared_ptr<Triangle>> triangles;
 
-        std::shared_ptr<Vertex> newVertex();
-        std::shared_ptr<Normal> newNormal();
-        std::shared_ptr<Tri> newTri();
+        std::shared_ptr<Vertex> NewVertex();
+        std::shared_ptr<Normal> NewNormal();
+        std::shared_ptr<Triangle> NewTriangle();
     };
 
     struct Vertex
     {
         int flags = 0;
         vec2 uv = vec2(0, 0);
-        vec3 pos = vec3(0, 0, 0);
+        vec3 position = vec3(0, 0, 0);
         int bone = 0;
 
-        void x(float value);
-        float x() const;
+        void SetX(float value);
+        float GetX() const;
 
-        void y(float value);
-        float y() const;
+        void SetY(float value);
+        float GetY() const;
 
-        void z(float value);
-        float z() const;
+        void SetZ(float value);
+        float GetZ() const;
 
-        void u(float value);
-        float u() const;
+        void SetU(float value);
+        float GetU() const;
 
-        void v(float value);
-        float v() const;
+        void SetV(float value);
+        float GetV() const;
 
         std::string ToString() const;
     };
 
     struct Normal
     {
-        vec3 norm = vec3(0, 0, 0);
+        vec3 normal = vec3(0, 0, 0);
 
-        void x(float value);
-        float x() const;
+        void SetX(float value);
+        float GetX() const;
 
-        void y(float value);
-        float y() const;
+        void SetY(float value);
+        float GetY() const;
 
-        void z(float value);
-        float z() const;
+        void SetZ(float value);
+        float GetZ() const;
 
-        void normalize();
+        void Normalize();
     };
 
-    struct Tri
+    struct Triangle
     {
         int flags = 0;
         int v1 = 0;
@@ -104,7 +104,7 @@ namespace SimpleEngine::load
         int n3 = 0;
         int smoothingGroup = 0;
 
-        void buildNormal(const Mesh& mesh);
+        void BuildNormal(const Mesh& mesh);
     };
 
     struct Color
@@ -114,7 +114,7 @@ namespace SimpleEngine::load
         float b = 1;
         float a = 1;
 
-        void parse(const std::string& p);
+        void Parse(const std::string& p);
     };
 
     struct Material
@@ -126,8 +126,8 @@ namespace SimpleEngine::load
         Color emissive;
         float shininess = 0;
         float transperency = 1;
-        std::string diffuseTexture;
-        std::string alphatexture;
+        std::string diffuse_texture;
+        std::string alpha_texture;
     };
 
     struct PositionKey
@@ -138,7 +138,7 @@ namespace SimpleEngine::load
         float z = 0.0f;
     };
 
-    struct RotatonKey
+    struct RotationKey
     {
         float time = 0.0f;
         float x = 0.0f;
@@ -151,8 +151,8 @@ namespace SimpleEngine::load
     struct Bone
     {
         std::string name;
-        std::string parentName;
-        int parentId = -1;
+        std::string parent_name;
+        int parent_id = -1;
         int flags = 0;
         float x = 0.0f;
         float y = 0.0f;
@@ -164,20 +164,18 @@ namespace SimpleEngine::load
         std::string ToString() const;
 
         std::vector<std::shared_ptr<PositionKey>> positions;
-        std::vector<std::shared_ptr<RotatonKey>> rotations;
-        std::vector<std::shared_ptr<PositionKey>>& PositionKeys();
-        std::vector<std::shared_ptr<RotatonKey>>& RotationKeys();
-        std::shared_ptr<RotatonKey> newRotationKey();
-        std::shared_ptr<PositionKey> newPositionKey();
+        std::vector<std::shared_ptr<RotationKey>> rotations;
+        std::shared_ptr<RotationKey> NewRotationKey();
+        std::shared_ptr<PositionKey> NewPositionKey();
     };
 
-    namespace MilkshapeCommon
+    namespace milkshape_common
     {
         std::shared_ptr<Animation> ExtractAnimation(std::shared_ptr<Model> model);
         std::shared_ptr<MeshDef> ExtractMeshDefinition(std::shared_ptr<Model> model);
-        float sin(float s);
-        float cos(float s);
-        quat makeQuat(const vec3& angles);
+        float Sin(float s);
+        float Cos(float s);
+        quat MakeQuat(const vec3& angles);
         std::string SmartTexture(std::string p);
     }
 }

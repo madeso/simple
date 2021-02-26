@@ -1,14 +1,14 @@
 ﻿#include "engine/stringcounter.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    void StringCounter::add(const std::string& s)
+    void StringCounter::Add(const std::string& s)
     {
-        const int c = countsOf(s);
+        const int c = GetCountsOf(s);
         counts[s] = c + 1;
     }
 
-    int StringCounter::countsOf(const std::string& s) const
+    int StringCounter::GetCountsOf(const std::string& s) const
     {
         auto found = counts.find(s);
         if (found == counts.end())

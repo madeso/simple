@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace SimpleEngine
+namespace simple
 {
     std::string ToLower(const std::string& s);
     std::string Nullstring(const std::string& nullorvalue, const std::string& valid);

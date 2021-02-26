@@ -1,14 +1,14 @@
-﻿#include <memory>
+#include <memory>
 #include <string>
 
-namespace SimpleEngine
+namespace simple
 {
     struct MeshDef;
     struct FileSystem;
 
     std::string MaterialNameFromId(int materialid);
 
-    namespace MeshFile
+    namespace mesh_file
     {
         std::shared_ptr<MeshDef> Load(FileSystem* fs, const std::string& path);
 

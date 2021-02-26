@@ -1,14 +1,14 @@
 ﻿#include "engine/rect.h"
 
-namespace SimpleEngine
+namespace simple
 {
     Rect Rect::FromLTWH(int l, int t, int w, int h)
     {
         Rect r;
-        r.Left = l;
-        r.Top = t;
-        r.Width = w;
-        r.Height = h;
+        r.left = l;
+        r.top = t;
+        r.width = w;
+        r.height = h;
         return r;
     }
 }

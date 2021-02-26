@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 #include <string>
@@ -6,7 +6,7 @@
 
 #include "engine/xml.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     struct Target;
     struct RenderArgs;
@@ -15,60 +15,44 @@ namespace SimpleEngine::fse
     struct Binder;
     struct BufferReference;
 
-    struct Provider;
-
-    struct Link
-    {
-        std::shared_ptr<Provider> prov;
-        std::string name;
-
-        Link(const std::string& n);
-
-        void provide(RenderArgs* ra);
-
-        void sortout(Linker* usr);
-    };
-
     struct Provider
     {
-        Provider(std::shared_ptr<Xml::Element> el);
+        Provider(std::shared_ptr<xml::Element> el);
         ~Provider();
 
-        static void PostLoad(std::shared_ptr<Provider> provider, std::shared_ptr<Xml::Element> el);
+        static void PostLoad(std::shared_ptr<Provider> provider, std::shared_ptr<xml::Element> el);
 
         std::shared_ptr<Target> target;
-        std::string targetname;
-
+        std::string target_name;
         std::string id;
 
-        bool autocallCommands = true;
+        bool autocall_commands = true;
         std::vector<std::shared_ptr<Command>> commands;
         std::vector<std::shared_ptr<Provider>> providers;
 
         void OnSize(int width, int height);
 
-        const std::string& Id() const;
-
-        void Id(const std::string& value);
+        const std::string& GetId() const;
+        void SetId(const std::string& value);
 
         virtual std::string ToString() const;
 
-        void provide(RenderArgs* ra);
+        void Provide(RenderArgs* ra);
 
-        void denyAutocallOfCommands();
+        void DenyAutocallOfCommands();
 
-        void callCommands();
+        void CallCommands();
 
-        std::shared_ptr<BufferReference> createBuffer(const std::string& name);
+        std::shared_ptr<BufferReference> CreateBuffer(const std::string& name);
 
-        static void link(std::shared_ptr<Provider> provider, Linker* linker);
+        static void Link(std::shared_ptr<Provider> provider, Linker* linker);
 
-        virtual void doProvide(RenderArgs* ra) = 0;
-        virtual void doLink(Linker* linker) = 0;
-        virtual void doBind(Binder* bd) = 0;
+        virtual void PostProvide(RenderArgs* ra) = 0;
+        virtual void PostLink(Linker* linker) = 0;
+        virtual void PreBind(Binder* bd) = 0;
 
-        void bind(Binder* bd);
+        void Bind(Binder* bd);
 
-        void postlink(Linker* linker);
+        void OnLinkCompleted(Linker* linker);
     };
 }

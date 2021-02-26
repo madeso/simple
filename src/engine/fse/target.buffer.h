@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 #include <string>
@@ -6,32 +6,32 @@
 #include "engine/fse/target.h"
 #include "engine/xml.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     struct BufferReference;
 }
 
-namespace SimpleEngine::fse::Targets
+namespace simple::fse::targets
 {
     struct BufferTarget : public Target
     {
-        BufferTarget(std::shared_ptr<Xml::Element> el);
+        BufferTarget(std::shared_ptr<xml::Element> el);
 
         std::shared_ptr<BufferReference> buffer;
         int width;
         int height;
 
-        std::string Name() const;
+        std::string GetName() const;
 
         std::string ToString() const override;
 
-        void apply(Target::ApplyFunction a) override;
+        void Apply(Target::ApplyFunction a) override;
 
-        int Width() override;
+        int GetWidth() override;
 
-        int Height() override;
+        int GetHeight() override;
 
-        void link(Linker*) override;
+        void Link(Linker*) override;
 
         void OnSize(int w, int h) override;
     };

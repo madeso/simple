@@ -1,10 +1,10 @@
 #pragma once
 
-namespace SimpleEngine
+namespace simple
 {
     struct Rect;
 
-    namespace Setup
+    namespace setup
     {
         void Setup();
         void BeforeRender(int Width, int Height);

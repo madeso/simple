@@ -1,25 +1,25 @@
-﻿#include "engine/math1.h"
+#include "engine/math.h"
 
 #include <cmath>
 
 #include "engine/angle.h"
 
-namespace SimpleEngine
+namespace simple
 {
-    namespace math1
+    namespace math
     {
         int Sign(float s)
         {
             return s > 0.0f ? 1 : -1;
         }
 
-        float Curve(float newValue, float oldValue, float smoothingValue)
+        float Curve(float new_value, float old_value, float smoothing_value)
         {
-            int sign = Sign(oldValue - newValue);
-            float slip = (oldValue - newValue) / smoothingValue;
-            float val = oldValue - slip;
-            if (sign != Sign(val - newValue))
-                return newValue;
+            int sign = Sign(old_value - new_value);
+            float slip = (old_value - new_value) / smoothing_value;
+            float val = old_value - slip;
+            if (sign != Sign(val - new_value))
+                return new_value;
             else
                 return val;
         }
@@ -75,14 +75,14 @@ namespace SimpleEngine
             return Max(min, Min(max, value));
         }
 
-        float To01(float L, float v, float R)
+        float To01(float min, float v, float max)
         {
-            return (v - L) / (R - L);
+            return (v - min) / (max - min);
         }
 
-        float From01(float L, float v, float R)
+        float From01(float min, float v, float max)
         {
-            return v * (R - L) + L;
+            return v * (max - min) + min;
         }
 
         float Remap(float ol, float oor, float v, float nl, float nr)
@@ -173,9 +173,9 @@ namespace SimpleEngine
             return start <= p && p <= end;
         }
 
-        bool isSame(float length, float last)
+        bool IsSame(float lhs, float rhs)
         {
-            return IsZero(length - last);
+            return IsZero(lhs - rhs);
         }
 
         float ZeroOrValue(float mark)

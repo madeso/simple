@@ -1,47 +1,47 @@
-﻿#include "engine/fse/target.buffer.h"
+#include "engine/fse/target.buffer.h"
 
 #include "engine/fse/bufferreference.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine::fse::Targets
+namespace simple::fse::targets
 {
-    BufferTarget::BufferTarget(std::shared_ptr<Xml::Element> el)
+    BufferTarget::BufferTarget(std::shared_ptr<xml::Element> el)
         : Target(el)
-        , width(Xml::GetAttribute<int>(
+        , width(xml::GetAttribute<int>(
               el, "width", [](const std::string& s) { return std::stoi(s); }, 512))
-        , height(Xml::GetAttribute<int>(
+        , height(xml::GetAttribute<int>(
               el, "height", [](const std::string& s) { return std::stoi(s); }, 512))
     {
     }
 
-    std::string BufferTarget::Name() const
+    std::string BufferTarget::GetName() const
     {
-        return Id();
+        return GetId();
     }
 
     std::string BufferTarget::ToString() const
     {
-        return fmt::format("{} targeting a buffer ({}x{}) named {}", Target::ToString(), width, height, Name());
+        return fmt::format("{} targeting a buffer ({}x{}) named {}", Target::ToString(), width, height, GetName());
     }
 
-    void BufferTarget::apply(Target::ApplyFunction a)
+    void BufferTarget::Apply(Target::ApplyFunction a)
     {
-        buffer->updateTexture(a);
+        buffer->UpdateTexture(a);
     }
 
-    int BufferTarget::Width()
+    int BufferTarget::GetWidth()
     {
-        return buffer->Width();
+        return buffer->GetWidth();
     }
 
-    int BufferTarget::Height()
+    int BufferTarget::GetHeight()
     {
-        return buffer->Height();
+        return buffer->GetHeight();
     }
 
-    void BufferTarget::link(Linker*)
+    void BufferTarget::Link(Linker*)
     {
-        buffer = createBuffer(Name(), width, height);
+        buffer = CreateBuffer(GetName(), width, height);
     }
 
     void BufferTarget::OnSize(int w, int h)

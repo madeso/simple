@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-namespace SimpleEngine
+namespace simple
 {
     struct Renderable;
     struct MeshPart;
@@ -22,7 +22,7 @@ namespace SimpleEngine
     {
         std::vector<std::shared_ptr<RenderDta>> datas;
 
-        void Add(std::shared_ptr<MeshPart> part, const vec3& pos, const quat& rot);
+        void Add(std::shared_ptr<MeshPart> part, const vec3& position, const quat& rotation);
 
         void Add(Renderable* r, int id);
 

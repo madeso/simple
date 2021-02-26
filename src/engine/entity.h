@@ -7,7 +7,7 @@
 #include "engine/renderable.h"
 #include "engine/xml.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct MediaLoader;
     struct vec3;
@@ -22,7 +22,7 @@ namespace SimpleEngine
 
         std::string ToString() const;
 
-        static std::shared_ptr<Entity> Create(MediaLoader* loader, const std::string& name, std::shared_ptr<Xml::Element> root, const vec3& pos, const quat& rot);
+        static std::shared_ptr<Entity> Create(MediaLoader* loader, const std::string& name, std::shared_ptr<xml::Element> root, const vec3& pos, const quat& rot);
 
         void AddRenderable(std::shared_ptr<Renderable> r);
     };

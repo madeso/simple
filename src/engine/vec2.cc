@@ -1,9 +1,9 @@
-﻿#include "engine/vec2.h"
+#include "engine/vec2.h"
 
-#include "engine/math1.h"
+#include "engine/math.h"
 #include "fmt/core.h"
 
-namespace SimpleEngine
+namespace simple
 {
     vec2::vec2(float xx, float yy)
         : x(xx)
@@ -21,7 +21,7 @@ namespace SimpleEngine
         return fmt::format("({} {})", x, y);
     }
 
-    vec2 vec2::scale(float s) const
+    vec2 vec2::GetScaled(float s) const
     {
         return vec2(x * s, y * s);
     }
@@ -33,7 +33,7 @@ namespace SimpleEngine
 
     vec2 vec2::Curve(const vec2& target, const vec2& old, float smoothing)
     {
-        return vec2(math1::Curve(target.x, old.x, smoothing), math1::Curve(target.y, old.y, smoothing));
+        return vec2(math::Curve(target.x, old.x, smoothing), math::Curve(target.y, old.y, smoothing));
     }
 
     vec2 operator+(const vec2& lhs, const vec2& rhs)
@@ -48,6 +48,6 @@ namespace SimpleEngine
 
     vec2 operator*(const vec2& lhs, float rhs)
     {
-        return lhs.scale(rhs);
+        return lhs.GetScaled(rhs);
     }
 }

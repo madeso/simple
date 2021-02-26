@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <functional>
 #include <memory>
@@ -6,7 +6,7 @@
 
 #include "engine/fbo.h"
 
-namespace SimpleEngine::fse
+namespace simple::fse
 {
     struct BufferReference
     {
@@ -15,16 +15,14 @@ namespace SimpleEngine::fse
 
         BufferReference(const std::string& name);
 
-        std::string Name() const;
+        void SetBuffer(std::shared_ptr<Fbo> fbo);
 
-        void setBuffer(std::shared_ptr<Fbo> fbo);
+        void BindTexture(int location);
 
-        void bindTexture(int location);
+        void UpdateTexture(std::function<void()> a);
 
-        void updateTexture(std::function<void()> a);
+        int GetWidth() const;
 
-        int Width() const;
-
-        int Height() const;
+        int GetHeight() const;
     };
 }

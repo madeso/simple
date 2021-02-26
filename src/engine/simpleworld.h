@@ -10,7 +10,7 @@
 #include "engine/world.h"
 #include "engine/xml.h"
 
-namespace SimpleEngine
+namespace simple
 {
     struct MediaLoader;
 
@@ -24,21 +24,21 @@ namespace SimpleEngine
 
         SimpleWorld(MediaLoader* loader, const std::string& file);
 
-        void AddEntities(MediaLoader* loader, std::shared_ptr<Xml::Element> level);
+        void AddEntities(MediaLoader* loader, std::shared_ptr<xml::Element> level);
 
-        void AddMeshes(MediaLoader* loader, std::shared_ptr<Xml::Element> level, RenderableAddTarget target);
+        void AddMeshes(MediaLoader* loader, std::shared_ptr<xml::Element> level, const RenderableAddTarget& target);
 
         void Add(std::shared_ptr<Renderable> r) override;
 
-        void Remove(std::shared_ptr<Renderable> r) override;
+        void Remove(std::shared_ptr<Renderable> renderable) override;
 
         void SendWorldRenderablesToList(RenderList* list) override;
 
-        void AddCameraRenderable(std::shared_ptr<Renderable> r) override;
+        void AddCameraRenderable(std::shared_ptr<Renderable> renderable) override;
 
         void SendCameraRenderablesToList(RenderList* list) override;
 
-        void AddEntity(std::shared_ptr<Entity> ent) override;
+        void AddEntity(std::shared_ptr<Entity> entity) override;
 
         void ClearScreen() override;
     };

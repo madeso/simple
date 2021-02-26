@@ -1,12 +1,12 @@
-﻿#pragma once
+#pragma once
 
 #include <SDL.h>
 
 #include <string>
 
-namespace SimpleEngine
+namespace simple
 {
-    struct Ckey
+    struct ConfigurableKey
     {
         enum class Type
         {
@@ -16,10 +16,10 @@ namespace SimpleEngine
         Type type;
         SDL_Keycode key;
 
-        explicit Ckey(SDL_Keycode k);
+        explicit ConfigurableKey(SDL_Keycode k);
 
         std::string ToString() const;
 
-        bool operator==(const Ckey& rhs) const;
+        bool operator==(const ConfigurableKey& rhs) const;
     };
 }
