@@ -141,7 +141,7 @@ namespace simple
 
             def->TranslateTexturePaths(overrides);
 
-            def->MapBones();
+            def->UntransformDefaultPose();
             std::shared_ptr<Actor> actor = std::make_shared<Actor>(def);
 
             if (animation != nullptr)

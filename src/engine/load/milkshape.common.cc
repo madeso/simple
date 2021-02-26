@@ -248,8 +248,8 @@ namespace simple::load
             for (auto b : model->bones)
             {
                 auto bn = def->CreateNewBone();
-                bn->pos = vec3(b->x, b->y, b->z);
-                bn->rot = MakeQuat(vec3(b->rx, b->ry, b->rz));
+                bn->position = vec3(b->x, b->y, b->z);
+                bn->rotation = MakeQuat(vec3(b->rx, b->ry, b->rz));
                 bn->parent = b->parent_id;
                 bn->name = b->name;
             }
@@ -268,8 +268,8 @@ namespace simple::load
                 def->SelectCurrentMaterial(MaterialNameFromId(me->materialId));
                 for (auto v : me->vertices)
                 {
-                    def->AddPoint(v->position, v->bone);
-                    def->AddUv(vec2(v->GetU(), 1 - v->GetV()));
+                    def->AddPosition(v->position, v->bone);
+                    def->AddTextureCoordinate(vec2(v->GetU(), 1 - v->GetV()));
                     ++vadded;
                 }
 
@@ -282,9 +282,9 @@ namespace simple::load
                 for (auto tr : me->triangles)
                 {
                     simple::Triangle data;
-                    data[0].uv = data[0].vertex = vbase + tr->v1;
-                    data[1].uv = data[1].vertex = vbase + tr->v2;
-                    data[2].uv = data[2].vertex = vbase + tr->v3;
+                    data[0].texture_coordinate = data[0].position = vbase + tr->v1;
+                    data[1].texture_coordinate = data[1].position = vbase + tr->v2;
+                    data[2].texture_coordinate = data[2].position = vbase + tr->v3;
                     data[0].normal = nbase + tr->n1;
                     data[1].normal = nbase + tr->n2;
                     data[2].normal = nbase + tr->n3;

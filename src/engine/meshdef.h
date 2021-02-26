@@ -15,21 +15,22 @@ namespace simple
     struct CompiledMesh;
     struct MediaLoader;
 
-    struct Point
+    struct SharedVertex
     {
         int bone_id;
-        vec3 location;
+        vec3 position;
 
-        Point(int b, const vec3& l);
+        SharedVertex(int b, const vec3& l);
 
         std::string ToString() const;
     };
 
     struct IndexedVertex
     {
-        int vertex;
+        int position;
         int normal;
-        int uv;
+        int texture_coordinate;
+        // bone is implicit based on vertex
     };
 
     using Triangle = std::array<IndexedVertex, 3>;
@@ -37,9 +38,9 @@ namespace simple
 
     struct Vertex
     {
-        vec3 vertex;
+        vec3 position;
         vec3 normal;
-        vec2 uv;
+        vec2 texture_coordinate;
         int bone;
     };
 
@@ -47,8 +48,8 @@ namespace simple
     {
         int parent;
         std::string name;
-        vec3 pos;
-        quat rot;
+        vec3 position;
+        quat rotation;
 
         int index = 0;
         std::shared_ptr<Bone> parent_bone;
@@ -80,26 +81,20 @@ namespace simple
         std::string ToString() const;
     };
 
-    struct MatrixAndPoints
+    struct MatrixAndSharedVertices
     {
-        MatrixAndPoints();
+        MatrixAndSharedVertices();
 
-        MatrixAndPoints(const mat44& m);
+        MatrixAndSharedVertices(const mat44& m);
 
         mat44 matrix;
-        std::vector<std::shared_ptr<Point>> points;
+        std::vector<std::shared_ptr<SharedVertex>> shared_vertices;
     };
 
-    // split to a builder and a definition
-    // use builder to load mesh from various files
-    // use def for to actually prepare to render (and faster loading)
-    // meshbuilder for building mesh
-    // mesdef for a optimized mesh
-    // compiledmesh on gpu for rendering
     struct MeshDef
     {
-        std::vector<std::shared_ptr<Point>> points;
-        std::vector<vec2> texturecoordinates;
+        std::vector<std::shared_ptr<SharedVertex>> positions;
+        std::vector<vec2> texture_coordinates;
         std::vector<vec3> normals;
         std::vector<std::shared_ptr<Bone>> bones;
 
@@ -112,37 +107,36 @@ namespace simple
 
         int GetTriangleCount() const;
 
-        MeshDef& MapBones();
-
+        MeshDef& UntransformDefaultPose();
         std::vector<std::shared_ptr<Bone>> GetRootBones() const;
 
-        std::vector<Triangle> GetTrianglesFor(const MaterialDefinition& material) const;
-
-        std::vector<std::shared_ptr<MaterialDefinition>> GetMaterials() const;
-
-        std::vector<Vertex> GetVerticesForTriangle(const Triangle& triangle) const;
-
-        void AddPoint(const vec3& point, int bone_id);
-        void AddUv(const vec2& uv);
-        std::shared_ptr<MaterialDefinition> AddMaterial(const std::string& name);
-
-        void SelectCurrentMaterial(const std::string& name);
-
-        void AddTriangle(const Triangle& t);
-
-        void AddNormal(const vec3& v);
-
-        std::shared_ptr<CompiledMesh> GetCompiledMesh();
-
-        void Compile(MediaLoader* ml);
 
         std::shared_ptr<Bone> CreateNewBone();
 
+        // bone_id is already created bone index, or -1
+        void AddPosition(const vec3& point, int bone_id);
+        void AddTextureCoordinate(const vec2& uv);
+        void AddNormal(const vec3& v);
+
+        std::shared_ptr<MaterialDefinition> AddMaterial(const std::string& name);
+        std::shared_ptr<MaterialDefinition> GetExistingMaterialNamed(const std::string& name);
+        std::vector<std::shared_ptr<MaterialDefinition>> GetMaterials() const;
+
+        void SelectCurrentMaterial(const std::string& name);
+
+        // Add triangle using currently selected material
+        void AddTriangle(const Triangle& triangle);
         bool HasTrianglesFor(MaterialDefinition m);
+
+        std::vector<Triangle> GetTrianglesFor(const MaterialDefinition& material) const;
+        std::vector<Vertex> GetVerticesForTriangle(const Triangle& triangle) const;
+
+
+        std::shared_ptr<CompiledMesh> GetCompiledMesh();
+        void Compile(MediaLoader* ml);
 
         void ScaleMeshAndBones(float scale);
 
-        std::shared_ptr<MaterialDefinition> GetExistingMaterialNamed(const std::string& name);
 
         void TranslateTexturePaths(const std::map<std::string, std::string>& overrides);
     };

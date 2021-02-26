@@ -17,15 +17,15 @@
 
 namespace simple
 {
-    Point::Point(int b, const vec3& l)
+    SharedVertex::SharedVertex(int b, const vec3& l)
         : bone_id(b)
-        , location(l)
+        , position(l)
     {
     }
 
-    std::string Point::ToString() const
+    std::string SharedVertex::ToString() const
     {
-        return fmt::format("{0} {1}", bone_id, location.ToString());
+        return fmt::format("{0} {1}", bone_id, position.ToString());
     }
 
     std::string Bone::ToString() const
@@ -58,12 +58,12 @@ namespace simple
         return fmt::format("{}: {}", name, Nullstring(texture, "<no_texture>"));
     }
 
-    MatrixAndPoints::MatrixAndPoints()
+    MatrixAndSharedVertices::MatrixAndSharedVertices()
         : matrix(mat44::Identity())
     {
     }
 
-    MatrixAndPoints::MatrixAndPoints(const mat44& m)
+    MatrixAndSharedVertices::MatrixAndSharedVertices(const mat44& m)
         : matrix(m)
     {
     }
@@ -78,10 +78,11 @@ namespace simple
         return c;
     }
 
-    MeshDef& MeshDef::MapBones()
+    MeshDef& MeshDef::UntransformDefaultPose()
     {
-        std::map<int, MatrixAndPoints> bone_to_mp;
+        std::map<int, MatrixAndSharedVertices> bone_to_mp;
 
+        // collect all bones and the reverse transformation matrix for the default pose
         for (int i = 0; i < bones.size(); ++i)
         {
             int parent = bones[i]->parent;
@@ -93,35 +94,38 @@ namespace simple
             }
 
             auto& bone = bones[i];
-            mat44 m = MatrixHelper(mat44::Identity()).Translate(-bone->pos).Rotate(-bone->rot).AsMat44();
-            bone_to_mp.emplace(i, MatrixAndPoints{m});
+            mat44 m = MatrixHelper(mat44::Identity()).Translate(-bone->position).Rotate(-bone->rotation).AsMat44();
+            bone_to_mp.emplace(i, MatrixAndSharedVertices{m});
         }
 
-        for (auto& pd : points)
+        // collect all vertices for a each bone... is this really needed? we could easily do this at the end instead
+        for (auto& vertex : positions)
         {
-            if (pd->bone_id == -1)
+            if (vertex->bone_id == -1)
                 continue;
-            if (pd->bone_id >= bones.size())
+            if (vertex->bone_id >= bones.size())
             {
-                throw std::runtime_error(fmt::format("bone id {} greater than bones {}", pd->bone_id, bones.size()));
+                throw std::runtime_error(fmt::format("bone id {} greater than bones {}", vertex->bone_id, bones.size()));
             }
-            const auto bone = bones[pd->bone_id];
-            auto& mpd = bone_to_mp[pd->bone_id];
-            mpd.points.emplace_back(pd);
+            auto& mpd = bone_to_mp[vertex->bone_id];
+            mpd.shared_vertices.emplace_back(vertex);
         }
 
         for (auto& k : bone_to_mp)
         {
             const auto current_bone = bones[k.first];
+
+            // for the current bone, combine the local reverse matrices into a total reverse transformation matrix
             auto m = mat44::Identity();
             for (auto loop_bone = current_bone; loop_bone != nullptr; loop_bone = loop_bone->parent_bone)
             {
                 m = m * bone_to_mp[loop_bone->index].matrix;
             }
 
-            for (const auto& pd : k.second.points)
+            // finally transform each vertex from the default pose to a "no-pose pose"
+            for (const auto& pd : k.second.shared_vertices)
             {
-                pd->location = m * pd->location;
+                pd->position = m * pd->position;
             }
         }
 
@@ -173,28 +177,28 @@ namespace simple
         for (int triangle_index = 0; triangle_index < 3; ++triangle_index)
         {
             Vertex vertex;
-            vertex.vertex = points[triangle[triangle_index].vertex]->location;
-            vertex.bone = points[triangle[triangle_index].vertex]->bone_id;
+            vertex.position = positions[triangle[triangle_index].position]->position;
+            vertex.bone = positions[triangle[triangle_index].position]->bone_id;
 
             if (triangle[triangle_index].normal != -1)
             {
                 vertex.normal = normals[triangle[triangle_index].normal];
             }
 
-            vertex.uv = texturecoordinates[triangle[triangle_index].uv];
+            vertex.texture_coordinate = texture_coordinates[triangle[triangle_index].texture_coordinate];
             v.emplace_back(vertex);
         }
         return v;
     }
 
-    void MeshDef::AddPoint(const vec3& point, int bone_id)
+    void MeshDef::AddPosition(const vec3& point, int bone_id)
     {
-        points.emplace_back(std::make_shared<Point>(bone_id, point));
+        positions.emplace_back(std::make_shared<SharedVertex>(bone_id, point));
     }
 
-    void MeshDef::AddUv(const vec2& uv)
+    void MeshDef::AddTextureCoordinate(const vec2& uv)
     {
-        texturecoordinates.emplace_back(uv);
+        texture_coordinates.emplace_back(uv);
     }
 
     std::shared_ptr<MaterialDefinition> MeshDef::AddMaterial(const std::string& name)
@@ -217,10 +221,10 @@ namespace simple
         current_part = parts[name];
     }
 
-    void MeshDef::AddTriangle(const Triangle& t)
+    void MeshDef::AddTriangle(const Triangle& triangle)
     {
         assert(current_part);
-        current_part->emplace_back(t);
+        current_part->emplace_back(triangle);
     }
 
     void MeshDef::AddNormal(const vec3& v)
@@ -257,14 +261,14 @@ namespace simple
 
     void MeshDef::ScaleMeshAndBones(float scale)
     {
-        for (auto& pd : points)
+        for (auto& pd : positions)
         {
-            pd->location = pd->location * scale;
+            pd->position = pd->position * scale;
         }
 
         for (auto b : bones)
         {
-            b->pos = b->pos * scale;
+            b->position = b->position * scale;
         }
     }
 

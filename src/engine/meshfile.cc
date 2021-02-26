@@ -52,22 +52,22 @@ namespace simple
                     auto bone = def->CreateNewBone();
                     bone->name = br.ReadString();
                     bone->parent = br.ReadInt32();
-                    bone->pos = vec3::Read(br);
+                    bone->position = vec3::Read(br);
                     vec3 qv = vec3::Read(br);
-                    bone->rot = quat(br.ReadSingle(), qv);
+                    bone->rotation = quat(br.ReadSingle(), qv);
                 }
                 int pointcount = br.ReadInt32();
                 for (int pointid = 0; pointid < pointcount; ++pointid)
                 {
                     int boneid = br.ReadInt32();
                     vec3 p = vec3(br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
-                    def->AddPoint(p, boneid);
+                    def->AddPosition(p, boneid);
                 }
                 int uvcount = br.ReadInt32();
                 for (int uvid = 0; uvid < uvcount; ++uvid)
                 {
                     vec2 v = vec2(br.ReadSingle(), br.ReadSingle());
-                    def->AddUv(v);
+                    def->AddTextureCoordinate(v);
                 }
                 int normalcount = br.ReadInt32();
                 for (int normalid = 0; normalid < normalcount; ++normalid)
@@ -85,8 +85,8 @@ namespace simple
                         std::array<IndexedVertex, 3> data;
                         for (int i = 0; i < 3; ++i)
                         {
-                            data[i].vertex = br.ReadInt32();
-                            data[i].uv = br.ReadInt32();
+                            data[i].position = br.ReadInt32();
+                            data[i].texture_coordinate = br.ReadInt32();
                             data[i].normal = br.ReadInt32();
                         }
                         def->AddTriangle(Triangle(data));
@@ -118,24 +118,24 @@ namespace simple
             {
                 bw.WriteString(bone->name);
                 bw.WriteInt32(bone->parent);
-                bw.WriteSingle(bone->pos.x);
-                bw.WriteSingle(bone->pos.y);
-                bw.WriteSingle(bone->pos.z);
-                bw.WriteSingle(bone->rot.x);
-                bw.WriteSingle(bone->rot.y);
-                bw.WriteSingle(bone->rot.z);
-                bw.WriteSingle(bone->rot.w);
+                bw.WriteSingle(bone->position.x);
+                bw.WriteSingle(bone->position.y);
+                bw.WriteSingle(bone->position.z);
+                bw.WriteSingle(bone->rotation.x);
+                bw.WriteSingle(bone->rotation.y);
+                bw.WriteSingle(bone->rotation.z);
+                bw.WriteSingle(bone->rotation.w);
             }
-            bw.WriteInt32(def->points.size());
-            for (auto v : def->points)
+            bw.WriteInt32(def->positions.size());
+            for (auto v : def->positions)
             {
                 bw.WriteInt32(v->bone_id);
-                bw.WriteSingle(v->location.x);
-                bw.WriteSingle(v->location.y);
-                bw.WriteSingle(v->location.z);
+                bw.WriteSingle(v->position.x);
+                bw.WriteSingle(v->position.y);
+                bw.WriteSingle(v->position.z);
             }
-            bw.WriteInt32(def->texturecoordinates.size());
-            for (vec2 u : def->texturecoordinates)
+            bw.WriteInt32(def->texture_coordinates.size());
+            for (vec2 u : def->texture_coordinates)
             {
                 bw.WriteSingle(u.x);
                 bw.WriteSingle(u.y);
@@ -155,8 +155,8 @@ namespace simple
                 {
                     for (int i = 0; i < 3; ++i)
                     {
-                        bw.WriteSingle(tri[i].vertex);
-                        bw.WriteSingle(tri[i].uv);
+                        bw.WriteSingle(tri[i].position);
+                        bw.WriteSingle(tri[i].texture_coordinate);
                         bw.WriteSingle(tri[i].normal);
                     }
                 }
@@ -240,11 +240,11 @@ namespace simple
                         auto data = Split(line);
                         if (data[0] == "v")
                         {
-                            mesh->AddPoint(vec3(floatParse(data[1]), floatParse(data[2]), floatParse(data[3])), -1);
+                            mesh->AddPosition(vec3(floatParse(data[1]), floatParse(data[2]), floatParse(data[3])), -1);
                         }
                         else if (data[0] == "vt")
                         {
-                            mesh->AddUv(vec2(floatParse(data[1]), floatParse(data[2])));
+                            mesh->AddTextureCoordinate(vec2(floatParse(data[1]), floatParse(data[2])));
                         }
                         else if (data[0] == "vn")
                         {
@@ -257,8 +257,8 @@ namespace simple
                             {
                                 auto ind = Split(data[i], '/');
                                 IndexedVertex v;
-                                v.vertex = std::stoi(ind[0]) - 1;
-                                v.uv = std::stoi(ind[1]) - 1;
+                                v.position = std::stoi(ind[0]) - 1;
+                                v.texture_coordinate = std::stoi(ind[1]) - 1;
                                 v.normal = ind.size() > 2 ? std::stoi(ind[2]) - 1 : -1;
                                 vd.emplace_back(v);
                             }
@@ -293,7 +293,7 @@ namespace simple
             else if (EndsWith(path, ".mdf"))
             {
                 auto loaded = meshdef_file::Load(fs, path);
-                loaded->MapBones();
+                loaded->UntransformDefaultPose();
                 return loaded;
             }
             else

@@ -64,7 +64,7 @@ namespace viewer
 
         current_filename = filename;
         model_information = fmt::format("{0} points, {1} texcoords {2} tris, {3}/{4} bones",
-                                        def->points.size(), def->texturecoordinates.size(), def->GetTriangleCount(), def->bones.size(), def->GetRootBones().size());
+                                        def->positions.size(), def->texture_coordinates.size(), def->GetTriangleCount(), def->bones.size(), def->GetRootBones().size());
 
         forceRedraw();
     }

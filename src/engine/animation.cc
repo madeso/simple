@@ -238,7 +238,7 @@ namespace simple
         vec3 loc = pose.bones[bone->index].location;
         quat rot = pose.bones[bone->index].rotation;
         // bone->pos Rotate(-bone->rot).
-        (*result)[bone->index] = MatrixHelper(parent).Rotate(bone->rot).Translate(bone->pos).Translate(loc).Rotate(-rot).AsMat44();
+        (*result)[bone->index] = MatrixHelper(parent).Rotate(bone->rotation).Translate(bone->position).Translate(loc).Rotate(-rot).AsMat44();
         for (auto& b : bone->children)
         {
             UpdateMatrix(result, b, pose, list);
