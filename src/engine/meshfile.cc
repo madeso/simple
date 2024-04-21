@@ -13,6 +13,9 @@
 
 namespace simple
 {
+    /// @addtogroup anim
+    /// @{
+
     std::string MaterialNameFromId(int materialid)
     {
         return fmt::format("m{}", materialid);
@@ -313,4 +316,6 @@ namespace simple
             return std::filesystem::path(file).filename().string();
         }
     }
+
+    /// @}
 }

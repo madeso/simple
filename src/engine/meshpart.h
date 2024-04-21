@@ -15,6 +15,9 @@ namespace simple
     struct vec3;
     struct quat;
 
+    /// @addtogroup anim
+    /// @{
+
     struct MeshPart
     {
         std::vector<std::vector<Vertex>> faces;
@@ -30,4 +33,6 @@ namespace simple
 
         void OnRender(const vec3& position, const quat& rotation) const;
     };
+
+    /// @}
 }

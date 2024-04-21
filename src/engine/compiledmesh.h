@@ -13,6 +13,9 @@ namespace simple
     struct vec3;
     struct quat;
 
+    /// @addtogroup anim
+    /// @{
+
     struct CompiledMesh : public Poseable
     {
         std::vector<std::shared_ptr<MeshPart>> parts;
@@ -26,4 +29,6 @@ namespace simple
 
         std::shared_ptr<CompiledPose> GetPose() override;
     };
+
+    /// @}
 }

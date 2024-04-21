@@ -3,6 +3,9 @@
 
 namespace simple
 {
+    /// @addtogroup anim
+    /// @{
+
     struct MeshDef;
     struct FileSystem;
 
@@ -19,4 +22,6 @@ namespace simple
         // should return hello:user.bmp
         std::string Resolve(const std::string& basepath, const std::string& file);
     }
+
+    /// @}
 }

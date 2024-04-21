@@ -9,9 +9,13 @@ namespace simple
 {
     struct FileSystem;
 
+    /// @addtogroup anim
+    /// @{
     namespace animation_file
     {
         std::shared_ptr<Animation> Load(FileSystem* fs, const std::string& path);
         void Write(std::shared_ptr<Animation> an, const std::string& s);
     }
+
+    /// @}
 }

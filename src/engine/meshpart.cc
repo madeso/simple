@@ -52,8 +52,8 @@ namespace simple
             {
                 auto v = face[i];
                 const auto vertex = (poseable->GetPose() != nullptr)
-                                      ? poseable->GetPose()->transforms[v.bone] * v.position
-                                      : v.position;
+                                        ? poseable->GetPose()->transforms[v.bone] * v.position
+                                        : v.position;
                 glNormal3f(v.normal.x, v.normal.y, v.normal.z);
                 glTexCoord2f(v.texture_coordinate.x, v.texture_coordinate.y);
                 glVertex3f(vertex.x, vertex.y, vertex.z);

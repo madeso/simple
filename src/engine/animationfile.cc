@@ -6,6 +6,8 @@
 
 namespace simple
 {
+    /// @addtogroup anim
+    /// @{
     namespace animation_file
     {
         namespace binary
@@ -75,4 +77,6 @@ namespace simple
             binary::Write(an, s);
         }
     }
+
+    /// @}
 }

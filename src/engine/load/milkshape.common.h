@@ -10,6 +10,9 @@
 
 namespace simple::load
 {
+    /// @addtogroup load
+    /// @{
+
     struct Model;
     struct Mesh;
     struct Vertex;
@@ -178,4 +181,6 @@ namespace simple::load
         quat MakeQuat(const vec3& angles);
         std::string SmartTexture(std::string p);
     }
+
+    /// @}
 }

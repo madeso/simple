@@ -12,6 +12,9 @@ namespace simple
     struct MeshDef;
     struct Bone;
 
+    /// @addtogroup anim
+    /// @{
+
     struct FramePosition
     {
         FramePosition(float time, const vec3& l);
@@ -111,4 +114,6 @@ namespace simple
 
         void Scale(float scale);
     };
+
+    /// @}
 }

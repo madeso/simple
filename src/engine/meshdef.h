@@ -15,6 +15,9 @@ namespace simple
     struct CompiledMesh;
     struct MediaLoader;
 
+    /// @addtogroup anim
+    /// @{
+
     struct SharedVertex
     {
         int bone_id;
@@ -110,7 +113,6 @@ namespace simple
         MeshDef& UntransformDefaultPose();
         std::vector<std::shared_ptr<Bone>> GetRootBones() const;
 
-
         std::shared_ptr<Bone> CreateNewBone();
 
         // bone_id is already created bone index, or -1
@@ -131,13 +133,13 @@ namespace simple
         std::vector<Triangle> GetTrianglesFor(const MaterialDefinition& material) const;
         std::vector<Vertex> GetVerticesForTriangle(const Triangle& triangle) const;
 
-
         std::shared_ptr<CompiledMesh> GetCompiledMesh();
         void Compile(MediaLoader* ml);
 
         void ScaleMeshAndBones(float scale);
 
-
         void TranslateTexturePaths(const std::map<std::string, std::string>& overrides);
     };
+
+    /// @}
 }

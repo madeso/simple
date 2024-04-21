@@ -202,6 +202,9 @@ namespace simple::load
         return key;
     }
 
+    /// @addtogroup load
+    /// @{
+
     namespace milkshape_common
     {
         std::shared_ptr<Animation> ExtractAnimation(std::shared_ptr<Model> model)
@@ -335,4 +338,6 @@ namespace simple::load
             return file_util::GetFileName(p);
         }
     }
+
+    /// @}
 }

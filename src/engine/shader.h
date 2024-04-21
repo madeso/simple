@@ -13,6 +13,8 @@ namespace simple
     struct ShaderProgram;
     struct FileSystem;
 
+    /// @addtogroup shader
+    /// @{
     struct Shader
     {
         enum ShaderType
@@ -85,4 +87,5 @@ namespace simple
 
         std::shared_ptr<Uniform> GetUniformFromName(const std::string& name);
     };
+    /// @}
 }

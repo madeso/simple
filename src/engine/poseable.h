@@ -4,6 +4,8 @@
 
 namespace simple
 {
+    /// @addtogroup anim
+    /// @{
     struct CompiledPose;
 
     struct Poseable
@@ -11,4 +13,6 @@ namespace simple
         virtual ~Poseable() = default;
         virtual std::shared_ptr<CompiledPose> GetPose() = 0;
     };
+
+    /// @}
 }
