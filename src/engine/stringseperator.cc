@@ -35,10 +35,10 @@ namespace simple
 
             if (strings.size() != index + 1)  // if this item isnt the last one: the list
             {
-                const std::string seperator =
+                const std::string the_seperator =
                     (strings.size() == index + 2) ? final_seperator
-                                                   : seperator;
-                builder << seperator;
+                                                  : seperator;
+                builder << the_seperator;
             }
         }
         return builder.str();
