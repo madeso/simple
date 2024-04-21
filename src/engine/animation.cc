@@ -24,7 +24,7 @@ namespace simple
                 }
             }
 
-            //throw std::runtime_error("data contatiner invalid for animating");
+            // throw std::runtime_error("data contatiner invalid for animating");
             return -1;
         }
     }
@@ -215,6 +215,19 @@ namespace simple
     {
     }
 
+    void UpdateMatrix(std::vector<mat44>* result, std::shared_ptr<Bone> bone, const Pose& pose)
+    {
+        mat44 parent =
+            bone->parent_bone == nullptr ? mat44::Identity() : (*result)[bone->parent];
+        vec3 loc = pose.bones[bone->index].location;
+        quat rot = pose.bones[bone->index].rotation;
+        (*result)[bone->index] = MatrixHelper(parent).Rotate(bone->rotation).Translate(bone->position).Translate(loc).Rotate(-rot).AsMat44();
+        for (auto& b : bone->children)
+        {
+            UpdateMatrix(result, b, pose);
+        }
+    }
+
     CompiledPose CompiledPose::Compile(const Pose& pose, const MeshDef& def)
     {
         if (pose.bones.size() != def.bones.size())
@@ -226,23 +239,9 @@ namespace simple
         for (int i = 0; i < pose.bones.size(); ++i) result.emplace_back(mat44::Identity());
         for (auto& root : def.GetRootBones())
         {
-            UpdateMatrix(&result, root, pose, def.bones);
+            UpdateMatrix(&result, root, pose);
         }
         return CompiledPose(result);
-    }
-
-    void CompiledPose::UpdateMatrix(std::vector<mat44>* result, std::shared_ptr<Bone> bone, const Pose& pose, const std::vector<std::shared_ptr<Bone>>& list)
-    {
-        mat44 parent =
-            bone->parent_bone == nullptr ? mat44::Identity() : (*result)[bone->parent];
-        vec3 loc = pose.bones[bone->index].location;
-        quat rot = pose.bones[bone->index].rotation;
-        // bone->pos Rotate(-bone->rot).
-        (*result)[bone->index] = MatrixHelper(parent).Rotate(bone->rotation).Translate(bone->position).Translate(loc).Rotate(-rot).AsMat44();
-        for (auto& b : bone->children)
-        {
-            UpdateMatrix(result, b, pose, list);
-        }
     }
 
     AnimationInformation::AnimationInformation(int s, int e, const std::string& n)

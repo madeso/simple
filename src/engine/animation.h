@@ -15,6 +15,7 @@ namespace simple
     /// @addtogroup anim
     /// @{
 
+    /// A position in the AnimationTrack
     struct FramePosition
     {
         FramePosition(float time, const vec3& l);
@@ -27,6 +28,7 @@ namespace simple
         std::string ToString() const;
     };
 
+    /// A rotation in the animation track
     struct FrameRotation
     {
         FrameRotation(float t, const quat& r);
@@ -39,6 +41,7 @@ namespace simple
         std::string ToString() const;
     };
 
+    /// A "Transform"
     struct PoseForBone
     {
         vec3 location;
@@ -47,6 +50,7 @@ namespace simple
         std::string ToString() const;
     };
 
+    /// A "AnimationTrack"
     struct AnimationForBone
     {
         std::vector<FramePosition> fp;
@@ -73,6 +77,7 @@ namespace simple
         void Scale(float scale);
     };
 
+    /// A collection of PoseForBone
     struct Pose
     {
         Pose(const std::vector<PoseForBone>& pose);
@@ -80,6 +85,8 @@ namespace simple
         std::vector<PoseForBone> bones;
     };
 
+    /// A collection of transformation matrices
+    /// @see MeshPart::OnRender
     struct CompiledPose
     {
         std::vector<mat44> transforms;
@@ -87,10 +94,9 @@ namespace simple
         CompiledPose(const std::vector<mat44>& ts);
 
         static CompiledPose Compile(const Pose& pose, const MeshDef& def);
-
-        static void UpdateMatrix(std::vector<mat44>* result, std::shared_ptr<Bone> bone, const Pose& pose, const std::vector<std::shared_ptr<Bone>>& list);
     };
 
+    /// util struct to extract animation from a longer animation clip that contains multiple animations
     struct AnimationInformation
     {
         AnimationInformation(int s, int e, const std::string& n);
@@ -99,6 +105,7 @@ namespace simple
         std::string name;
     };
 
+    /// A list of animation tracks
     struct Animation
     {
         std::vector<AnimationForBone> bones;

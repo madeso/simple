@@ -36,6 +36,8 @@ namespace simple
         return 0;
     }
 
+    /// Does the actual Renderer with a Pose
+    /// @see MeshDef::UntransformDefaultPose
     void MeshPart::OnRender(const vec3& position, const quat& rotation) const
     {
         PushedMatrix pushed_matrix;

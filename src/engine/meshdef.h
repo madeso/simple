@@ -18,6 +18,7 @@ namespace simple
     /// @addtogroup anim
     /// @{
 
+    /// A position with a bone assigned
     struct SharedVertex
     {
         int bone_id;
@@ -28,6 +29,7 @@ namespace simple
         std::string ToString() const;
     };
 
+    /// index into position, normal and texture coordinate
     struct IndexedVertex
     {
         int position;
@@ -36,9 +38,13 @@ namespace simple
         // bone is implicit based on vertex
     };
 
+    /// A triangle of indexed vertices
     using Triangle = std::array<IndexedVertex, 3>;
+
+    /// A list of triangles with indexed vertices
     using TriangleList = std::vector<Triangle>;
 
+    /// data for position, normal and texture coordinate
     struct Vertex
     {
         vec3 position;
@@ -47,6 +53,7 @@ namespace simple
         int bone;
     };
 
+    /// A named bone with a default pose transformation
     struct Bone
     {
         int parent;
@@ -64,6 +71,7 @@ namespace simple
         std::vector<std::shared_ptr<Bone>> children;
     };
 
+    /// Unloaded data for a material
     struct MaterialDefinition
     {
         MaterialDefinition(const std::string& n);
@@ -84,6 +92,7 @@ namespace simple
         std::string ToString() const;
     };
 
+    /// a matrix + a list of vertex positions with assigned bones
     struct MatrixAndSharedVertices
     {
         MatrixAndSharedVertices();
@@ -94,6 +103,7 @@ namespace simple
         std::vector<std::shared_ptr<SharedVertex>> shared_vertices;
     };
 
+    /// A unloaded mesh
     struct MeshDef
     {
         std::vector<std::shared_ptr<SharedVertex>> positions;

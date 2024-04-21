@@ -10,6 +10,8 @@ namespace simple
 
     /// @addtogroup anim
     /// @{
+
+    /// A Media wrapper on a CompiledMesh
     struct Mesh : public Media
     {
         std::shared_ptr<CompiledMesh> mesh;

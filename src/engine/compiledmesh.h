@@ -16,6 +16,7 @@ namespace simple
     /// @addtogroup anim
     /// @{
 
+    /// A list of MeshPart with a CompiledPose
     struct CompiledMesh : public Poseable
     {
         std::vector<std::shared_ptr<MeshPart>> parts;

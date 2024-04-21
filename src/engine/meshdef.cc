@@ -4,13 +4,12 @@
 #include <iostream>
 #include <stdexcept>
 
-
-#include "engine/strings.h"
 #include "engine/compiledmesh.h"
 #include "engine/filesystem.h"
 #include "engine/mat44.h"
 #include "engine/matrixhelper.h"
 #include "engine/quat.h"
+#include "engine/strings.h"
 #include "engine/vec2.h"
 #include "engine/vec3.h"
 #include "fmt/core.h"
